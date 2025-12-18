@@ -1,0 +1,214 @@
+name: mashrou3
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# Android publish 22/04/2025 - 1.3.0+5
+# Android publish 06/05/2025 - 1.4.0+6
+# Android publish 18/06/2025 - 1.4.1+7
+# Android publish 27/06/2025 - 1.4.2+8
+# Android publish 30/06/2025 - 1.4.3+9
+# Android publish 30/06/2025 - 1.4.4+10
+# Android publish 29/07/2025 - 1.4.5+11
+
+#version: 3.0.19+6
+version: 1.4.10+17
+
+environment:
+  sdk: '>=3.4.3 <4.0.0'
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+  http: ^1.5.0
+  # Fetch current device information.
+  device_info_plus: ^11.1.0
+
+  # flutter phone direct call.
+  #  flutter_phone_direct_caller:
+
+  # Bloc architecture
+  flutter_bloc: ^8.1.3
+
+  # Routing navigation
+  go_router: ^15.1.0
+
+  # Prevent duplicate object being called.
+  equatable: ^2.0.7
+
+  # Get it
+  get_it: ^8.0.3
+
+  # Defines the annotations used by json_serializable
+  # to create code for JSON serialization and deserialization.
+  json_annotation: ^4.8.1
+
+  # Provides Dart Build System builders for handling JSON.
+  json_serializable: ^6.7.1
+
+  # networking library
+  dio: ^5.3.3
+  pretty_dio_logger: ^1.3.1
+
+  # check network connection
+  connectivity_plus: ^7.0.0
+
+  intl: ^0.19.0
+
+  # svg image support
+  flutter_svg: ^2.1.0
+
+  # Open fileX
+  open_filex: ^4.7.0
+
+  path_provider: ^2.1.5
+
+  # flutter webview
+  webview_flutter: ^4.13.0
+
+  # OTP pinput
+  pinput: ^5.0.0
+
+  # country code picker
+  #  country_calling_code_picker: ^2.0.0
+  country_picker: ^2.0.26
+
+  # infinite scroll pagination
+  infinite_scroll_pagination: ^4.0.0
+
+  flutter_keyboard_visibility: ^6.0.0
+
+  # loaderf
+  skeletonizer: ^2.1.0+1
+
+  # cached network image
+  cached_network_image: ^3.4.0
+
+  url_launcher_android: ^6.3.14
+
+  phone_numbers_parser:
+
+  # loggerste
+  logger: ^2.0.2+1
+
+  image:
+  gif_view: ^0.4.4
+
+  country_phone_validator: ^1.0.1
+
+  # badge
+  badges: ^3.1.2
+
+  # Test
+  bloc_test: ^9.1.4
+
+  get_storage: ^2.1.1
+
+  loader_overlay: ^4.0.0
+
+  any_link_preview: ^3.0.3
+
+  # flutter local notification
+  flutter_local_notifications: ^18.0.1
+
+  # Firebase
+  firebase_core: ^3.6.0
+  firebase_messaging: ^15.1.3
+  firebase_analytics: ^11.4.5
+
+  #Permission Handler
+  permission_handler: ^11.3.0
+
+  flutter_widget_from_html: ^0.15.3
+
+  #Document picker
+  file_picker: ^8.0.0+1
+
+  #Image picker
+  image_picker: ^1.1.2
+
+  easy_image_viewer: ^1.5.1
+
+  photo_view: ^0.15.0
+
+  #  google maps
+  google_maps_flutter: ^2.10.0
+
+  # geolocator
+  geolocator: ^13.0.1
+
+  #  place picker map
+  #  place_picker_google: ^0.0.11
+  place_picker_google:
+    path: packages/place_picker_google
+
+  syncfusion_flutter_sliders: ^27.2.3
+  syncfusion_flutter_core: ^27.2.3
+
+  # shared preferences
+  shared_preferences: ^2.2.3
+
+  # flutter toast
+  fluttertoast: ^8.0.8
+
+  share_plus: ^10.1.2
+
+  url_launcher: ^6.3.1
+
+  #Carousel Slider
+  carousel_slider: ^5.0.0
+  app_links: ^6.4.1
+
+dependency_overrides:
+  intl: 0.18.1
+  webview_flutter_wkwebview: 3.16.3
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+  # The build_runner package provides a
+  # concrete way of generating files using Dart code.
+  build_runner: ^2.4.6
+
+integration_test:
+  sdk: flutter
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - lib/l10n/
+    - assets/
+    - assets/icons/
+    - assets/images/
+    - assets/vectors/
+    - assets/gif/
+    - assets/lottie/
+    - .env
+
+  fonts:
+    - family: Reddit Sans
+      fonts:
+        - asset: fonts/RedditSans-Light.ttf
+          weight: 300
+        - asset: fonts/RedditSans-Regular.ttf
+          weight: 400
+        - asset: fonts/RedditSans-Medium.ttf
+          weight: 500
+        - asset: fonts/RedditSans-Bold.ttf
+          weight: 600
+

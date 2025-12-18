@@ -1,0 +1,33 @@
+sonarqube-check:
+  image:
+    name: ghcr.io/cirruslabs/flutter
+    entrypoint: [ "" ]
+
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+    FLUTTER_CHANNEL: "stable"
+    FLUTTER_VERSION: "3.7.12"
+
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+
+  before_script:
+    # Install SonarScanner inside the Flutter image
+    - apt-get update && apt-get install -y openjdk-11-jre wget unzip
+    - wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+    - unzip sonar-scanner-cli-4.6.2.2472-linux.zip
+    - export PATH=$PATH:$PWD/sonar-scanner-4.6.2.2472-linux/bin
+
+    # Run Flutter analyze if needed
+    - flutter pub get
+    - flutter analyze --no-fatal-warnings --no-fatal-infos
+
+  script:
+    - sonar-scanner -X
+
+  allow_failure: true
+  only:
+    - dev_category_cr
