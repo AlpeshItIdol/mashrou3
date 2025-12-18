@@ -1,0 +1,19 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.2948 10.8333L11.6673 12.9166M11.6673 12.9166L13.0399 15M11.6673 12.9166L13.0399 10.8333M11.6673 12.9166L10.2948 15M14.7556 10.8333H16.1281M16.1281 10.8333H17.5007M16.1281 10.8333V15M5.83398 10.8333H7.20653M7.20653 10.8333H8.57908M7.20653 10.8333V15" stroke="url(#paint0_linear_4903_2181)" stroke-width="1.25" stroke-linecap="round"/>
+<path d="M12.4993 18.3333H8.93874C6.22107 18.3333 4.86224 18.3333 3.91857 17.6685C3.6482 17.478 3.40817 17.252 3.20577 16.9976C2.49935 16.1094 2.49935 14.8305 2.49935 12.2727V10.1515C2.49935 7.68219 2.49935 6.44753 2.89013 5.46144C3.51836 3.87617 4.84696 2.62572 6.53132 2.03444C7.57904 1.66665 8.89086 1.66665 11.5145 1.66665C13.0137 1.66665 13.7633 1.66665 14.362 1.87681C15.3245 2.21469 16.0837 2.92923 16.4427 3.8351C16.666 4.39858 16.666 5.1041 16.666 6.51513V8.33331" stroke="url(#paint1_linear_4903_2181)" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M2.50065 10C2.50065 8.46588 3.7443 7.22222 5.27843 7.22222C5.83325 7.22222 6.48735 7.31944 7.02679 7.1749C7.50608 7.04647 7.88045 6.6721 8.00888 6.1928C8.15342 5.65336 8.05621 4.99926 8.05621 4.44444C8.05621 2.91032 9.29986 1.66667 10.834 1.66667" stroke="url(#paint2_linear_4903_2181)" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+<defs>
+<linearGradient id="paint0_linear_4903_2181" x1="5.83398" y1="12.9166" x2="17.5007" y2="12.9166" gradientUnits="userSpaceOnUse">
+<stop stop-color="#347278"/>
+<stop offset="1" stop-color="#1D5055"/>
+</linearGradient>
+<linearGradient id="paint1_linear_4903_2181" x1="16.666" y1="9.99998" x2="2.49935" y2="9.99998" gradientUnits="userSpaceOnUse">
+<stop stop-color="#347278"/>
+<stop offset="1" stop-color="#1D5055"/>
+</linearGradient>
+<linearGradient id="paint2_linear_4903_2181" x1="10.834" y1="5.83333" x2="2.50065" y2="5.83333" gradientUnits="userSpaceOnUse">
+<stop stop-color="#347278"/>
+<stop offset="1" stop-color="#1D5055"/>
+</linearGradient>
+</defs>
+</svg>

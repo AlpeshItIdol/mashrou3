@@ -1,0 +1,24 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "APP_ID.com.mashrou3.realestate",
+        "components": [
+          {
+            "/": "/view-project/*",
+            "comment": "Matches any URL with a path that starts with /view-project/."
+          },
+          {
+            "/": "/login/*",
+            "exclude": true,
+            "comment": "Matches any URL with a path that starts with /login/ and instructs the system not to open it as a universal link."
+          }
+        ],
+        "paths": [
+          "/view-project/*"
+        ]
+      }
+    ]
+  }
+}
