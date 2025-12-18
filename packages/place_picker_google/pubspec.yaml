@@ -1,0 +1,34 @@
+name: place_picker_google
+description: "A place picker package for google maps api fully written in dart for Flutter."
+homepage: https://github.com/joafc96/place_picker_google
+repository: https://github.com/joafc96/place_picker_google
+issue_tracker: https://github.com/joafc96/place_picker_google/issues
+documentation: https://github.com/joafc96/place_picker_google/blob/main/README.md
+version: 0.0.11
+
+environment:
+  sdk: ^3.4.0
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  http: ^1.2.2
+  google_maps_flutter: ^2.9.0
+  geolocator: ^13.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+
+topics:
+  - map-picker
+  - location-picker
+  - flutter-location-picker
+  - google-maps-flutter
+  - place-picker
