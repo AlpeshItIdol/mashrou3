@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "439738132740",
+    "project_id": "mashrou3-realestate",
+    "storage_bucket": "mashrou3-realestate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439738132740:android:f67e53a10ac63e65550851",
+        "android_client_info": {
+          "package_name": "com.mashrou3.realestate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByjeW7bbdJYdK5rjuK1eGVW66KI5wksXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
