@@ -605,6 +605,19 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                 final lockedProperties = cubit.selectedPropertyList
                     .where((property) => property.isLockedByMe == true)
                     .toList();
+                
+                // Check if ALL selected properties are locked (before partial-selection logic)
+                if (lockedProperties.length == cubit.selectedPropertyList.length && 
+                    cubit.selectedPropertyList.isNotEmpty) {
+                  // All properties are locked - show alert and don't proceed
+                  await _showAllPropertiesLockedAlert(
+                    context: context,
+                    lockedCount: lockedProperties.length,
+                  );
+                  return;
+                }
+                
+                // Check if SOME properties are locked (partial-selection logic)
                 if (lockedProperties.isNotEmpty) {
                   // Show alert dialog
                   final shouldProceed = await _showLockedPropertiesAlert(
@@ -874,6 +887,91 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                       ),
                     ),
                   ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Show alert dialog when all selected properties are locked
+  Future<void> _showAllPropertiesLockedAlert({
+    required BuildContext context,
+    required int lockedCount,
+  }) async {
+    return await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.only(top: 24, bottom: 20.0, left: 20, right: 20),
+            decoration: BoxDecoration(
+              color: AppColors.white.adaptiveColor(
+                context,
+                lightModeColor: AppColors.white,
+                darkModeColor: AppColors.black2E,
+              ),
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Text(
+                  appStrings(context).applyOffer,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                ),
+                const SizedBox(height: 16.0),
+                // Message
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    "You can't apply offer again on the same $lockedCount ${lockedCount == 1 ? 'applied property' : 'applied properties'}. Please select different properties.",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).highlightColor,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 24.0),
+                // OK button
+                SizedBox(
+                  width: double.infinity,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      gradient: AppColors.primaryGradient,
+                    ),
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        appStrings(context).ok,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
