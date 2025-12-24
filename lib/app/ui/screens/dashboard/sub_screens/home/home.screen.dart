@@ -635,6 +635,47 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                 );
                 // return;
               } else {
+                // Validate selected properties for locked status
+                final lockedProperties = cubit.selectedPropertyList
+                    .where((property) => property.isLockedByMe == true)
+                    .toList();
+                if (lockedProperties.isNotEmpty) {
+                  // Show alert dialog
+                  final shouldProceed = await _showLockedPropertiesAlert(
+                    context: context,
+                    lockedCount: lockedProperties.length,
+                  );
+                  
+                  if (shouldProceed == true) {
+                    // Remove locked properties from selection
+                    cubit.selectedPropertyList.removeWhere(
+                      (property) => property.isLockedByMe == true,
+                    );
+                    
+                    // Update Select All state if needed
+                    final totalProperties = homeScreenPagingController.itemList?.length ?? 0;
+                    cubit.isBtnSelectAllPropertiesTapped = 
+                        cubit.selectedPropertyList.length == totalProperties && totalProperties > 0;
+                    
+                    // Update UI if all properties were locked
+                    if (cubit.selectedPropertyList.isEmpty) {
+                      Utils.snackBar(
+                        context: context,
+                        message: appStrings(context).selectPropertyError,
+                      );
+                      return;
+                    }
+                    
+                    // Trigger UI rebuild by calling setState
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  } else {
+                    // User cancelled, don't proceed
+                    return;
+                  }
+                }
+                
                 List<String> selectedPropertyIds = cubit.selectedPropertyList
                     .map((property) => property.sId)
                     .whereType<String>() // Filters out null values and ensures type safety
@@ -749,6 +790,132 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                       .textTheme
                       .titleMedium
                       ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Show alert dialog for locked properties
+  Future<bool?> _showLockedPropertiesAlert({
+    required BuildContext context,
+    required int lockedCount,
+  }) async {
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.only(top: 24, bottom: 20.0, left: 20, right: 20),
+            decoration: BoxDecoration(
+              color: AppColors.white.adaptiveColor(
+                context,
+                lightModeColor: AppColors.white,
+                darkModeColor: AppColors.black2E,
+              ),
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Text(
+                  appStrings(context).applyOffer,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                ),
+                const SizedBox(height: 16.0),
+                // Message
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    "The selected $lockedCount ${lockedCount == 1 ? 'property' : 'properties'} already have an applied offer and will be skipped.",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).highlightColor,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 24.0),
+                // Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Cancel button
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: AppColors.white.adaptiveColor(
+                            context,
+                            lightModeColor: AppColors.white,
+                            darkModeColor: AppColors.black2E,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(
+                              color: AppColors.greyE8.adaptiveColor(
+                                context,
+                                lightModeColor: AppColors.greyE8,
+                                darkModeColor: AppColors.black2E,
+                              ),
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          appStrings(context).cancel,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: AppColors.black14.adaptiveColor(
+                                  context,
+                                  lightModeColor: AppColors.black14,
+                                  darkModeColor: AppColors.white,
+                                ),
+                                fontWeight: FontWeight.w500,
+                              ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Yes button
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: AppColors.primaryGradient,
+                        ),
+                        child: TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            appStrings(context).yes,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
