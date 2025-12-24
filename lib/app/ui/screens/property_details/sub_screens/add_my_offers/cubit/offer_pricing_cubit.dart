@@ -47,6 +47,7 @@ class OfferPricingCubit extends Cubit<OfferPricingState> {
 
   Future<void> getPriceCalculations({
     required List<String> propertyIds,
+    bool isAllProperty = false,
   }) async {
     emit(OfferPricingLoading());
 
@@ -69,8 +70,8 @@ class OfferPricingCubit extends Cubit<OfferPricingState> {
     final requestModel = PriceCalculationsRequestModel(
       offerType: selectedOfferType,
       type: "vendor",
-      isAllProperty: false,
-      propertyIds: propertyIds,
+      isAllProperty: isAllProperty,
+      propertyIds: isAllProperty ? null : propertyIds, // Don't send propertyIds when isAllProperty is true
       startDate: selectedOfferType == "timed" ? DateFormat('yyyy-MM-dd').format(startDate!) : null,
       endDate: selectedOfferType == "timed" ? DateFormat('yyyy-MM-dd').format(endDate!) : null,
     );

@@ -449,9 +449,10 @@ class AppRouter {
         builder: (BuildContext context, GoRouterState state) {
           final data = state.extra as Map<String, dynamic>;
           return OfferPricingScreen(
-            propertyIds: data['propertyIds'] as List<String>,
-            offersIds: data['offersIds'] as List<String>,
-            isMultiple: data['isMultiple'] as bool,
+            propertyIds: data['propertyIds'] as List<String>? ?? [],
+            offersIds: data['offersIds'] as List<String>? ?? [],
+            isMultiple: data['isMultiple'] as bool? ?? false,
+            isAllProperty: data['isAllProperty'] as bool? ?? false,
           );
         },
       ),
@@ -463,9 +464,10 @@ class AppRouter {
           final data = state.extra as Map<String, dynamic>;
           return PricingCalculationResultsScreen(
             pricingData: data['pricingData'] as PriceCalculationsResponseModel,
-            propertyIds: data['propertyIds'] as List<String>,
-            offersIds: data['offersIds'] as List<String>,
-            isMultiple: data['isMultiple'] as bool,
+            propertyIds: data['propertyIds'] as List<String>? ?? [],
+            offersIds: data['offersIds'] as List<String>? ?? [],
+            isMultiple: data['isMultiple'] as bool? ?? false,
+            isAllProperty: data['isAllProperty'] as bool? ?? false,
             offerType: data['offerType'] as String?,
             startDate: data['startDate'] as String?,
             endDate: data['endDate'] as String?,

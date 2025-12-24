@@ -23,6 +23,7 @@ class PricingCalculationResultsScreen extends StatefulWidget {
   final List<String> propertyIds;
   final List<String> offersIds;
   final bool isMultiple;
+  final bool isAllProperty;
   final String? offerType;
   final String? startDate;
   final String? endDate;
@@ -33,6 +34,7 @@ class PricingCalculationResultsScreen extends StatefulWidget {
     required this.propertyIds,
     required this.offersIds,
     required this.isMultiple,
+    this.isAllProperty = false,
     this.offerType,
     this.startDate,
     this.endDate,
@@ -343,7 +345,7 @@ class _PricingCalculationResultsScreenState extends State<PricingCalculationResu
         // Use propertiesData from API response
         for (var propData in data.propertiesData!) {
           propertiesDataList.add(PropertyData(
-            propertyId: propData.propertyId,
+            propertyId: widget.isAllProperty ? null : propData.propertyId, // Exclude propertyId when isAllProperty is true
             pricing: propData.pricing,
             timedRate: propData.timedRate != null
                 ? Rate(
@@ -367,24 +369,43 @@ class _PricingCalculationResultsScreenState extends State<PricingCalculationResu
         final totalAmount = data?.finalSum?.amount ?? data?.totalAmount ?? 0.0;
         final currencyCode = data?.finalSum?.currencyCode ?? data?.currency ?? "JOD";
         final currencySymbol = data?.finalSum?.currencySymbol ?? data?.currencySymbol ?? "د.أ";
-        final perPropertyAmount = widget.propertyIds.isNotEmpty
-            ? totalAmount / widget.propertyIds.length
-            : totalAmount;
         
-        for (var propertyId in widget.propertyIds) {
+        if (widget.isAllProperty) {
+          // For isAllProperty, create a single PropertyData entry without propertyId
           final rate = Rate(
-            amount: perPropertyAmount.toStringAsFixed(2),
+            amount: totalAmount.toStringAsFixed(2),
             currencyCode: currencyCode,
             currencySymbol: currencySymbol,
           );
           
           propertiesDataList.add(PropertyData(
-            propertyId: propertyId,
-            pricing: perPropertyAmount,
+            propertyId: null, // Exclude propertyId for isAllProperty
+            pricing: totalAmount,
             timedRate: offerType == "timed" ? rate : null,
             lifetimeRate: offerType == "lifetime" ? rate : null,
-            originalAmount: perPropertyAmount,
+            originalAmount: totalAmount,
           ));
+        } else {
+          // Normal flow: create PropertyData for each property
+          final perPropertyAmount = widget.propertyIds.isNotEmpty
+              ? totalAmount / widget.propertyIds.length
+              : totalAmount;
+          
+          for (var propertyId in widget.propertyIds) {
+            final rate = Rate(
+              amount: perPropertyAmount.toStringAsFixed(2),
+              currencyCode: currencyCode,
+              currencySymbol: currencySymbol,
+            );
+            
+            propertiesDataList.add(PropertyData(
+              propertyId: propertyId,
+              pricing: perPropertyAmount,
+              timedRate: offerType == "timed" ? rate : null,
+              lifetimeRate: offerType == "lifetime" ? rate : null,
+              originalAmount: perPropertyAmount,
+            ));
+          }
         }
       }
 
@@ -397,13 +418,13 @@ class _PricingCalculationResultsScreenState extends State<PricingCalculationResu
 
       // Build request model
       final requestModel = ApplyVendorOfferRequestModel(
-        propertyId: widget.propertyIds,
+        propertyId: widget.isAllProperty ? [] : widget.propertyIds,
         offersIds: widget.offersIds,
         offerType: offerType,
         propertiesData: propertiesDataList,
         finalSum: finalSum,
         action: NetworkConstants.kActionOfferApply,
-        isAllProperty: false,
+        isAllProperty: widget.isAllProperty,
         startDate: widget.startDate ?? data?.propertiesData?.firstOrNull?.startDate ?? data?.startDate,
         endDate: widget.endDate ?? data?.propertiesData?.firstOrNull?.endDate ?? data?.endDate,
         totalDays: data?.propertiesData?.firstOrNull?.totalDays ?? data?.totalDays ?? _calculateTotalDays(),
