@@ -241,43 +241,47 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                                   children: [
                                     Row(
                                       children: [
-                                        UIComponent.customInkWellWidget(
-                                          onTap: () {
-                                            cubit.toggleSelectAllProperties(homeScreenPagingController);
-                                            printf("selectedPropertyList--------${cubit.selectedPropertyList.length}");
-                                          },
-                                          child: Container(
-                                            height: 40,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(8),
-                                              border: Border.all(
-                                                color: AppColors.colorPrimary.adaptiveColor(context,
-                                                    lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.greyE8),
-                                              ),
-                                              color: AppColors.white
-                                                  .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
-                                            ),
-                                            child: Center(
-                                              child: Padding(
-                                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
-                                                child: Row(
-                                                  children: [
-                                                    cubit.isBtnSelectAllPropertiesTapped
-                                                        ? SVGAssets.checkboxEnableIcon.toSvg(height: 18, width: 18, context: context)
-                                                        : SVGAssets.checkboxBlackDisableIcon.toSvg(
-                                                      height: 18,
-                                                      width: 18,
-                                                      context: context,
-                                                      color: AppColors.black14.adaptiveColor(context,
-                                                          lightModeColor: AppColors.black14, darkModeColor: AppColors.white),
+                                        BlocBuilder<HomeCubit, HomeState>(
+                                          builder: (context, state) {
+                                            return UIComponent.customInkWellWidget(
+                                              onTap: () {
+                                                cubit.toggleSelectAllProperties(homeScreenPagingController);
+                                                printf("selectedPropertyList--------${cubit.selectedPropertyList.length}");
+                                              },
+                                              child: Container(
+                                                height: 40,
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                    color: AppColors.colorPrimary.adaptiveColor(context,
+                                                        lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.greyE8),
+                                                  ),
+                                                  color: AppColors.white
+                                                      .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
+                                                ),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
+                                                    child: Row(
+                                                      children: [
+                                                        cubit.isBtnSelectAllPropertiesTapped
+                                                            ? SVGAssets.checkboxEnableIcon.toSvg(height: 18, width: 18, context: context)
+                                                            : SVGAssets.checkboxBlackDisableIcon.toSvg(
+                                                          height: 18,
+                                                          width: 18,
+                                                          context: context,
+                                                          color: AppColors.black14.adaptiveColor(context,
+                                                              lightModeColor: AppColors.black14, darkModeColor: AppColors.white),
+                                                        ),
+                                                        10.horizontalSpace,
+                                                        Text(appStrings(context).textSelectAll),
+                                                      ],
                                                     ),
-                                                    10.horizontalSpace,
-                                                    Text(appStrings(context).textSelectAll),
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
+                                            );
+                                          },
                                         ),
                                         10.horizontalSpace,
                                         UIComponent.customInkWellWidget(

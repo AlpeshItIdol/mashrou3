@@ -267,6 +267,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   // Method to toggle Select All Properties checkbox (global selection)
   Future<void> toggleSelectAllPropertiesGlobal() async {
+    emit(ToggleSelectAllPropertiesInit());
+    
     // Clear "Select All" state first if it's active
     if (isBtnSelectAllPropertiesTapped) {
       isBtnSelectAllPropertiesTapped = false;
@@ -274,11 +276,11 @@ class HomeCubit extends Cubit<HomeState> {
     }
     
     // Now toggle "Select All Properties"
-    final newValue = !isSelectAllPropertiesTapped;
-    isSelectAllPropertiesTapped = newValue;
+    isSelectAllPropertiesTapped = !isSelectAllPropertiesTapped;
     
-    // Emit state to trigger UI rebuild
-    emit(ToggleSelectAllPropertiesUpdate(newValue));
+    // Emit state to trigger UI rebuild for both checkboxes
+    // The BlocBuilders will read the current state of both flags
+    emit(ToggleSelectAllPropertiesUpdate(isSelectAllPropertiesTapped));
   }
 
   // Add method to toggle the state
