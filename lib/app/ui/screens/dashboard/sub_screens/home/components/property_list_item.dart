@@ -145,7 +145,9 @@ class _PropertyListItemState extends State<PropertyListItem> {
       elevation: 2,
       color: AppColors.white.adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
       child: UIComponent.customInkWellWidget(
-        onTap: widget.onPropertyTap,
+        onTap: (widget.isLocked == true && widget.isLockedByMe == true)
+            ? null
+            : widget.onPropertyTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -204,23 +206,47 @@ class _PropertyListItemState extends State<PropertyListItem> {
                 ),
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
+                    final isFullyLocked = widget.isLocked == true && widget.isLockedByMe == true;
+
                     return PositionedDirectional(
                       top: 12,
                       start: 12,
                       child: Skeleton.unite(
-                        child: UIComponent.customInkWellWidget(
-                          onTap: _toggleSelection,
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: UIComponent.svgIconContainer(
-                                context: context,
-                                clipPath: _isSelected ? SVGAssets.checkboxWhiteWithRightIcon : SVGAssets.checkboxWhiteWithoutRightIcon,
-                                padding: 12,
-                                backgroundColor: AppColors.colorPrimary,
-                                radius: 80,
-                                size: const Size(21, 21)),
-                          ),
-                        ),
+                        child: isFullyLocked
+                            ? Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.colorPrimary,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: SvgPicture.asset(
+                                    SVGAssets.lockIcon,
+                                    width: 21,
+                                    height: 21,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppColors.white,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : UIComponent.customInkWellWidget(
+                                onTap: _toggleSelection,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: UIComponent.svgIconContainer(
+                                      context: context,
+                                      clipPath: _isSelected
+                                          ? SVGAssets.checkboxWhiteWithRightIcon
+                                          : SVGAssets.checkboxWhiteWithoutRightIcon,
+                                      padding: 12,
+                                      backgroundColor: AppColors.colorPrimary,
+                                      radius: 80,
+                                      size: const Size(21, 21)),
+                                ),
+                              ),
                       ),
                     ).showIf(context.read<HomeCubit>().isBtnSelectPropertiesTapped == true && widget.isVendor);
                   },
@@ -232,7 +258,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
                     builder: (context) {
                       final lockLabelText = StringUtils.getLockLabelText(widget.isLocked, widget.offerData);
                       final lockTooltipText = StringUtils.getLockTooltipText(widget.isLockedByMe);
-                      
+
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

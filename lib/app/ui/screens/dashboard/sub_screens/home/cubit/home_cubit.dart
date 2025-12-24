@@ -217,10 +217,12 @@ class HomeCubit extends Cubit<HomeState> {
       selectedPropertyList.clear();
     } else {
       // If not selected, add all properties to the selected list
-      // selectedPropertyList.addAll(filteredPropertyList ?? []);
-      selectedPropertyList.addAll(
-        (controller.itemList as List<PropertyData>).where((item) => !selectedPropertyList.contains(item)).toList(),
-      );
+      // Exclude fully locked properties (isLocked == true && isLockedByMe == true)
+      final availableProperties = (controller.itemList as List<PropertyData>)
+          .where((item) => !(item.isLocked == true && item.isLockedByMe == true))
+          .where((item) => !selectedPropertyList.contains(item))
+          .toList();
+      selectedPropertyList.addAll(availableProperties);
     }
 
     // Toggle the selection state
@@ -230,6 +232,11 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void togglePropertySelection(PropertyData property, bool isSelected, PagingController controller) {
+    // Don't allow selection of fully locked properties
+    if (property.isLocked == true && property.isLockedByMe == true) {
+      return;
+    }
+    
     if (isSelected) {
       selectedPropertyList.add(property);
     } else {
@@ -237,7 +244,11 @@ class HomeCubit extends Cubit<HomeState> {
     }
 
     // Update 'Select All' state dynamically
-    isBtnSelectAllPropertiesTapped = selectedPropertyList.length == (controller.itemList?.length ?? 0);
+    // Count only non-locked properties for Select All state
+    final availablePropertiesCount = (controller.itemList as List<PropertyData>?)
+        ?.where((item) => !(item.isLocked == true && item.isLockedByMe == true))
+        .length ?? 0;
+    isBtnSelectAllPropertiesTapped = selectedPropertyList.length == availablePropertiesCount && availablePropertiesCount > 0;
 
     printf("selectedPropertyList----${selectedPropertyList.length}");
     emit(ToggleSelectAllPropertiesUpdate(isBtnSelectAllPropertiesTapped));
