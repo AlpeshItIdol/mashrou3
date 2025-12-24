@@ -32,6 +32,8 @@ class PropertyListItem extends StatefulWidget {
   final bool requiredFavorite;
   final bool requiredCheckBox;
   final bool requiredDelete;
+  // final bool isLocked;
+  // final bool isLockedByMe;
   final String? createdAt;
   final String? reqStatus;
   final String? reqStatusText;
@@ -58,8 +60,8 @@ class PropertyListItem extends StatefulWidget {
     this.createdAt,
     this.reqStatus,
     this.reqStatusText,
-    this.isLocked,
-    this.isLockedByMe,
+    // this.isLocked,
+    // this.isLockedByMe,
     this.offerData,
     this.isFavorite = false,
     this.isSelected = false,
@@ -68,6 +70,8 @@ class PropertyListItem extends StatefulWidget {
     this.requiredCheckBox = false,
     this.isVendor = false,
     this.requiredFavorite = true,
+    this.isLocked = false,
+    this.isLockedByMe = false,
     required this.onPropertyTap,
     this.onDeleteTap,
     this.onFavouriteToggle,
@@ -148,6 +152,9 @@ class _PropertyListItemState extends State<PropertyListItem> {
         onTap: (widget.isLocked == true && widget.isLockedByMe == true)
             ? null
             : widget.onPropertyTap,
+        // onTap: (widget.isLocked == true && widget.isLockedByMe == true)
+        //             ? null
+        //             : widget.onPropertyTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -208,6 +215,8 @@ class _PropertyListItemState extends State<PropertyListItem> {
                   builder: (context, state) {
                     final isFullyLocked = widget.isLocked == true && widget.isLockedByMe == true;
 
+                    //   final isFullyLocked = widget.isLocked == true && widget.isLockedByMe == true;
+                    //
                     return PositionedDirectional(
                       top: 12,
                       start: 12,

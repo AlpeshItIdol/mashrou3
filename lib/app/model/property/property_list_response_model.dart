@@ -290,6 +290,18 @@ class PropertyData {
     offerData = json['offerData'] != null
         ? PropertyOfferData.fromJson(json['offerData'])
         : null;
+    //isLocked = json['isLocked'];
+    //     isLockedByMe = json['isLockedByMe'];
+    //     priceAsNumber = json['priceAsNumber'] is int
+    //         ? (json['priceAsNumber'] as int).toDouble()
+    //         : (json['priceAsNumber'] is double ? json['priceAsNumber'] : null);
+    //     AreaAsNumber = json['AreaAsNumber'] is int
+    //         ? (json['AreaAsNumber'] as int).toDouble()
+    //         : (json['AreaAsNumber'] is double ? json['AreaAsNumber'] : null);
+    //     lowerCaseTitle = json['lowerCaseTitle'];
+    //     offerData = json['offerData'] != null
+    //         ? PropertyOfferData.fromJson(json['offerData'])
+    //         : null;
     createdByData = json['createdByData'] != null
         ? CreatedByData.fromJson(json['createdByData'])
         : null;
