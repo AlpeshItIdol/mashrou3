@@ -87,6 +87,11 @@ class PropertyDetailData {
   int? iV;
   String? propertyIdForPropertiesWithOffers;
   CreatedByData? createdByData;
+  bool? isLocked;
+  String? lockExpiresAt;
+  String? lockOwnerId;
+  bool? isLockedByMe;
+  PropertyOfferData? offerData;
 
   PropertyDetailData(
       {this.sId,
@@ -143,7 +148,12 @@ class PropertyDetailData {
       this.bankOffer,
       this.vendorOffer,
       this.propertyIdForPropertiesWithOffers,
-      this.createdByData});
+      this.createdByData,
+      this.isLocked,
+      this.lockExpiresAt,
+      this.lockOwnerId,
+      this.isLockedByMe,
+      this.offerData});
 
   PropertyDetailData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -240,6 +250,13 @@ class PropertyDetailData {
     vendorOffer = json['vendorOffer'];
     createdByData = json['createdByData'] != null
         ? CreatedByData.fromJson(json['createdByData'])
+        : null;
+    isLocked = json['isLocked'] ?? json['is_locked'];
+    lockExpiresAt = json['lock_expires_at'];
+    lockOwnerId = json['lock_owner_id'];
+    isLockedByMe = json['isLockedByMe'];
+    offerData = json['offerData'] != null
+        ? PropertyOfferData.fromJson(json['offerData'])
         : null;
   }
 
@@ -338,6 +355,13 @@ class PropertyDetailData {
     data['vendorOffer'] = vendorOffer;
     if (createdByData != null) {
       data['createdByData'] = createdByData!.toJson();
+    }
+    data['is_locked'] = isLocked;
+    data['lock_expires_at'] = lockExpiresAt;
+    data['lock_owner_id'] = lockOwnerId;
+    data['isLockedByMe'] = isLockedByMe;
+    if (offerData != null) {
+      data['offerData'] = offerData!.toJson();
     }
     return data;
   }
@@ -673,5 +697,43 @@ class BanksAlternativeContact {
       'name': name,
       'contactNumber': contactNumber,
     };
+  }
+}
+
+class PropertyOfferData {
+  String? sId;
+  String? offerType;
+  String? startDate;
+  String? endDate;
+  String? vendorId;
+  int? durationInDays;
+
+  PropertyOfferData({
+    this.sId,
+    this.offerType,
+    this.startDate,
+    this.endDate,
+    this.vendorId,
+    this.durationInDays,
+  });
+
+  PropertyOfferData.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    offerType = json['offerType'];
+    startDate = json['startDate'];
+    endDate = json['endDate'];
+    vendorId = json['vendorId'];
+    durationInDays = json['durationInDays'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['offerType'] = offerType;
+    data['startDate'] = startDate;
+    data['endDate'] = endDate;
+    data['vendorId'] = vendorId;
+    data['durationInDays'] = durationInDays;
+    return data;
   }
 }

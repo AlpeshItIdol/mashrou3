@@ -79,14 +79,14 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
 
           return cubit.isBtnSelectPropertiesTapped
               ? Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _buildRemoveOffer(),
-              8.verticalSpace,
-              _buildAddOffer(),
-            ],
-          )
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    _buildRemoveOffer(),
+                    8.verticalSpace,
+                    _buildAddOffer(),
+                  ],
+                )
               : Container();
         },
       ),
@@ -180,13 +180,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                       children: [
                         Text(
                           appStrings(context).lblPropertyListing,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(color: Theme
-                              .of(context)
-                              .primaryColor, fontWeight: FontWeight.w700),
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w700),
                         ),
                         // Items per page dropdown
                         _buildItemsPerPageDropdown(context, cubit),
@@ -197,16 +191,8 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                       padding: const EdgeInsetsDirectional.symmetric(horizontal: 2.0),
                       child: Text(
                         "${appStrings(context).textFound} ${cubit.totalEstates} ${foundPropertiesText(context, cubit.totalEstates)}",
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: Theme
-                            .of(context)
-                            .highlightColor, fontWeight: FontWeight.w500),
-                      ).showIf(!cubit.isVendor &&
-                          homeScreenPagingController.itemList != null &&
-                          homeScreenPagingController.itemList!.isNotEmpty),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).highlightColor, fontWeight: FontWeight.w500),
+                      ).showIf(!cubit.isVendor && homeScreenPagingController.itemList != null && homeScreenPagingController.itemList!.isNotEmpty),
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.max,
@@ -218,13 +204,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                             padding: const EdgeInsetsDirectional.symmetric(horizontal: 2.0),
                             child: Text(
                               "${appStrings(context).textFound} ${cubit.totalEstates} ${foundPropertiesText(context, cubit.totalEstates)}",
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(color: Theme
-                                  .of(context)
-                                  .highlightColor, fontWeight: FontWeight.w500),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).highlightColor, fontWeight: FontWeight.w500),
                             ).showIf(homeScreenPagingController.itemList != null && homeScreenPagingController.itemList!.isNotEmpty),
                           ),
                         ),
@@ -244,8 +224,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(color: AppColors.greyE8),
-                                      color: AppColors.white
-                                          .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
+                                      color: AppColors.white.adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
                                     ),
                                     child: Center(
                                       child: Padding(
@@ -269,11 +248,9 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(8),
                                           border: Border.all(
-                                            color: AppColors.colorPrimary.adaptiveColor(context,
-                                                lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.greyE8),
+                                            color: AppColors.colorPrimary.adaptiveColor(context, lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.greyE8),
                                           ),
-                                          color: AppColors.white
-                                              .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
+                                          color: AppColors.white.adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
                                         ),
                                         child: Center(
                                           child: Padding(
@@ -283,12 +260,11 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                                                 cubit.isBtnSelectAllPropertiesTapped
                                                     ? SVGAssets.checkboxEnableIcon.toSvg(height: 18, width: 18, context: context)
                                                     : SVGAssets.checkboxBlackDisableIcon.toSvg(
-                                                  height: 18,
-                                                  width: 18,
-                                                  context: context,
-                                                  color: AppColors.black14.adaptiveColor(context,
-                                                      lightModeColor: AppColors.black14, darkModeColor: AppColors.white),
-                                                ),
+                                                        height: 18,
+                                                        width: 18,
+                                                        context: context,
+                                                        color: AppColors.black14.adaptiveColor(context, lightModeColor: AppColors.black14, darkModeColor: AppColors.white),
+                                                      ),
                                                 10.horizontalSpace,
                                                 Text(appStrings(context).textSelectAll),
                                               ],
@@ -309,8 +285,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(8),
                                           border: Border.all(color: AppColors.greyE8),
-                                          color: AppColors.white
-                                              .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
+                                          color: AppColors.white.adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
                                         ),
                                         child: Center(
                                           child: Padding(
@@ -325,9 +300,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                               ],
                             );
                           },
-                        ).showIf(cubit.isVendor &&
-                            homeScreenPagingController.itemList != null &&
-                            homeScreenPagingController.itemList!.isNotEmpty),
+                        ).showIf(cubit.isVendor && homeScreenPagingController.itemList != null && homeScreenPagingController.itemList!.isNotEmpty),
                       ],
                     ).showIf(cubit.isVendor),
                     8.verticalSpace.showIf(homeScreenPagingController.itemList != null && homeScreenPagingController.itemList!.isNotEmpty),
@@ -363,11 +336,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
           return PropertyListItem(
             propertyName: item.title ?? '',
             propertyImg: Utils.getLatestPropertyImage(item.propertyFiles ?? [], item.thumbnail ?? "") ?? "",
-            propertyImgCount:
-            (Utils
-                .getAllImageFiles(item.propertyFiles ?? [])
-                .length + ((item.thumbnail != null && item.thumbnail!.isNotEmpty) ? 1 : 0))
-                .toString(),
+            propertyImgCount: (Utils.getAllImageFiles(item.propertyFiles ?? []).length + ((item.thumbnail != null && item.thumbnail!.isNotEmpty) ? 1 : 0)).toString(),
             propertyPrice: item.price?.amount?.toString(),
             propertyLocation: '${item.city?.isNotEmpty == true ? item.city : ''}'
                 '${(item.city?.isNotEmpty == true && item.country?.isNotEmpty == true) ? ', ' : ''}'
@@ -393,6 +362,9 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
             isFavorite: item.favorite ?? cubit.isFavorite,
             isSelected: isSelected,
             isBankProperty: item.createdByBank ?? false,
+            isLocked: item.isLocked,
+            isLockedByMe: item.isLockedByMe,
+            offerData: item.offerData,
             onFavouriteToggle: (isFavourite) async {
               if (isFetchingData) return;
               OverlayLoadingProgress.start(context);
@@ -423,10 +395,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
         },
         noItemsFoundIndicatorBuilder: (context) {
           return SizedBox(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.6,
+            height: MediaQuery.of(context).size.height * 0.6,
             child: Center(
               child: UIComponent.noDataWidgetWithInfo(
                 title: appStrings(context).emptyPropertyList,
@@ -559,16 +528,14 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
               child: Text(
                 "$value",
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: isSelected ? Colors.white : AppColors.black14,
-                  fontWeight:
-                  isSelected ? FontWeight.w600 : FontWeight.w400,
-                ),
+                      color: isSelected ? Colors.white : AppColors.black14,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    ),
               ),
             ),
           );
         }).toList();
       },
-
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
@@ -587,9 +554,9 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
             Text(
               "${cubit.itemsPerPage}",
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: selectedColor,
-                fontWeight: FontWeight.w600,
-              ),
+                    color: selectedColor,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             const SizedBox(width: 8),
             Icon(Icons.arrow_drop_down, color: selectedColor, size: 18),
@@ -598,7 +565,6 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
       ),
     );
   }
-
 
   Widget _buildAddOffer() {
     return BlocConsumer<HomeCubit, HomeState>(
@@ -665,11 +631,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
               children: [
                 Text(
                   appStrings(context).applyOffer,
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w500),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.white, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -744,11 +706,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
               children: [
                 Text(
                   appStrings(context).removeOffer,
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: AppColors.white, fontWeight: FontWeight.w500),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.white, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -794,17 +752,13 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
       );
     } else if (state is PropertyAddFavError) {
       OverlayLoadingProgress.stop();
-      Utils.showErrorMessage(
-          context: context,
-          message: state.errorMessage.contains('No internet') ? appStrings(context).noInternetConnection : state.errorMessage);
+      Utils.showErrorMessage(context: context, message: state.errorMessage.contains('No internet') ? appStrings(context).noInternetConnection : state.errorMessage);
     } else if (state is PropertyListError) {
       homeScreenPagingController.appendLastPage([]);
-      Utils.showErrorMessage(
-          context: context,
-          message: state.errorMessage.contains('No internet') ? appStrings(context).noInternetConnection : state.errorMessage);
+      Utils.showErrorMessage(context: context, message: state.errorMessage.contains('No internet') ? appStrings(context).noInternetConnection : state.errorMessage);
       (
-      context: context,
-      message: state.errorMessage,
+        context: context,
+        message: state.errorMessage,
       );
     } else if (state is NoPropertyFoundState) {
       homeScreenPagingController.appendLastPage([]);

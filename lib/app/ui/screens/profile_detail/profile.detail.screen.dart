@@ -828,6 +828,9 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
               isFavorite: item.favorite ?? false,
               isSelected: false,
               isBankProperty: item.createdByBank ?? false,
+              isLocked: item.isLocked,
+              isLockedByMe: item.isLockedByMe,
+              offerData: item.offerData,
               onFavouriteToggle: (isFavourite) async {
                 if (isFetchingData) return;
                 isFetchingData = true;

@@ -6,6 +6,7 @@ import 'package:mashrou3/config/resources/text_styles.dart';
 import 'package:mashrou3/utils/app_localization.dart';
 import 'package:mashrou3/utils/extensions.dart';
 import 'package:mashrou3/utils/ui_components.dart';
+import 'package:mashrou3/utils/string_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class RecentlyVisitedPropertiesListItem extends StatefulWidget {
@@ -25,6 +26,9 @@ class RecentlyVisitedPropertiesListItem extends StatefulWidget {
   final bool requiredDelete;
   final bool requiredCheckBox;
   final bool isSelected;
+  final bool? isLocked;
+  final bool? isLockedByMe;
+  final dynamic offerData;
   final VoidCallback onPropertyTap;
   final VoidCallback? onDeleteTap;
   final Future<void> Function(bool isAdd)? onFavouriteToggle;
@@ -48,6 +52,9 @@ class RecentlyVisitedPropertiesListItem extends StatefulWidget {
     this.requiredFavorite = true,
     this.requiredCheckBox = false,
     this.isSelected = false,
+    this.isLocked,
+    this.isLockedByMe,
+    this.offerData,
     required this.onPropertyTap,
     this.onDeleteTap,
     this.onFavouriteToggle,
@@ -200,66 +207,113 @@ class _RecentlyVisitedPropertiesListItemState
                 PositionedDirectional(
                   bottom: 12,
                   start: 12,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 6.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.red00,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                                vertical: 12.0, horizontal: 12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  appStrings(context).soldOut,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.white,
+                  child: Builder(
+                    builder: (context) {
+                      final lockLabelText = StringUtils.getLockLabelText(widget.isLocked, widget.offerData);
+                      final lockTooltipText = StringUtils.getLockTooltipText(widget.isLockedByMe);
+                      
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Lock label
+                          if (lockLabelText != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 6.0),
+                              child: Tooltip(
+                                message: lockTooltipText,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.colorPrimary.adaptiveColor(
+                                      context,
+                                      lightModeColor: AppColors.colorPrimary,
+                                      darkModeColor: AppColors.goldA1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.symmetric(
+                                        vertical: 12.0, horizontal: 12),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          lockLabelText,
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall
+                                              ?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ).showIf(
-                          widget.isSoldOut == true && widget.isVisitor == true),
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                              vertical: 12.0, horizontal: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                appStrings(context).btnBankProperty,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.white,
+                          // Sold Out label
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.red00,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.symmetric(
+                                    vertical: 12.0, horizontal: 12),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      appStrings(context).soldOut,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ).showIf(widget.isBankProperty == true),
-                    ],
+                            ),
+                          ).showIf(
+                              widget.isSoldOut == true && widget.isVisitor == true),
+                          // Bank Property label
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.symmetric(
+                                  vertical: 12.0, horizontal: 12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    appStrings(context).btnBankProperty,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ).showIf(widget.isBankProperty == true),
+                        ],
+                      );
+                    },
                   ),
                 ),
                 PositionedDirectional(

@@ -1,3 +1,5 @@
+import 'property_detail_response_model.dart';
+
 class PropertyListResponseModel {
   int? statusCode;
   bool? success;
@@ -99,6 +101,11 @@ class PropertyData {
   CategoryData? categoryData;
   bool? favorite;
   CreatedByData? createdByData;
+  bool? isLocked;
+  String? lockExpiresAt;
+  String? lockOwnerId;
+  bool? isLockedByMe;
+  PropertyOfferData? offerData;
 
   PropertyData(
       {this.sId,
@@ -136,7 +143,12 @@ class PropertyData {
       this.neighbourHoodTypeData,
       this.categoryData,
       this.favorite,
-      this.createdByData});
+      this.createdByData,
+      this.isLocked,
+      this.lockExpiresAt,
+      this.lockOwnerId,
+      this.isLockedByMe,
+      this.offerData});
 
   PropertyData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -208,6 +220,13 @@ class PropertyData {
     createdByData = json['createdByData'] != null
         ? CreatedByData.fromJson(json['createdByData'])
         : null;
+    isLocked = json['isLocked'] ?? json['is_locked'];
+    lockExpiresAt = json['lock_expires_at'];
+    lockOwnerId = json['lock_owner_id'];
+    isLockedByMe = json['isLockedByMe'];
+    offerData = json['offerData'] != null
+        ? PropertyOfferData.fromJson(json['offerData'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -274,6 +293,13 @@ class PropertyData {
     data['favorite'] = favorite;
     if (createdByData != null) {
       data['createdByData'] = createdByData!.toJson();
+    }
+    data['is_locked'] = isLocked;
+    data['lock_expires_at'] = lockExpiresAt;
+    data['lock_owner_id'] = lockOwnerId;
+    data['isLockedByMe'] = isLockedByMe;
+    if (offerData != null) {
+      data['offerData'] = offerData!.toJson();
     }
     return data;
   }

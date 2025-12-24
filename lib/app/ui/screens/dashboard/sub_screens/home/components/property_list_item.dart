@@ -9,6 +9,7 @@ import 'package:mashrou3/config/utils.dart';
 import 'package:mashrou3/utils/app_localization.dart';
 import 'package:mashrou3/utils/extensions.dart';
 import 'package:mashrou3/utils/ui_components.dart';
+import 'package:mashrou3/utils/string_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../cubit/home_cubit.dart';
@@ -34,6 +35,9 @@ class PropertyListItem extends StatefulWidget {
   final String? createdAt;
   final String? reqStatus;
   final String? reqStatusText;
+  final bool? isLocked;
+  final bool? isLockedByMe;
+  final dynamic offerData;
   final VoidCallback onPropertyTap;
   final VoidCallback? onDeleteTap;
   final Future<void> Function(bool isAdd)? onFavouriteToggle;
@@ -54,6 +58,9 @@ class PropertyListItem extends StatefulWidget {
     this.createdAt,
     this.reqStatus,
     this.reqStatusText,
+    this.isLocked,
+    this.isLockedByMe,
+    this.offerData,
     this.isFavorite = false,
     this.isSelected = false,
     this.isBankProperty = false,
@@ -114,8 +121,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content:
-                Text('Failed to update favorite status. Please try again.'),
+            content: Text('Failed to update favorite status. Please try again.'),
           ),
         );
       }
@@ -137,8 +143,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 2,
-      color: AppColors.white.adaptiveColor(context,
-          lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
+      color: AppColors.white.adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
       child: UIComponent.customInkWellWidget(
         onTap: widget.onPropertyTap,
         child: Column(
@@ -148,18 +153,14 @@ class _PropertyListItemState extends State<PropertyListItem> {
               children: [
                 Skeleton.leaf(
                   child: ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(16)),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                       child: SizedBox(
                         height: 250,
                         child: Stack(
                           children: [
                             Stack(
                               children: [
-                                UIComponent.cachedNetworkImageWidget(
-                                    imageUrl: widget.propertyImg,
-                                    isForProperty: true,
-                                    onTap: widget.onPropertyTap),
+                                UIComponent.cachedNetworkImageWidget(imageUrl: widget.propertyImg, isForProperty: true, onTap: widget.onPropertyTap),
                                 PositionedDirectional(
                                     top: 12,
                                     end: 12,
@@ -170,29 +171,21 @@ class _PropertyListItemState extends State<PropertyListItem> {
                                           decoration: BoxDecoration(
                                             color: Theme.of(context).cardColor,
                                             border: Border.all(
-                                              color: AppColors.greyE9
-                                                  .adaptiveColor(
+                                              color: AppColors.greyE9.adaptiveColor(
                                                 context,
-                                                lightModeColor:
-                                                    AppColors.greyE9,
-                                                darkModeColor:
-                                                    AppColors.black3D,
+                                                lightModeColor: AppColors.greyE9,
+                                                darkModeColor: AppColors.black3D,
                                               ),
                                               width: 1,
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: UIComponent.svgIconContainer(
                                               context: context,
-                                              clipPath: _isFavourite
-                                                  ? SVGAssets
-                                                      .favouriteSelectedIcon
-                                                  : SVGAssets.favouriteIcon,
+                                              clipPath: _isFavourite ? SVGAssets.favouriteSelectedIcon : SVGAssets.favouriteIcon,
                                               padding: 12,
                                               applyColorFilter: true,
-                                              backgroundColor:
-                                                  Theme.of(context).cardColor,
+                                              backgroundColor: Theme.of(context).cardColor,
                                               size: const Size(21, 21)),
                                         ),
                                       ),
@@ -221,9 +214,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
                             padding: const EdgeInsets.all(4),
                             child: UIComponent.svgIconContainer(
                                 context: context,
-                                clipPath: _isSelected
-                                    ? SVGAssets.checkboxWhiteWithRightIcon
-                                    : SVGAssets.checkboxWhiteWithoutRightIcon,
+                                clipPath: _isSelected ? SVGAssets.checkboxWhiteWithRightIcon : SVGAssets.checkboxWhiteWithoutRightIcon,
                                 padding: 12,
                                 backgroundColor: AppColors.colorPrimary,
                                 radius: 80,
@@ -231,74 +222,106 @@ class _PropertyListItemState extends State<PropertyListItem> {
                           ),
                         ),
                       ),
-                    ).showIf(
-                        context.read<HomeCubit>().isBtnSelectPropertiesTapped ==
-                            true && widget.isVendor);
+                    ).showIf(context.read<HomeCubit>().isBtnSelectPropertiesTapped == true && widget.isVendor);
                   },
                 ),
                 PositionedDirectional(
                   bottom: 12,
                   start: 12,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 6.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.red00,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                                vertical: 12.0, horizontal: 12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  appStrings(context).soldOut,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.white,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ).showIf(
-                          widget.isSoldOut == true && widget.isVisitor == true),
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                              vertical: 12.0, horizontal: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                appStrings(context).btnBankProperty,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.white,
+                  child: Builder(
+                    builder: (context) {
+                      final lockLabelText = StringUtils.getLockLabelText(widget.isLocked, widget.offerData);
+                      final lockTooltipText = StringUtils.getLockTooltipText(widget.isLockedByMe);
+                      
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Lock label
+                          if (lockLabelText != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 6.0),
+                              child: Tooltip(
+                                message: lockTooltipText,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.colorPrimary.adaptiveColor(
+                                      context,
+                                      lightModeColor: AppColors.colorPrimary,
+                                      darkModeColor: AppColors.goldA1,
                                     ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          lockLabelText,
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColors.white,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ).showIf(widget.isBankProperty == true),
-                    ],
+                            ),
+                          // Sold Out label
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.red00,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      appStrings(context).soldOut,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.white,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ).showIf(widget.isSoldOut == true && widget.isVisitor == true),
+                          // Bank Property label
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: AppColors.primaryGradient,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    appStrings(context).btnBankProperty,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.white,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ).showIf(widget.isBankProperty == true),
+                        ],
+                      );
+                    },
                   ),
                 ),
                 PositionedDirectional(
@@ -309,12 +332,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
                         onTap: widget.onDeleteTap ?? () {},
                         child: Padding(
                           padding: const EdgeInsets.all(4),
-                          child: UIComponent.svgIconContainer(
-                              clipPath: SVGAssets.deleteIcon,
-                              padding: 12,
-                              context: context,
-                              backgroundColor: AppColors.white,
-                              size: const Size(21, 21)),
+                          child: UIComponent.svgIconContainer(clipPath: SVGAssets.deleteIcon, padding: 12, context: context, backgroundColor: AppColors.white, size: const Size(21, 21)),
                         ),
                       ),
                     )).showIf(widget.requiredDelete == true),
@@ -323,8 +341,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
                   end: 12,
                   child: Skeleton.unite(
                     child: Container(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(10, 6, 10, 6),
+                      padding: const EdgeInsetsDirectional.fromSTEB(10, 6, 10, 6),
                       decoration: BoxDecoration(
                         color: Colors.black54,
                         borderRadius: BorderRadius.circular(8),
@@ -355,19 +372,12 @@ class _PropertyListItemState extends State<PropertyListItem> {
                 children: [
                   Text(
                     widget.propertyName,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).primaryColor),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
                   ),
                   8.verticalSpace,
                   Text(
-                    (widget.propertyPrice != null &&
-                            widget.propertyPrice != "null" &&
-                            widget.propertyPrice!.isNotEmpty
-                        ? num.tryParse(widget.propertyPrice!)?.formatCurrency(
-                                showSymbol: true,
-                                currencySymbol: widget.propertyPriceCurrency) ??
-                            ""
+                    (widget.propertyPrice != null && widget.propertyPrice != "null" && widget.propertyPrice!.isNotEmpty
+                        ? num.tryParse(widget.propertyPrice!)?.formatCurrency(showSymbol: true, currencySymbol: widget.propertyPriceCurrency) ?? ""
                         : ""),
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.w700,
@@ -377,14 +387,8 @@ class _PropertyListItemState extends State<PropertyListItem> {
                             darkModeColor: AppColors.goldA1,
                           ),
                         ),
-                  ).showIf(widget.propertyPrice != null &&
-                      widget.propertyPrice != "null" &&
-                      widget.propertyPrice!.isNotEmpty),
-                  Visibility(
-                      visible: widget.propertyLocation.isNotEmpty == true ||
-                          widget.propertyArea.isNotEmpty == true ||
-                          widget.propertyRating != '0',
-                      child: 12.verticalSpace),
+                  ).showIf(widget.propertyPrice != null && widget.propertyPrice != "null" && widget.propertyPrice!.isNotEmpty),
+                  Visibility(visible: widget.propertyLocation.isNotEmpty == true || widget.propertyArea.isNotEmpty == true || widget.propertyRating != '0', child: 12.verticalSpace),
                   Skeleton.unite(
                       child: Wrap(
                     spacing: 4,
@@ -396,14 +400,8 @@ class _PropertyListItemState extends State<PropertyListItem> {
                             context: context,
                             svgPath: SVGAssets.locationIcon,
                             text: widget.propertyLocation,
-                            backgroundColor: AppColors.colorBgPrimary
-                                .adaptiveColor(context,
-                                    lightModeColor: AppColors.colorBgPrimary,
-                                    darkModeColor: AppColors.black14),
-                            textColor: AppColors.colorPrimary.adaptiveColor(
-                                context,
-                                lightModeColor: AppColors.colorPrimary,
-                                darkModeColor: AppColors.white),
+                            backgroundColor: AppColors.colorBgPrimary.adaptiveColor(context, lightModeColor: AppColors.colorBgPrimary, darkModeColor: AppColors.black14),
+                            textColor: AppColors.colorPrimary.adaptiveColor(context, lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
                           )),
                       Visibility(
                           visible: widget.propertyArea.isNotEmpty == true,
@@ -411,14 +409,8 @@ class _PropertyListItemState extends State<PropertyListItem> {
                             context: context,
                             svgPath: SVGAssets.aspectRatioIcon,
                             text: widget.propertyArea,
-                            backgroundColor: AppColors.colorBgPrimary
-                                .adaptiveColor(context,
-                                    lightModeColor: AppColors.colorBgPrimary,
-                                    darkModeColor: AppColors.black14),
-                            textColor: AppColors.colorSecondary.adaptiveColor(
-                                context,
-                                lightModeColor: AppColors.colorPrimary,
-                                darkModeColor: AppColors.white),
+                            backgroundColor: AppColors.colorBgPrimary.adaptiveColor(context, lightModeColor: AppColors.colorBgPrimary, darkModeColor: AppColors.black14),
+                            textColor: AppColors.colorSecondary.adaptiveColor(context, lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
                           )),
                       Visibility(
                           visible: widget.propertyRating.toString() != '0',
@@ -427,14 +419,8 @@ class _PropertyListItemState extends State<PropertyListItem> {
                             iconColor: AppColors.goldA1,
                             context: context,
                             text: widget.propertyRating.toString(),
-                            backgroundColor: AppColors.colorBgPrimary
-                                .adaptiveColor(context,
-                                    lightModeColor: AppColors.colorBgPrimary,
-                                    darkModeColor: AppColors.black14),
-                            textColor: AppColors.colorSecondary.adaptiveColor(
-                                context,
-                                lightModeColor: AppColors.colorPrimary,
-                                darkModeColor: AppColors.white),
+                            backgroundColor: AppColors.colorBgPrimary.adaptiveColor(context, lightModeColor: AppColors.colorBgPrimary, darkModeColor: AppColors.black14),
+                            textColor: AppColors.colorSecondary.adaptiveColor(context, lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
                           )),
                     ],
                   )),
@@ -453,86 +439,35 @@ class _PropertyListItemState extends State<PropertyListItem> {
                           children: [
                             UIComponent.iconRowAndText(
                               context: context,
-                              svgPath: widget.reqStatus
-                                          ?.toLowerCase()
-                                          .toString() ==
-                                      "approved"
+                              svgPath: widget.reqStatus?.toLowerCase().toString() == "approved"
                                   ? SVGAssets.checkmarkCircleIcon
-                                  : widget.reqStatus
-                                              ?.toLowerCase()
-                                              .toString() ==
-                                          "pending"
+                                  : widget.reqStatus?.toLowerCase().toString() == "pending"
                                       ? SVGAssets.clock4Icon
-                                      : widget.reqStatus
-                                                  ?.toLowerCase()
-                                                  .toString() ==
-                                              "rejected"
+                                      : widget.reqStatus?.toLowerCase().toString() == "rejected"
                                           ? SVGAssets.cancelCircleIcon
                                           : SVGAssets.placeholder,
                               text: widget.reqStatusText ?? "",
-                              backgroundColor: widget.reqStatus
-                                          ?.toLowerCase()
-                                          .toString() ==
-                                      "approved"
+                              backgroundColor: widget.reqStatus?.toLowerCase().toString() == "approved"
                                   ? AppColors.colorPrimary
-                                  : widget.reqStatus
-                                              ?.toLowerCase()
-                                              .toString() ==
-                                          "rejected"
+                                  : widget.reqStatus?.toLowerCase().toString() == "rejected"
                                       ? AppColors.red33
-                                      : widget.reqStatus
-                                                  ?.toLowerCase()
-                                                  .toString() ==
-                                              "pending"
+                                      : widget.reqStatus?.toLowerCase().toString() == "pending"
                                           ? AppColors.goldA1
-                                          : AppColors.colorBgPrimary
-                                              .adaptiveColor(context,
-                                                  lightModeColor:
-                                                      AppColors.colorBgPrimary,
-                                                  darkModeColor:
-                                                      AppColors.black14),
-                              textColor: widget.reqStatus
-                                          ?.toLowerCase()
-                                          .toString() ==
-                                      "approved"
+                                          : AppColors.colorBgPrimary.adaptiveColor(context, lightModeColor: AppColors.colorBgPrimary, darkModeColor: AppColors.black14),
+                              textColor: widget.reqStatus?.toLowerCase().toString() == "approved"
                                   ? AppColors.white
-                                  : widget.reqStatus
-                                              ?.toLowerCase()
-                                              .toString() ==
-                                          "pending"
+                                  : widget.reqStatus?.toLowerCase().toString() == "pending"
                                       ? AppColors.white
-                                      : widget.reqStatus
-                                                  ?.toLowerCase()
-                                                  .toString() ==
-                                              "rejected"
+                                      : widget.reqStatus?.toLowerCase().toString() == "rejected"
                                           ? AppColors.white
-                                          : AppColors.colorPrimary
-                                              .adaptiveColor(context,
-                                                  lightModeColor:
-                                                      AppColors.colorPrimary,
-                                                  darkModeColor:
-                                                      AppColors.white),
-                              iconColor: widget.reqStatus
-                                          ?.toLowerCase()
-                                          .toString() ==
-                                      "approved"
+                                          : AppColors.colorPrimary.adaptiveColor(context, lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
+                              iconColor: widget.reqStatus?.toLowerCase().toString() == "approved"
                                   ? AppColors.white
-                                  : widget.reqStatus
-                                              ?.toLowerCase()
-                                              .toString() ==
-                                          "pending"
+                                  : widget.reqStatus?.toLowerCase().toString() == "pending"
                                       ? AppColors.white
-                                      : widget.reqStatus
-                                                  ?.toLowerCase()
-                                                  .toString() ==
-                                              "rejected"
+                                      : widget.reqStatus?.toLowerCase().toString() == "rejected"
                                           ? AppColors.white
-                                          : AppColors.colorPrimary
-                                              .adaptiveColor(context,
-                                                  lightModeColor:
-                                                      AppColors.colorPrimary,
-                                                  darkModeColor:
-                                                      AppColors.white),
+                                          : AppColors.colorPrimary.adaptiveColor(context, lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
                             ),
                           ],
                         )),
@@ -547,9 +482,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
                       12.verticalSpace,
                       Divider(
                         height: 1,
-                        color: AppColors.greyE8.adaptiveColor(context,
-                            lightModeColor: AppColors.greyE8,
-                            darkModeColor: AppColors.grey50),
+                        color: AppColors.greyE8.adaptiveColor(context, lightModeColor: AppColors.greyE8, darkModeColor: AppColors.grey50),
                       ),
                       12.verticalSpace,
                       Container(
@@ -557,23 +490,14 @@ class _PropertyListItemState extends State<PropertyListItem> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: Colors.transparent),
-                          color: AppColors.greyFA.adaptiveColor(context,
-                              lightModeColor: AppColors.greyFA,
-                              darkModeColor: AppColors.black14),
+                          color: AppColors.greyFA.adaptiveColor(context, lightModeColor: AppColors.greyFA, darkModeColor: AppColors.black14),
                         ),
                         child: Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
+                          padding: const EdgeInsetsDirectional.symmetric(vertical: 8.0, horizontal: 16.0),
                           child: Text(
                             "${appStrings(context).addedOn} ${UIComponent.formatDate(widget.createdAt ?? DateTime.now().toString(), AppConstants.dateFormatDdMMYyyyDash)}",
                             maxLines: 1,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(
-                                    color:
-                                        AppColors.black14.forLightMode(context),
-                                    fontWeight: FontWeight.w400),
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.black14.forLightMode(context), fontWeight: FontWeight.w400),
                           ),
                         ),
                       )
