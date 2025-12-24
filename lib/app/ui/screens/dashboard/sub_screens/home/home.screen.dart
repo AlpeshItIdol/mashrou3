@@ -359,7 +359,8 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
           );
         },
         itemBuilder: (context, item, index) {
-          final isSelected = cubit.isBtnSelectAllPropertiesTapped || cubit.selectedPropertyList.contains(item);
+          final isFullyLocked = (item.isLocked == true && item.isLockedByMe == true);
+          final isSelected = !isFullyLocked && (cubit.isBtnSelectAllPropertiesTapped || cubit.selectedPropertyList.contains(item));
           return PropertyListItem(
             propertyName: item.title ?? '',
             propertyImg: Utils.getLatestPropertyImage(item.propertyFiles ?? [], item.thumbnail ?? "") ?? "",
@@ -377,6 +378,8 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
             isVendor: cubit.isVendor,
             isVisitor: cubit.isVendor == true ? false : true,
             isSoldOut: item.isSoldOut ?? false,
+            isLocked: item.isLocked ?? false,
+            isLockedByMe: item.isLockedByMe ?? false,
             onPropertyTap: () {
               context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
                 RouteArguments.propertyId: item.sId ?? "0",
@@ -416,7 +419,9 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
               }
             },
             onCheckBoxToggle: (isSelectedForCheckbox) async {
-              cubit.togglePropertySelection(item, isSelectedForCheckbox, homeScreenPagingController);
+              if (!isFullyLocked) {
+                cubit.togglePropertySelection(item, isSelectedForCheckbox, homeScreenPagingController);
+              }
             },
             propertyPriceCurrency: item.price?.currencySymbol ?? '',
           );
@@ -635,14 +640,28 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                 );
                 // return;
               } else {
-                // Validate selected properties for locked status
-                final lockedProperties = cubit.selectedPropertyList
+                // Filter out fully locked properties (isLocked == true && isLockedByMe == true)
+                // These should never be in the selection, but filter as safety measure
+                final validSelectedProperties = cubit.selectedPropertyList
+                    .where((property) => !(property.isLocked == true && property.isLockedByMe == true))
+                    .toList();
+                
+                if (validSelectedProperties.isEmpty) {
+                  Utils.snackBar(
+                    context: context,
+                    message: appStrings(context).selectPropertyError,
+                  );
+                  return;
+                }
+                
+                // Validate selected properties for locked status (isLockedByMe == true but not fully locked)
+                final lockedProperties = validSelectedProperties
                     .where((property) => property.isLockedByMe == true)
                     .toList();
                 
                 // Check if ALL selected properties are locked (before partial-selection logic)
-                if (lockedProperties.length == cubit.selectedPropertyList.length && 
-                    cubit.selectedPropertyList.isNotEmpty) {
+                if (lockedProperties.length == validSelectedProperties.length && 
+                    validSelectedProperties.isNotEmpty) {
                   // All properties are locked - show alert and don't proceed
                   await _showAllPropertiesLockedAlert(
                     context: context,
@@ -689,7 +708,8 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                   }
                 }
                 
-                List<String> selectedPropertyIds = cubit.selectedPropertyList
+                // Use validSelectedProperties (excluding fully locked) for offer application
+                List<String> selectedPropertyIds = validSelectedProperties
                     .map((property) => property.sId)
                     .whereType<String>() // Filters out null values and ensures type safety
                     .toList();

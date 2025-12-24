@@ -145,6 +145,7 @@ abstract class SVGAssets {
   static const supportCallWhite = 'assets/icons/ic_support_call_white.svg';
   static const supportMailWhite = 'assets/icons/ic_support_mail_white.svg';
   static const supportMail = 'assets/icons/ic_support_mail.svg';
+  static const lockIcon = 'assets/icons/ic_lock.svg';
   static const scrollIcon = 'assets/icons/ic_scroll.svg';
   static const scrollWhiteIcon = 'assets/icons/ic_scroll_white.svg';
   static const financeRequestIcon = 'assets/icons/ic_finance_request.svg';
