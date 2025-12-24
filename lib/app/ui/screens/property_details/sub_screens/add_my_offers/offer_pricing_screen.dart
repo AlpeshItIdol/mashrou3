@@ -19,12 +19,14 @@ class OfferPricingScreen extends StatefulWidget {
   final List<String> propertyIds;
   final List<String> offersIds;
   final bool isMultiple;
+  final bool isAllProperty;
 
   const OfferPricingScreen({
     super.key,
     required this.propertyIds,
     required this.offersIds,
     required this.isMultiple,
+    this.isAllProperty = false,
   });
 
   @override
@@ -286,7 +288,10 @@ class _OfferPricingScreenState extends State<OfferPricingScreen> with AppBarMixi
                             return;
                           }
                         }
-                        cubit.getPriceCalculations(propertyIds: widget.propertyIds);
+                        cubit.getPriceCalculations(
+                          propertyIds: widget.propertyIds,
+                          isAllProperty: widget.isAllProperty,
+                        );
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -329,6 +334,7 @@ class _OfferPricingScreenState extends State<OfferPricingScreen> with AppBarMixi
           'propertyIds': widget.propertyIds,
           'offersIds': widget.offersIds,
           'isMultiple': widget.isMultiple,
+          'isAllProperty': widget.isAllProperty,
           'offerType': cubit.selectedOfferType,
           'startDate': cubit.startDate != null ? cubit.startDateController.text : null,
           'endDate': cubit.endDate != null ? cubit.endDateController.text : null,

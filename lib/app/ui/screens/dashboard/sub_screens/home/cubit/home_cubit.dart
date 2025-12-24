@@ -36,6 +36,7 @@ class HomeCubit extends Cubit<HomeState> {
   bool isBtnSelectPropertiesTapped = false;
   bool isBtnSelectProperty = false;
   bool isBtnSelectAllPropertiesTapped = false;
+  bool isSelectAllPropertiesTapped = false;
   bool isVendor = false;
   bool isVisitor = false;
 
@@ -212,6 +213,11 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> toggleSelectAllProperties(PagingController controller) async {
     emit(ToggleSelectAllPropertiesInit());
     printf("New");
+    // Clear "Select All Properties" when "Select All" is toggled
+    if (isSelectAllPropertiesTapped) {
+      isSelectAllPropertiesTapped = false;
+    }
+    
     if (isBtnSelectAllPropertiesTapped) {
       // If already selected, deselect all properties
       selectedPropertyList.clear();
@@ -237,6 +243,11 @@ class HomeCubit extends Cubit<HomeState> {
       return;
     }
     
+    // Clear "Select All Properties" when individual property is selected
+    if (isSelectAllPropertiesTapped) {
+      isSelectAllPropertiesTapped = false;
+    }
+    
     if (isSelected) {
       selectedPropertyList.add(property);
     } else {
@@ -252,6 +263,22 @@ class HomeCubit extends Cubit<HomeState> {
 
     printf("selectedPropertyList----${selectedPropertyList.length}");
     emit(ToggleSelectAllPropertiesUpdate(isBtnSelectAllPropertiesTapped));
+  }
+
+  // Method to toggle Select All Properties checkbox (global selection)
+  Future<void> toggleSelectAllPropertiesGlobal() async {
+    // Clear "Select All" state first if it's active
+    if (isBtnSelectAllPropertiesTapped) {
+      isBtnSelectAllPropertiesTapped = false;
+      selectedPropertyList.clear();
+    }
+    
+    // Now toggle "Select All Properties"
+    final newValue = !isSelectAllPropertiesTapped;
+    isSelectAllPropertiesTapped = newValue;
+    
+    // Emit state to trigger UI rebuild
+    emit(ToggleSelectAllPropertiesUpdate(newValue));
   }
 
   // Add method to toggle the state

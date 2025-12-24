@@ -257,68 +257,117 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                                 ).showIf(!cubit.isBtnSelectPropertiesTapped),
 
                                 // Buttons select all and cancel
-                                Row(
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    UIComponent.customInkWellWidget(
-                                      onTap: () {
-                                        cubit.toggleSelectAllProperties(homeScreenPagingController);
-                                        printf("selectedPropertyList--------${cubit.selectedPropertyList.length}");
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(
-                                            color: AppColors.colorPrimary.adaptiveColor(context,
-                                                lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.greyE8),
-                                          ),
-                                          color: AppColors.white
-                                              .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
-                                        ),
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
-                                            child: Row(
-                                              children: [
-                                                cubit.isBtnSelectAllPropertiesTapped
-                                                    ? SVGAssets.checkboxEnableIcon.toSvg(height: 18, width: 18, context: context)
-                                                    : SVGAssets.checkboxBlackDisableIcon.toSvg(
-                                                  height: 18,
-                                                  width: 18,
-                                                  context: context,
-                                                  color: AppColors.black14.adaptiveColor(context,
-                                                      lightModeColor: AppColors.black14, darkModeColor: AppColors.white),
+                                    Row(
+                                      children: [
+                                        UIComponent.customInkWellWidget(
+                                          onTap: () {
+                                            cubit.toggleSelectAllProperties(homeScreenPagingController);
+                                            printf("selectedPropertyList--------${cubit.selectedPropertyList.length}");
+                                          },
+                                          child: Container(
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color: AppColors.colorPrimary.adaptiveColor(context,
+                                                    lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.greyE8),
+                                              ),
+                                              color: AppColors.white
+                                                  .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
+                                            ),
+                                            child: Center(
+                                              child: Padding(
+                                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
+                                                child: Row(
+                                                  children: [
+                                                    cubit.isBtnSelectAllPropertiesTapped
+                                                        ? SVGAssets.checkboxEnableIcon.toSvg(height: 18, width: 18, context: context)
+                                                        : SVGAssets.checkboxBlackDisableIcon.toSvg(
+                                                      height: 18,
+                                                      width: 18,
+                                                      context: context,
+                                                      color: AppColors.black14.adaptiveColor(context,
+                                                          lightModeColor: AppColors.black14, darkModeColor: AppColors.white),
+                                                    ),
+                                                    10.horizontalSpace,
+                                                    Text(appStrings(context).textSelectAll),
+                                                  ],
                                                 ),
-                                                10.horizontalSpace,
-                                                Text(appStrings(context).textSelectAll),
-                                              ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    10.horizontalSpace,
-                                    UIComponent.customInkWellWidget(
-                                      onTap: () {
-                                        cubit.isBtnSelectAllPropertiesTapped = false;
-                                        cubit.selectedPropertyList.clear();
-                                        cubit.toggleSelectProperties();
-                                      },
-                                      child: Container(
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8),
-                                          border: Border.all(color: AppColors.greyE8),
-                                          color: AppColors.white
-                                              .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
-                                        ),
-                                        child: Center(
-                                          child: Padding(
-                                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
-                                            child: Text(appStrings(context).cancel),
+                                        10.horizontalSpace,
+                                        UIComponent.customInkWellWidget(
+                                          onTap: () {
+                                            cubit.isBtnSelectAllPropertiesTapped = false;
+                                            cubit.isSelectAllPropertiesTapped = false;
+                                            cubit.selectedPropertyList.clear();
+                                            cubit.toggleSelectProperties();
+                                          },
+                                          child: Container(
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(color: AppColors.greyE8),
+                                              color: AppColors.white
+                                                  .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
+                                            ),
+                                            child: Center(
+                                              child: Padding(
+                                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
+                                                child: Text(appStrings(context).cancel),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                      ],
+                                    ),
+                                    // Select All Properties checkbox
+                                    8.verticalSpace,
+                                    BlocBuilder<HomeCubit, HomeState>(
+                                      builder: (context, state) {
+                                        return UIComponent.customInkWellWidget(
+                                          onTap: () {
+                                            cubit.toggleSelectAllPropertiesGlobal();
+                                          },
+                                          child: Container(
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(8),
+                                              border: Border.all(
+                                                color: AppColors.colorPrimary.adaptiveColor(context,
+                                                    lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.greyE8),
+                                              ),
+                                              color: AppColors.white
+                                                  .adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
+                                            ),
+                                            child: Center(
+                                              child: Padding(
+                                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
+                                                child: Row(
+                                                  children: [
+                                                    cubit.isSelectAllPropertiesTapped
+                                                        ? SVGAssets.checkboxEnableIcon.toSvg(height: 18, width: 18, context: context)
+                                                        : SVGAssets.checkboxBlackDisableIcon.toSvg(
+                                                      height: 18,
+                                                      width: 18,
+                                                      context: context,
+                                                      color: AppColors.black14.adaptiveColor(context,
+                                                          lightModeColor: AppColors.black14, darkModeColor: AppColors.white),
+                                                    ),
+                                                    10.horizontalSpace,
+                                                    Text("Select All Properties"),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ],
                                 ).showIf(cubit.isBtnSelectPropertiesTapped),
@@ -633,6 +682,78 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
             isExtended: true,
             elevation: 0,
             onPressed: () async {
+              // Check if "Select All Properties" is selected
+              if (cubit.isSelectAllPropertiesTapped) {
+                // Get all properties from the paging controller
+                final allProperties = homeScreenPagingController.itemList ?? <PropertyData>[];
+                
+                // Calculate locked properties count
+                final lockedPropertiesCount = allProperties
+                    .where((property) => property.isLockedByMe == true)
+                    .length;
+                
+                final documentCount = cubit.totalEstates; // Total number of properties
+                final eligiblePropertiesCount = documentCount - lockedPropertiesCount;
+                
+                // Validate locked properties
+                if (lockedPropertiesCount > 0) {
+                  // Check if ALL properties are locked
+                  if (lockedPropertiesCount == documentCount && documentCount > 0) {
+                    // All properties are locked - show alert and don't proceed
+                    await _showAllPropertiesLockedAlert(
+                      context: context,
+                      lockedCount: lockedPropertiesCount,
+                    );
+                    return;
+                  }
+                  
+                  // Check if SOME properties are locked - show new alert for Select All Properties flow
+                  if (lockedPropertiesCount > 0 && eligiblePropertiesCount > 0) {
+                    // Show alert dialog with eligible properties message
+                    final shouldProceed = await _showSelectAllPropertiesAlert(
+                      context: context,
+                      eligibleCount: eligiblePropertiesCount,
+                      lockedCount: lockedPropertiesCount,
+                    );
+                    
+                    if (shouldProceed != true) {
+                      // User cancelled, don't proceed
+                      return;
+                    }
+                  }
+                } else if (eligiblePropertiesCount == 0 || documentCount == 0) {
+                  // No eligible properties or no properties at all
+                  Utils.snackBar(
+                    context: context,
+                    message: appStrings(context).selectPropertyError,
+                  );
+                  return;
+                }
+                // If no locked properties, proceed directly without showing alert
+                
+                // Navigate to offer pricing screen with isAllProperty: true
+                await context.pushNamed(
+                  Routes.kOfferPricingScreen,
+                  extra: {
+                    'propertyIds': <String>[], // Empty list when isAllProperty is true
+                    'offersIds': <String>[],
+                    'isMultiple': true,
+                    'isAllProperty': true, // Flag to indicate all properties selection
+                  },
+                ).then((value) {
+                  if (value != null && value == true) {
+                    cubit.isBtnSelectPropertiesTapped = false;
+                    cubit.isSelectedForCheckbox = false;
+                    cubit.isSelectAllPropertiesTapped = false;
+                    cubit.toggleSelectAllProperties(homeScreenPagingController);
+                    cubit.isBtnSelectAllPropertiesTapped = false;
+                    cubit.selectedPropertyList.clear();
+                  }
+                });
+                return;
+              }
+              
+              // Normal selection flow
               if (cubit.selectedPropertyList.isEmpty) {
                 Utils.snackBar(
                   context: context,
@@ -875,6 +996,133 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     "The selected $lockedCount ${lockedCount == 1 ? 'property' : 'properties'} already have an applied offer and will be skipped.",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).highlightColor,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 24.0),
+                // Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Cancel button
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(false),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: AppColors.white.adaptiveColor(
+                            context,
+                            lightModeColor: AppColors.white,
+                            darkModeColor: AppColors.black2E,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            side: BorderSide(
+                              color: AppColors.greyE8.adaptiveColor(
+                                context,
+                                lightModeColor: AppColors.greyE8,
+                                darkModeColor: AppColors.black2E,
+                              ),
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          appStrings(context).cancel,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: AppColors.black14.adaptiveColor(
+                                  context,
+                                  lightModeColor: AppColors.black14,
+                                  darkModeColor: AppColors.white,
+                                ),
+                                fontWeight: FontWeight.w500,
+                              ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Yes button
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: AppColors.primaryGradient,
+                        ),
+                        child: TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: Text(
+                            appStrings(context).yes,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Show alert dialog for Select All Properties flow with eligible properties message
+  Future<bool?> _showSelectAllPropertiesAlert({
+    required BuildContext context,
+    required int eligibleCount,
+    required int lockedCount,
+  }) async {
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          child: Container(
+            padding: const EdgeInsets.only(top: 24, bottom: 20.0, left: 20, right: 20),
+            decoration: BoxDecoration(
+              color: AppColors.white.adaptiveColor(
+                context,
+                lightModeColor: AppColors.white,
+                darkModeColor: AppColors.black2E,
+              ),
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Text(
+                  appStrings(context).applyOffer,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                ),
+                const SizedBox(height: 16.0),
+                // Message
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    "You are eligible to apply the offer on $eligibleCount ${eligibleCount == 1 ? 'property' : 'properties'}, as $lockedCount ${lockedCount == 1 ? 'property is' : 'properties are'} already locked. Do you agree to proceed?",
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Theme.of(context).highlightColor,

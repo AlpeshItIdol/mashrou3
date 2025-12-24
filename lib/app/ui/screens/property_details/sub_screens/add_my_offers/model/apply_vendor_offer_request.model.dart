@@ -25,11 +25,12 @@ class ApplyVendorOfferRequestModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['propertyId'] = propertyId;
+    // Send empty array when isAllProperty is true
+    data['propertyId'] = isAllProperty == true ? [] : propertyId;
     data['offersIds'] = offersIds;
     data['offerType'] = offerType;
     if (propertiesData != null) {
-      data['propertiesData'] = propertiesData!.map((v) => v.toJson()).toList();
+      data['propertiesData'] = propertiesData!.map((v) => v.toJson(isAllProperty: isAllProperty == true)).toList();
     }
     if (finalSum != null) {
       data['finalSum'] = finalSum!.toJson();
@@ -64,9 +65,12 @@ class PropertyData {
     this.originalAmount,
   });
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool isAllProperty = false}) {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['propertyId'] = propertyId;
+    // Exclude propertyId when isAllProperty is true
+    if (!isAllProperty) {
+      data['propertyId'] = propertyId;
+    }
     data['pricing'] = pricing;
     if (timedRate != null) {
       data['timed_rate'] = timedRate!.toJson();
