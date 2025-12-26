@@ -769,6 +769,8 @@ class PropertyOfferData {
   String? vendorCategoryId;
   String? offerType;
   String? status;
+  String? startDate;
+  String? endDate;
   PropertyOfferPropertiesData? propertiesData;
   PropertyOfferFinalSum? finalSum;
   bool? isAllProperties;
@@ -785,6 +787,8 @@ class PropertyOfferData {
     this.vendorCategoryId,
     this.offerType,
     this.status,
+    this.startDate,
+    this.endDate,
     this.propertiesData,
     this.finalSum,
     this.isAllProperties,
@@ -802,6 +806,8 @@ class PropertyOfferData {
     vendorCategoryId = json['vendorCategoryId'];
     offerType = json['offerType'];
     status = json['status'];
+    startDate = json['startDate'];
+    endDate = json['endDate'];
     propertiesData = json['propertiesData'] != null
         ? PropertyOfferPropertiesData.fromJson(json['propertiesData'])
         : null;
@@ -826,6 +832,8 @@ class PropertyOfferData {
     data['vendorCategoryId'] = vendorCategoryId;
     data['offerType'] = offerType;
     data['status'] = status;
+    data['startDate'] = startDate;
+    data['endDate'] = endDate;
     if (propertiesData != null) {
       data['propertiesData'] = propertiesData!.toJson();
     }

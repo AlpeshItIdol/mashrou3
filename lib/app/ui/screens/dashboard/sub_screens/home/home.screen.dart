@@ -433,6 +433,7 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
             isSoldOut: item.isSoldOut ?? false,
             isLocked: item.isLocked ?? false,
             isLockedByMe: item.isLockedByMe ?? false,
+            offerData: item.offerData,
             onPropertyTap: () {
               context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
                 RouteArguments.propertyId: item.sId ?? "0",

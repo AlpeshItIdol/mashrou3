@@ -198,7 +198,7 @@ flutter:
     - assets/vectors/
     - assets/gif/
     - assets/lottie/
-    - .env
+#    - .env
 
   fonts:
     - family: Reddit Sans

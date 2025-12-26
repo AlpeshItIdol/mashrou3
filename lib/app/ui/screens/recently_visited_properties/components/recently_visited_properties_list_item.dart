@@ -7,6 +7,9 @@ import 'package:mashrou3/utils/app_localization.dart';
 import 'package:mashrou3/utils/extensions.dart';
 import 'package:mashrou3/utils/ui_components.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:mashrou3/app/model/property/property_list_response_model.dart';
+
+import '../../../../../utils/string_utils.dart';
 
 class RecentlyVisitedPropertiesListItem extends StatefulWidget {
   final String propertyName;
@@ -21,6 +24,9 @@ class RecentlyVisitedPropertiesListItem extends StatefulWidget {
   final bool isSoldOut;
   final bool isVisitor;
   final bool isBankProperty;
+  final bool isLocked;
+  final bool isLockedByMe;
+  final PropertyOfferData? offerData;
   final bool requiredFavorite;
   final bool requiredDelete;
   final bool requiredCheckBox;
@@ -44,6 +50,9 @@ class RecentlyVisitedPropertiesListItem extends StatefulWidget {
     required this.isVisitor,
     this.isBankProperty = false,
     this.isFavorite = false,
+    this.isLocked = false,
+    this.isLockedByMe = false,
+    this.offerData,
     this.requiredDelete = false,
     this.requiredFavorite = true,
     this.requiredCheckBox = false,
@@ -200,29 +209,76 @@ class _RecentlyVisitedPropertiesListItemState
                 PositionedDirectional(
                   bottom: 12,
                   start: 12,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 6.0),
-                        child: Container(
+                  child: Builder(builder: (context) {
+                    final lockLabelText = StringUtils.getLockLabelText(widget.isLocked, widget.offerData);
+                    final lockTooltipText = StringUtils.getLockTooltipText(widget.isLockedByMe);
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (lockLabelText != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 6.0),
+                            child: Tooltip(
+                              message: lockTooltipText,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.colorPrimary,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
+                                  child: Text(
+                                    lockLabelText,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ).showIf(widget.isLocked == true),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 6.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.red00,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    appStrings(context).soldOut,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ).showIf(widget.isSoldOut == true && widget.isVisitor == true),
+                        Container(
                           decoration: BoxDecoration(
-                            color: AppColors.red00,
+                            gradient: AppColors.primaryGradient,
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Padding(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                                vertical: 12.0, horizontal: 12),
+                            padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  appStrings(context).soldOut,
+                                  appStrings(context).btnBankProperty,
                                   textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(
+                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight.w500,
                                     color: AppColors.white,
                                   ),
@@ -230,37 +286,10 @@ class _RecentlyVisitedPropertiesListItemState
                               ],
                             ),
                           ),
-                        ),
-                      ).showIf(
-                          widget.isSoldOut == true && widget.isVisitor == true),
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: AppColors.primaryGradient,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                              vertical: 12.0, horizontal: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                appStrings(context).btnBankProperty,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall
-                                    ?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ).showIf(widget.isBankProperty == true),
-                    ],
-                  ),
+                        ).showIf(widget.isBankProperty == true),
+                      ],
+                    );
+                  }),
                 ),
                 PositionedDirectional(
                   bottom: 12,

@@ -662,6 +662,9 @@ class _RecentlyVisitedPropertiesScreenState
             propertyPriceCurrency: item.price?.currencySymbol ?? '',
             isSoldOut: item.isSoldOut ?? false,
             isVisitor: cubit.isVendor == true ? false : true,
+            isLocked: item.isLocked ?? false,
+            isLockedByMe: item.isLockedByMe ?? false,
+            offerData: item.offerData,
             requiredCheckBox: widget.isPropertiesWithOffers ? cubit.isBtnSelectPropertiesTapped : false,
             isSelected: isSelected,
             onCheckBoxToggle: (isSelectedForCheckbox) async {
