@@ -286,7 +286,7 @@ class _SideDrawerWidgetState extends State<SideDrawerWidget> {
                                       WidgetsBinding.instance
                                           .addPostFrameCallback((_) {
                                         context.pushNamed(
-                                          Routes.kBanksOffer,
+                                          Routes.kCmsScreen,
                                           extra: licenceUrl,
                                         );
                                       });
