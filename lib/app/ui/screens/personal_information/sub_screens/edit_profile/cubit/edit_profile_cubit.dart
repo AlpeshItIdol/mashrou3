@@ -23,7 +23,6 @@ import '../../../../../../model/social_media_model.dart';
 import '../../../../../../model/vendor_list_response.model.dart';
 import '../../../../../../model/verify_response.model.dart';
 import '../../../../../../repository/authentication_repository.dart';
-import '../../../../../custom_widget/loader/overlay_loading_progress.dart';
 import '../../../../authentication/component/bloc/country_selection_cubit.dart';
 import '../../../../authentication/login/model/login_response.model.dart';
 import '../../../cubit/personal_information_cubit.dart';
@@ -116,10 +115,9 @@ class EditProfileCubit extends Cubit<EditProfileState> {
         await appPreferences.getUserDetails() ?? VerifyResponseData();
     printf(userSavedData);
 
-    OverlayLoadingProgress.start(context);
+    // Let the BlocListener handle overlay loading via state changes
     await getCountryList(context);
     // await getCityList(context);
-    OverlayLoadingProgress.stop();
     await setEditData(userSavedData ?? VerifyResponseData(), context);
   }
 
