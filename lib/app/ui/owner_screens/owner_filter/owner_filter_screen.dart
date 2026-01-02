@@ -6,6 +6,8 @@ import 'package:mashrou3/app/model/city_list_response_model.dart';
 import 'package:mashrou3/app/model/country_list_model.dart';
 import 'package:mashrou3/app/model/property/currency_list_response_model.dart';
 import 'package:mashrou3/app/model/property/property_category_response_model.dart';
+import 'package:mashrou3/app/model/property/address_location_response_model.dart';
+import 'package:mashrou3/app/ui/owner_screens/add_edit_property/model/category_item_data_response_model.dart';
 import 'package:mashrou3/app/ui/custom_widget/app_bar_mixin.dart';
 import 'package:mashrou3/app/ui/custom_widget/common_row_bottons.dart';
 import 'package:mashrou3/app/ui/custom_widget/text_form_fields/my_text_form_field.dart';
@@ -27,7 +29,6 @@ import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import '../../custom_widget/bottom_sheet_with_pagination/bottom_sheet_with_pagination.dart';
-import '../../screens/filter/filter_screen.dart';
 
 class OwnerFilterScreen extends StatefulWidget {
   const OwnerFilterScreen({super.key});
@@ -177,8 +178,28 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
                 /// City Widget
                 buildFilterComponent("city"),
 
+                /// Property Category
+                buildFilterComponent("propertyCategory"),
+
+                /// Property Sub Category (only show if category is selected)
+                if (context.read<OwnerFilterCubit>().selectedPropertyCategory.sId != null && 
+                    context.read<OwnerFilterCubit>().selectedPropertyCategory.sId!.isNotEmpty)
+                  buildFilterComponent("propertySubCategory"),
+
+                /// Living Space Details (only show if category is selected and data is loaded)
+                if (context.read<OwnerFilterCubit>().selectedPropertyCategory.sId != null && 
+                    context.read<OwnerFilterCubit>().selectedPropertyCategory.sId!.isNotEmpty &&
+                    context.read<OwnerFilterCubit>().categoryOptions.isNotEmpty)
+                  ...buildLivingSpaceFilterComponents(context),
+
+                /// Address Location
+                buildFilterComponent("addressLocation"),
+
                 /// Neighborhood Multi Selection Widget
                 buildFilterComponent("neighborhood"),
+
+                /// Leasing Company
+                buildFilterComponent("leasingCompany").hideIf(context.read<OwnerFilterCubit>().isVendor),
 
                 /// Price
                 buildFilterComponent("price"),
@@ -460,7 +481,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
                           ),
                         ),
                         builder: (_) => CityListBottomSheet(
-                          selectedCountryId: cubit.selectedCountryId ?? "",
+                          selectedCountryId: cubit.selectedCountryId,
                           searchController: cubit.searchCtl,
                         ),
                       );
@@ -889,6 +910,18 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
 
   Widget buildFilterComponent(String key) {
     OwnerFilterCubit cubit = context.read<OwnerFilterCubit>();
+    
+    // Always show these filters regardless of backend configuration
+    if (key == 'addressLocation') {
+      return addressLocationFilterComponent(context);
+    }
+    if (key == 'propertyCategory') {
+      return propertyCategoryFilterComponent(context);
+    }
+    if (key == 'propertySubCategory') {
+      return propertySubCategoryFilterComponent(context);
+    }
+    
     FilterStatusData? filter =
         context.read<OwnerFilterCubit>().filterStatusList?.firstWhere(
               (f) => f.key == key && f.isActive == true,
@@ -910,7 +943,8 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
         case 'virtualTour':
           cubit.selectedVirtualTourStatus = null;
           return const SizedBox.shrink();
-        case 'country' || 'city':
+        case 'country':
+        case 'city':
           cubit.selectedCountryId = "";
           cubit.selectedCountry = CountryListData();
           cubit.isSelectedCountry = false;
@@ -951,7 +985,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
       case 'neighborhood':
         return neighborhoodFilterComponent(context);
       case 'leasingCompany':
-        return const SizedBox.shrink();
+        return bankLeasingFilterComponent(context);
       case 'price':
         return priceFilterComponent(context);
       case 'area':
@@ -1295,5 +1329,920 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
             null;
     setState(() {});
     return isAreaValid;
+  }
+
+  Widget bankLeasingFilterComponent(BuildContext context) {
+    OwnerFilterCubit cubit = context.read<OwnerFilterCubit>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextLabel(text: appStrings(context).bankLeaseCompany),
+        5.verticalSpace,
+        UIComponent.customInkWellWidget(
+          onTap: () async {
+            final status = await showCustomBottomSheet(
+                context,
+                "${appStrings(context).select} ${appStrings(context).bankLeaseCompany}",
+                getYesNoData(context));
+
+            if (status != null) {
+              setState(() {
+                cubit.selectedBankLeasingStatus = status;
+                printf(cubit.selectedBankLeasingStatus);
+              });
+            }
+          },
+          child: Container(
+            padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(16)),
+              border: Border.all(
+                  color: AppColors.greyE8.adaptiveColor(context,
+                      lightModeColor: AppColors.greyE8,
+                      darkModeColor: AppColors.black2E)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    BlocListener<OwnerFilterCubit, OwnerFilterState>(
+                      listener: (context, state) {},
+                      child: Text(
+                        cubit.selectedBankLeasingStatus ??
+                            appStrings(context).select,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: cubit.selectedBankLeasingStatus != null
+                                ? Theme.of(context).primaryColor
+                                : AppColors.black14.adaptiveColor(context,
+                                    lightModeColor: AppColors.black14,
+                                    darkModeColor: AppColors.grey77),
+                            fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                SVGAssets.arrowDownIcon.toSvg(
+                    context: context, color: Theme.of(context).highlightColor),
+              ],
+            ),
+          ),
+        ),
+        18.verticalSpace,
+      ],
+    );
+  }
+
+  Widget propertyCategoryFilterComponent(BuildContext context) {
+    return BlocBuilder<OwnerFilterCubit, OwnerFilterState>(
+      builder: (context, state) {
+        final cubit = context.read<OwnerFilterCubit>();
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomTextLabel(text: "Category"),
+            5.verticalSpace,
+            UIComponent.customInkWellWidget(
+              onTap: () async {
+                final category = await showPropertyCategorySheet(
+                    context, cubit.propertyCategoryList ?? []);
+
+                if (category != null) {
+                  if (category.sId != null && category.sId!.isNotEmpty) {
+                    setState(() {
+                      cubit.selectedPropertyCategory = category;
+                      cubit.selectedPropertySubCategories = [];
+                      cubit.propertySubCategoryList = [];
+                    });
+                    
+                    await cubit.getPropertySubCategoryList(categoryId: category.sId!);
+                    
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  }
+                }
+              },
+              child: Container(
+                padding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 16),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(16)),
+                  border: Border.all(
+                      color: AppColors.greyE8.adaptiveColor(context,
+                          lightModeColor: AppColors.greyE8,
+                          darkModeColor: AppColors.black2E)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          cubit.selectedPropertyCategory.name ?? appStrings(context).select,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              color: cubit.selectedPropertyCategory.name != null
+                                  ? Theme.of(context).primaryColor
+                                  : AppColors.black14.adaptiveColor(context,
+                                      lightModeColor: AppColors.black14,
+                                      darkModeColor: AppColors.grey77),
+                              fontWeight: FontWeight.w400),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                    SVGAssets.arrowDownIcon.toSvg(context: context, color: Theme.of(context).highlightColor),
+                  ],
+                ),
+              ),
+            ),
+            18.verticalSpace,
+          ],
+        );
+      },
+    );
+  }
+
+  Widget propertySubCategoryFilterComponent(BuildContext context) {
+    return BlocBuilder<OwnerFilterCubit, OwnerFilterState>(
+      builder: (context, state) {
+        final cubit = context.read<OwnerFilterCubit>();
+        // Only show if a category is selected
+        if (cubit.selectedPropertyCategory.sId == null || cubit.selectedPropertyCategory.sId!.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomTextLabel(text: "Sub Category"),
+            6.verticalSpace,
+            BlocListener<OwnerFilterCubit, OwnerFilterState>(
+              listener: (context, state) {},
+              child: BlocBuilder<OwnerFilterCubit, OwnerFilterState>(
+                builder: (context, state) {
+                  return ExpansionTile(
+                    collapsedShape: ContinuousRectangleBorder(
+                        side: BorderSide(
+                            color: AppColors.greyE9.adaptiveColor(context,
+                                lightModeColor: AppColors.greyE9,
+                                darkModeColor: AppColors.black2E),
+                            width: 2),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(30))),
+                    shape: ContinuousRectangleBorder(
+                        side: BorderSide(
+                            color: AppColors.greyE9.adaptiveColor(context,
+                                lightModeColor: AppColors.greyE9,
+                                darkModeColor: AppColors.black2E),
+                            width: 2),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(30))),
+                    title: Text(
+                      cubit.selectedPropertySubCategories.isEmpty
+                          ? appStrings(context).select
+                          : "${cubit.selectedPropertySubCategories.length} Selected",
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: AppColors.grey77, fontWeight: FontWeight.w400),
+                    ),
+                    initiallyExpanded: false,
+                    dense: true,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: Divider(
+                            color: AppColors.greyE9.adaptiveColor(context,
+                                lightModeColor: AppColors.greyE9,
+                                darkModeColor: AppColors.black2E)),
+                      ),
+                      ListView.separated(
+                        itemCount: cubit.propertySubCategoryList?.length ?? 0,
+                        physics: const ClampingScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          final subCategory = cubit.propertySubCategoryList![index];
+                          final isSelected = cubit.selectedPropertySubCategories
+                              .contains(subCategory);
+                          return UIComponent.customInkWellWidget(
+                            onTap: () {
+                              setState(() {
+                                if (isSelected) {
+                                  cubit.selectedPropertySubCategories
+                                      .remove(subCategory);
+                                } else {
+                                  cubit.selectedPropertySubCategories
+                                      .add(subCategory);
+                                }
+                              });
+
+                              (context as Element).markNeedsBuild();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  isSelected
+                                      ? SVGAssets.checkboxEnableIcon.toSvg(
+                                          height: 18, width: 18, context: context)
+                                      : SVGAssets.checkboxDisableIcon.toSvg(
+                                          height: 18,
+                                          width: 18,
+                                          context: context),
+                                  10.horizontalSpace,
+                                  Flexible(
+                                    child: Text(subCategory.name ?? '',
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(
+                                              color: AppColors.black14
+                                                  .forLightMode(context),
+                                            )),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                                horizontal: 20.0),
+                            child: Divider(
+                              height: 1,
+                              color: AppColors.greyE8.adaptiveColor(context,
+                                  lightModeColor: AppColors.greyE8,
+                                  darkModeColor: AppColors.grey50),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            18.verticalSpace,
+          ],
+        );
+      },
+    );
+  }
+
+  Widget addressLocationFilterComponent(BuildContext context) {
+    OwnerFilterCubit cubit = context.read<OwnerFilterCubit>();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextLabel(text: "Address Location"),
+        5.verticalSpace,
+        UIComponent.customInkWellWidget(
+          onTap: () async {
+            final addressLocation = await showAddressLocationSheet(
+                context, cubit.addressLocationList ?? []);
+
+            if (addressLocation != null) {
+              setState(() {
+                cubit.selectedAddressLocation = addressLocation;
+              });
+            }
+          },
+          child: Container(
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(Radius.circular(16)),
+              border: Border.all(
+                  color: AppColors.greyE8.adaptiveColor(context,
+                      lightModeColor: AppColors.greyE8,
+                      darkModeColor: AppColors.black2E)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      cubit.selectedAddressLocation.text ?? appStrings(context).select,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: cubit.selectedAddressLocation.text != null
+                              ? Theme.of(context).primaryColor
+                              : AppColors.black14.adaptiveColor(context,
+                                  lightModeColor: AppColors.black14,
+                                  darkModeColor: AppColors.grey77),
+                          fontWeight: FontWeight.w400),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+                SVGAssets.arrowDownIcon.toSvg(context: context, color: Theme.of(context).highlightColor),
+              ],
+            ),
+          ),
+        ),
+        18.verticalSpace,
+      ],
+    );
+  }
+
+  List<Widget> buildLivingSpaceFilterComponents(BuildContext context) {
+    OwnerFilterCubit cubit = context.read<OwnerFilterCubit>();
+    List<Widget> widgets = [];
+    
+    // This method is only called when category is selected and data is loaded
+    // (checked in the parent widget), but adding extra safety check
+    if (cubit.selectedPropertyCategory.sId == null || 
+        cubit.selectedPropertyCategory.sId!.isEmpty ||
+        cubit.categoryOptions.isEmpty) {
+      return widgets;
+    }
+    
+    // Build widgets for each living space field
+    cubit.categoryOptions.forEach((key, options) {
+      if (options.data != null && options.data!.isNotEmpty) {
+        widgets.add(
+          livingSpaceFilterComponent(context, key, options),
+        );
+      }
+    });
+    
+    return widgets;
+  }
+
+  Widget livingSpaceFilterComponent(
+    BuildContext context,
+    String key,
+    CategoryItemOptions options,
+  ) {
+    OwnerFilterCubit cubit = context.read<OwnerFilterCubit>();
+    final isMultiple = options.isMultiple == true;
+    final isSelected = isMultiple
+        ? (cubit.selectedLivingSpaceMultiItems[key]?.isNotEmpty ?? false)
+        : (cubit.selectedLivingSpaceItems[key] != null);
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomTextLabel(text: options.label ?? key),
+        6.verticalSpace,
+        BlocBuilder<OwnerFilterCubit, OwnerFilterState>(
+          builder: (context, state) {
+            if (isMultiple) {
+              // Multi-select using ExpansionTile
+              return ExpansionTile(
+                collapsedShape: ContinuousRectangleBorder(
+                  side: BorderSide(
+                    color: AppColors.greyE9.adaptiveColor(context,
+                        lightModeColor: AppColors.greyE9,
+                        darkModeColor: AppColors.black2E),
+                    width: 2,
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
+                ),
+                shape: ContinuousRectangleBorder(
+                  side: BorderSide(
+                    color: AppColors.greyE9.adaptiveColor(context,
+                        lightModeColor: AppColors.greyE9,
+                        darkModeColor: AppColors.black2E),
+                    width: 2,
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
+                ),
+                title: Text(
+                  isSelected
+                      ? "${cubit.selectedLivingSpaceMultiItems[key]?.length ?? 0} Selected"
+                      : appStrings(context).select,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: AppColors.grey77, fontWeight: FontWeight.w400),
+                ),
+                initiallyExpanded: false,
+                dense: true,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Divider(
+                      color: AppColors.greyE9.adaptiveColor(context,
+                          lightModeColor: AppColors.greyE9,
+                          darkModeColor: AppColors.black2E),
+                    ),
+                  ),
+                  ListView.separated(
+                    itemCount: options.data?.length ?? 0,
+                    physics: const ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      final item = options.data![index];
+                      final isItemSelected = cubit.selectedLivingSpaceMultiItems[key]
+                          ?.contains(item) ?? false;
+                      return UIComponent.customInkWellWidget(
+                        onTap: () {
+                          setState(() {
+                            if (cubit.selectedLivingSpaceMultiItems[key] == null) {
+                              cubit.selectedLivingSpaceMultiItems[key] = [];
+                            }
+                            if (isItemSelected) {
+                              cubit.selectedLivingSpaceMultiItems[key]!.remove(item);
+                            } else {
+                              cubit.selectedLivingSpaceMultiItems[key]!.add(item);
+                            }
+                          });
+                          (context as Element).markNeedsBuild();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              isItemSelected
+                                  ? SVGAssets.checkboxEnableIcon.toSvg(
+                                      height: 18, width: 18, context: context)
+                                  : SVGAssets.checkboxDisableIcon.toSvg(
+                                      height: 18, width: 18, context: context),
+                              10.horizontalSpace,
+                              Flexible(
+                                child: Text(
+                                  item.name ?? '',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        color: AppColors.black14
+                                            .forLightMode(context),
+                                      ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 20.0),
+                        child: Divider(
+                          height: 1,
+                          color: AppColors.greyE8.adaptiveColor(context,
+                              lightModeColor: AppColors.greyE8,
+                              darkModeColor: AppColors.grey50),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            } else {
+              // Single-select using dropdown
+              return UIComponent.customInkWellWidget(
+                onTap: () async {
+                  final selected = await showLivingSpaceItemSheet(
+                      context, options.data ?? [], options.label ?? key);
+                  if (selected != null) {
+                    setState(() {
+                      cubit.selectedLivingSpaceItems[key] = selected;
+                    });
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: 16, vertical: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
+                    border: Border.all(
+                        color: AppColors.greyE8.adaptiveColor(context,
+                            lightModeColor: AppColors.greyE8,
+                            darkModeColor: AppColors.black2E)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        cubit.selectedLivingSpaceItems[key]?.name ??
+                            appStrings(context).select,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: cubit.selectedLivingSpaceItems[key]?.name != null
+                                ? Theme.of(context).primaryColor
+                                : AppColors.black14.adaptiveColor(context,
+                                    lightModeColor: AppColors.black14,
+                                    darkModeColor: AppColors.grey77),
+                            fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.center,
+                      ),
+                      SVGAssets.arrowDownIcon.toSvg(
+                          context: context,
+                          color: Theme.of(context).highlightColor),
+                    ],
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+        18.verticalSpace,
+      ],
+    );
+  }
+
+  Future<PropertyCategoryData?> showPropertyCategorySheet(
+      BuildContext context, List<PropertyCategoryData> dataList) {
+    final itemCount = dataList.length;
+    final isSmall = itemCount <= 5;
+
+    return showModalBottomSheet<PropertyCategoryData>(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Select Property Category",
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.black3D.forLightMode(context))),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      context.pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            isSmall
+                ? ListView.separated(
+                    itemCount: dataList.length,
+                    physics: const ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return UIComponent.customInkWellWidget(
+                        onTap: () {
+                          Navigator.pop(context, dataList[index]);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                dataList[index].name ?? "",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                      color: AppColors.black14
+                                          .forLightMode(context),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 20.0),
+                        child: Divider(
+                          height: 1,
+                          color: AppColors.greyE8.adaptiveColor(context,
+                              lightModeColor: AppColors.greyE8,
+                              darkModeColor: AppColors.grey50),
+                        ),
+                      );
+                    },
+                  )
+                : Expanded(
+                    child: ListView.separated(
+                      itemCount: dataList.length,
+                      physics: const ClampingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UIComponent.customInkWellWidget(
+                          onTap: () {
+                            Navigator.pop(context, dataList[index]);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  dataList[index].name ?? "",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        color: AppColors.black14.forLightMode(
+                                            context),
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 20.0),
+                          child: Divider(
+                            height: 1,
+                            color: AppColors.greyE8.adaptiveColor(context,
+                                lightModeColor: AppColors.greyE8,
+                                darkModeColor: AppColors.grey50),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<AddressLocationItem?> showAddressLocationSheet(
+      BuildContext context, List<AddressLocationItem> dataList) {
+    final itemCount = dataList.length;
+    final isSmall = itemCount <= 5;
+
+    return showModalBottomSheet<AddressLocationItem>(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Select Address Location",
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.black3D.forLightMode(context))),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      context.pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            isSmall
+                ? ListView.separated(
+                    itemCount: dataList.length,
+                    physics: const ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return UIComponent.customInkWellWidget(
+                        onTap: () {
+                          Navigator.pop(context, dataList[index]);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                dataList[index].text ?? "",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                      color: AppColors.black14
+                                          .forLightMode(context),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 20.0),
+                        child: Divider(
+                          height: 1,
+                          color: AppColors.greyE8.adaptiveColor(context,
+                              lightModeColor: AppColors.greyE8,
+                              darkModeColor: AppColors.grey50),
+                        ),
+                      );
+                    },
+                  )
+                : Expanded(
+                    child: ListView.separated(
+                      itemCount: dataList.length,
+                      physics: const ClampingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UIComponent.customInkWellWidget(
+                          onTap: () {
+                            Navigator.pop(context, dataList[index]);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  dataList[index].text ?? "",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        color: AppColors.black14.forLightMode(
+                                            context),
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 20.0),
+                          child: Divider(
+                            height: 1,
+                            color: AppColors.greyE8.adaptiveColor(context,
+                                lightModeColor: AppColors.greyE8,
+                                darkModeColor: AppColors.grey50),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<CategoryItemData?> showLivingSpaceItemSheet(
+      BuildContext context, List<CategoryItemData> dataList, String title) {
+    final itemCount = dataList.length;
+    final isSmall = itemCount <= 5;
+
+    return showModalBottomSheet<CategoryItemData>(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Select $title",
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.black3D.forLightMode(context)),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      context.pop();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            isSmall
+                ? ListView.separated(
+                    itemCount: dataList.length,
+                    physics: const ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return UIComponent.customInkWellWidget(
+                        onTap: () {
+                          Navigator.pop(context, dataList[index]);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                dataList[index].name ?? "",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall
+                                    ?.copyWith(
+                                      color: AppColors.black14
+                                          .forLightMode(context),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 20.0),
+                        child: Divider(
+                          height: 1,
+                          color: AppColors.greyE8.adaptiveColor(context,
+                              lightModeColor: AppColors.greyE8,
+                              darkModeColor: AppColors.grey50),
+                        ),
+                      );
+                    },
+                  )
+                : Expanded(
+                    child: ListView.separated(
+                      itemCount: dataList.length,
+                      physics: const ClampingScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext context, int index) {
+                        return UIComponent.customInkWellWidget(
+                          onTap: () {
+                            Navigator.pop(context, dataList[index]);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  dataList[index].name ?? "",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        color: AppColors.black14.forLightMode(
+                                            context),
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 20.0),
+                          child: Divider(
+                            height: 1,
+                            color: AppColors.greyE8.adaptiveColor(context,
+                                lightModeColor: AppColors.greyE8,
+                                darkModeColor: AppColors.grey50),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class CustomTextLabel extends StatelessWidget {
+  final String text;
+  final TextStyle? textStyle;
+
+  const CustomTextLabel({super.key, required this.text, this.textStyle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: textStyle ??
+          Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: AppColors.black3D.adaptiveColor(
+                context,
+                lightModeColor: AppColors.black3D,
+                darkModeColor: AppColors.greyB0,
+              )),
+    );
   }
 }
