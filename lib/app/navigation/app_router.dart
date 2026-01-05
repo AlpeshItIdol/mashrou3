@@ -333,6 +333,17 @@ class AppRouter {
                 userId: state.extra as String,
               )),
 
+      // Deep link route for owner-details
+      GoRoute(
+          name: Routes.kOwnerDetailsScreen,
+          path: RoutePaths.kOwnerDetailsPath,
+          builder: (BuildContext context, GoRouterState state) {
+            String? userId = state.pathParameters[RouteArguments.userId];
+            return ProfileDetailScreen(
+              userId: userId ?? "",
+            );
+          }),
+
       GoRoute(
           name: Routes.kPropertyNotFound,
           path: RoutePaths.kPropertyNotFoundPath,
@@ -719,15 +730,20 @@ class AppRouter {
       if ((redirectURL ?? '').isNotEmpty) {
         final splitData = redirectURL.split("/");
 
-        if (redirectURL.contains(AppConstants.viewPropertyDetails)) {
-          // Navigate to view property.
+        if (redirectURL.contains(AppConstants.viewOwnerDetails)) {
+          // Navigate to owner profile details (Developer Profile).
           Future.delayed(Duration(milliseconds: delay800Millis), () {
-            AppRouter.goToPropertyDetail(
-              isAppOpened: isAppOpened || isFromNotification,
-              propertyID: splitData.last,
-              isFromDeepLink: true,
-              isOwner: userRole == AppStrings.owner,
-            );
+            // Extract userId from URL: /property/details/owner-details/{userId}
+            final userId = splitData.isNotEmpty ? splitData.last.split("?").first : "";
+            if (userId.isNotEmpty) {
+              AppRouter.goToProfileDetail(
+                userId: userId,
+                isAppOpened: isAppOpened || isFromNotification,
+                isFromDeepLink: true,
+              );
+            } else {
+              goToInvalidScreen();
+            }
           });
         } else if (redirectURL.contains(AppConstants.viewPropertyDetails)) {
           // Navigate to view property.
@@ -802,6 +818,23 @@ class AppRouter {
         RouteArguments.propertyLat: "0.00",
         RouteArguments.propertyLng: "0.00",
       });
+    }
+  }
+
+  /// Navigate to owner profile details (Developer Profile)
+  static void goToProfileDetail({
+    required String userId,
+    bool isAppOpened = false,
+    bool isFromDeepLink = false,
+  }) {
+    if (isFromDeepLink) {
+      router.goNamed(Routes.kOwnerDetailsScreen, pathParameters: {
+        RouteArguments.userId: userId,
+      });
+    } else if (isAppOpened) {
+      router.pushNamed(Routes.kProfileDetailScreen, extra: userId);
+    } else {
+      router.pushNamed(Routes.kProfileDetailScreen, extra: userId);
     }
   }
 

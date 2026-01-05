@@ -23,6 +23,7 @@ abstract class Routes {
   static const kOwnerDashboard = "owner-dashboard";
   static const kPropertyDetailScreen = "property-detail";
   static const kProfileDetailScreen = "profile-detail";
+  static const kOwnerDetailsScreen = "owner-details";
   static const kFilterScreen = "filter";
   static const kFavFilterScreen = "fav-filter";
   static const kOwnerFilterScreen = "owner-filter";
@@ -94,6 +95,7 @@ abstract class RoutePaths {
   static const kInReviewFilterPath = "/in-review-filter";
   static const kPersonalInformationPath = "/personal-information";
   static const kProfileDetailPath = "/profile-detail";
+  static const kOwnerDetailsPath = "/property/details/owner-details/:${RouteArguments.userId}";
   static const kAddEditCertificatesPath =
       "/add-edit-certificates:${RouteArguments.isForPortfolio}/:${RouteArguments.isForEdit}";
   static const kViewAllCertificatesPath =

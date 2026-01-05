@@ -24,4 +24,5 @@ abstract class RouteArguments {
   static const isFromFinanceReq = 'isFromFinanceReq';
   static const isFromDelete = 'isFromDelete';
   static const requestId = 'requestId';
+  static const userId = 'userId';
 }

@@ -769,6 +769,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
                             padding: const EdgeInsetsDirectional.symmetric(vertical: 16),
                             child: CustomDivider.colored(context),
                           ),
+                          //Navigate to profile-detail
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                             child: Row(
@@ -2164,7 +2165,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
               requireLeading: true,
               requireShareFavIcon: context.read<DashboardCubit>().isGuest ? false : true,
               isFavourite: cubit.myPropertyDetails.favorite ?? false,
-              onBackTap: () async {
+                onBackTap: () async {
                 if (context.canPop()) {
                   context.pop();
                 } else {

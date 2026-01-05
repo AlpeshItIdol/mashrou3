@@ -78,6 +78,7 @@ class AppConstants {
   /// Deep Linking strings
   static const viewProperty = "view-property";
   static const viewPropertyDetails = "property/details";
+  static const viewOwnerDetails = "property/details/owner-details";
   static const viewOfferDetails = "view-offer/vendor";
   static const owner = "owner";
   static const vendor = "vendor";

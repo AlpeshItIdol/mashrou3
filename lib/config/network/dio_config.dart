@@ -281,7 +281,16 @@ class DioProvider {
       String fullUrl = "$url?search=${search ?? ""}";
 
       if (queryParameters != null && queryParameters.isNotEmpty) {
-        final queryString = Uri(queryParameters: queryParameters).query;
+        // Convert all query parameter values to strings to avoid type errors
+        final Map<String, String> stringQueryParams = queryParameters.map(
+          (key, value) => MapEntry(
+            key,
+            value is Iterable
+                ? value.map((e) => e.toString()).join(',')
+                : value.toString(),
+          ),
+        );
+        final queryString = Uri(queryParameters: stringQueryParams).query;
         fullUrl = "$fullUrl&$queryString";
       }
 
