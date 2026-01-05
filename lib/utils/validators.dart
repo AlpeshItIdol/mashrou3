@@ -294,8 +294,11 @@ String? validatePhoneNumber(
         : null;
   }
 
-  final isoCodeStr =
-      IsoCode.values.firstWhere((e) => e.name == isoCode.toUpperCase());
+  // Try to find matching IsoCode, default to JO (Jordan) if not found
+  final isoCodeStr = IsoCode.values.firstWhere(
+    (e) => e.name == isoCode.toUpperCase(),
+    orElse: () => IsoCode.JO, // Default to Jordan if ISO code not found
+  );
 
   /// Validate phone number using the iso code
   ///
