@@ -19,6 +19,7 @@ import 'package:mashrou3/utils/ui_components.dart';
 import '../../../../../../config/utils.dart';
 import '../../../../../../utils/app_localization.dart';
 import '../../../../config/resources/app_assets.dart';
+import '../../../../config/resources/app_strings.dart';
 import '../../../../utils/read_more_text.dart';
 import '../../../db/app_preferences.dart';
 import '../../../db/session_tracker.dart';
@@ -71,6 +72,18 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
         context: context,
         requireLeading: true,
         title: appStrings(context).profile,
+        onBackTap: () async {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            var selectedUserRole = await GetIt.I<AppPreferences>().getUserRole() ?? "";
+            if (selectedUserRole == AppStrings.owner) {
+              context.goNamed(Routes.kOwnerDashboard);
+            } else {
+              context.goNamed(Routes.kDashboard);
+            }
+          }
+        },
       ),
       body: FutureBuilder(
         future: _initializeData(),
