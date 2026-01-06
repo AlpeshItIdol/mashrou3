@@ -431,6 +431,33 @@ class AddEditPropertyCubit extends Cubit<AddEditPropertyState> {
     }
   }
 
+  /// Set a single address location (replaces the entire list)
+  void setSingleAddressLocation(AddressLocationItem? location) {
+    selectedAddressLocations.clear();
+    locationKeys.clear();
+    // Dispose existing controllers
+    for (var controller in locationKeysControllers) {
+      controller.dispose();
+    }
+    locationKeysControllers.clear();
+    
+    if (location != null) {
+      selectedAddressLocations.add(location);
+      locationKeys.add(location.sId ?? "");
+      locationKeysControllers.add(TextEditingController(text: location.text ?? ""));
+    }
+    
+    emit(AddMoreNeighbourhoodKeys(
+      neighbourhoodKeys: List.from(locationKeys),
+      neighbourhoodKeysCtrl: List.from(locationKeysControllers),
+    ));
+  }
+
+  /// Clear the single address location
+  void clearSingleAddressLocation() {
+    setSingleAddressLocation(null);
+  }
+
   void showHideSuffix(bool showBool) {
     emit(SuffixBoolChangedStateInitial());
     emit(SuffixBoolChangedState(showBool: showSuffixIcon));
@@ -799,33 +826,36 @@ class AddEditPropertyCubit extends Cubit<AddEditPropertyState> {
       videoLinksCtls: List.from(videoLinksControllers),
     ));
 
-    // Prepare neighbour locations (Area Names)
-    locationKeys = propertyDetailData.locationKeys ?? [];
+    // Prepare neighbour locations (Area Names) - Single selection only
+    final allLocationKeys = propertyDetailData.locationKeys ?? [];
+    // Take only the first location key for single selection
+    locationKeys = allLocationKeys.isNotEmpty && allLocationKeys.first.isNotEmpty 
+        ? [allLocationKeys.first] 
+        : [];
     locationKeysControllers.clear();
     selectedAddressLocations.clear();
     
     // Store locationKeys IDs - will be matched with addressLocationList when it loads
-    // For now, create placeholder items
-    for (var locationKeyId in locationKeys) {
-      if (locationKeyId.isNotEmpty) {
-        // Try to find in already loaded list, otherwise create placeholder
-        AddressLocationItem? matchedLocation;
-        if (addressLocationList != null && addressLocationList!.isNotEmpty) {
-          try {
-            matchedLocation = addressLocationList!.firstWhere(
-              (location) => location.sId == locationKeyId,
-            );
-          } catch (e) {
-            // Not found, create placeholder
-            matchedLocation = AddressLocationItem(sId: locationKeyId, text: locationKeyId);
-          }
-        } else {
-          // List not loaded yet, create placeholder
+    // For single selection, only process the first location key
+    if (locationKeys.isNotEmpty && locationKeys.first.isNotEmpty) {
+      final locationKeyId = locationKeys.first;
+      // Try to find in already loaded list, otherwise create placeholder
+      AddressLocationItem? matchedLocation;
+      if (addressLocationList != null && addressLocationList!.isNotEmpty) {
+        try {
+          matchedLocation = addressLocationList!.firstWhere(
+            (location) => location.sId == locationKeyId,
+          );
+        } catch (e) {
+          // Not found, create placeholder
           matchedLocation = AddressLocationItem(sId: locationKeyId, text: locationKeyId);
         }
-        selectedAddressLocations.add(matchedLocation);
-        locationKeysControllers.add(TextEditingController(text: matchedLocation.text ?? locationKeyId));
+      } else {
+        // List not loaded yet, create placeholder
+        matchedLocation = AddressLocationItem(sId: locationKeyId, text: locationKeyId);
       }
+      selectedAddressLocations.add(matchedLocation);
+      locationKeysControllers.add(TextEditingController(text: matchedLocation.text ?? locationKeyId));
     }
     
     emit(AddMoreNeighbourhoodKeys(

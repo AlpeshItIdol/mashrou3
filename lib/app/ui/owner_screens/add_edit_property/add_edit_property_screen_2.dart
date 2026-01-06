@@ -605,142 +605,103 @@ class _AddEditPropertyScreen2State extends State<AddEditPropertyScreen2> with Ap
     );
   }
 
-  /// Location Keys (Area Name) - Now using dropdown
+  /// Location Keys (Area Name) - Single dropdown selection
   ///
   Widget _buildVideoLinksWidget() {
     AddEditPropertyCubit cubit = context.read<AddEditPropertyCubit>();
+    final hasSelectedLocation = cubit.selectedAddressLocations.isNotEmpty;
+    final selectedLocation = hasSelectedLocation ? cubit.selectedAddressLocations.first : null;
+    
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Always show at least one dropdown
-        ...List.generate(
-          cubit.selectedAddressLocations.isEmpty ? 1 : cubit.selectedAddressLocations.length,
-          (index) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                cubit.selectedAddressLocations.isNotEmpty || index > 0
-                    ? MediaQuery(
-                        data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
-                        child: Text(
-                          cubit.selectedAddressLocations.length < 2
-                              ? appStrings(context).lblNeighbourLocations
-                              : "${appStrings(context).lblNeighbourLocation} ${index + 1}",
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.black3D.adaptiveColor(
-                                  context,
-                                  lightModeColor: AppColors.black3D,
-                                  darkModeColor: AppColors.greyB0)),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-                5.verticalSpace,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      flex: 9,
-                      child: UIComponent.customInkWellWidget(
-                        onTap: () async {
-                          final selected = await showAddressLocationSheet(
-                              context, cubit.addressLocationList ?? [], index);
-                          if (selected != null) {
-                            setState(() {
-                              if (index < cubit.selectedAddressLocations.length) {
-                                cubit.setAddressLocationForIndex(index, selected);
-                              } else {
-                                cubit.addAddressLocation(selected);
-                              }
-                            });
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: 16, vertical: 16),
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(Radius.circular(16)),
-                            border: Border.all(
-                                color: AppColors.greyE8.adaptiveColor(context,
-                                    lightModeColor: AppColors.greyE8,
-                                    darkModeColor: AppColors.black2E)),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  index < cubit.selectedAddressLocations.length
-                                      ? (cubit.selectedAddressLocations[index].text ??
-                                          appStrings(context).lblNeighbourLocationPlaceholder)
-                                      : appStrings(context).lblNeighbourLocationPlaceholder,
-                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      color: index < cubit.selectedAddressLocations.length
-                                          ? Theme.of(context).primaryColor
-                                          : AppColors.black14.adaptiveColor(context,
-                                              lightModeColor: AppColors.black14,
-                                              darkModeColor: AppColors.grey77),
-                                      fontWeight: FontWeight.w400),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                ),
-                              ),
-                              SVGAssets.arrowDownIcon.toSvg(
-                                  context: context,
-                                  color: Theme.of(context).highlightColor),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.only(start: 10),
-                        child: CommonButtonWithIcon(
-                          onTap: () {
-                            if (index == 0 && cubit.selectedAddressLocations.isEmpty) {
-                              // First item, show error if trying to add without selection
-                              Utils.showErrorMessage(
-                                  context: context,
-                                  message: appStrings(context).lblNeighbourLocationPlaceholder);
-                              return;
-                            }
-                            if (index == 0 && cubit.selectedAddressLocations.isNotEmpty) {
-                              // Add new empty dropdown
-                              cubit.addLocationKeys("");
-                            } else {
-                              // Remove this item
-                              cubit.removeAddressLocation(index);
-                            }
-                            setState(() {});
-                          },
-                          isGradientColor: false,
-                          icon: (index == 0 && cubit.selectedAddressLocations.isEmpty) ||
-                                  (index == 0 && cubit.selectedAddressLocations.isNotEmpty)
-                              ? SVGAssets.addIcon.toSvg(
-                                  context: context,
-                                  color: AppColors.black.adaptiveColor(context,
-                                      lightModeColor: AppColors.black,
-                                      darkModeColor: AppColors.white))
-                              : SVGAssets.deleteIcon.toSvg(context: context),
-                          borderColor: (index == 0)
-                              ? AppColors.greyE8.adaptiveColor(context,
-                                  lightModeColor: AppColors.greyE8,
-                                  darkModeColor: AppColors.black3D)
-                              : AppColors.red00,
-                          buttonBgColor: AppColors.white.adaptiveColor(context,
-                              lightModeColor: AppColors.white,
-                              darkModeColor: AppColors.black14),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                12.verticalSpace,
-              ],
-            );
-          },
+        MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+          child: Text(
+            appStrings(context).lblNeighbourLocations,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w500,
+                color: AppColors.black3D.adaptiveColor(
+                    context,
+                    lightModeColor: AppColors.black3D,
+                    darkModeColor: AppColors.greyB0)),
+          ),
         ),
+        5.verticalSpace,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              flex: hasSelectedLocation ? 8 : 10,
+              child: UIComponent.customInkWellWidget(
+                onTap: () async {
+                  final selected = await showAddressLocationSheet(
+                      context, cubit.addressLocationList ?? [], 0);
+                  if (selected != null) {
+                    setState(() {
+                      cubit.setSingleAddressLocation(selected);
+                    });
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: 16, vertical: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(16)),
+                    border: Border.all(
+                        color: AppColors.greyE8.adaptiveColor(context,
+                            lightModeColor: AppColors.greyE8,
+                            darkModeColor: AppColors.black2E)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          selectedLocation?.text ??
+                              appStrings(context).lblNeighbourLocationPlaceholder,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              color: hasSelectedLocation
+                                  ? Theme.of(context).primaryColor
+                                  : AppColors.black14.adaptiveColor(context,
+                                      lightModeColor: AppColors.black14,
+                                      darkModeColor: AppColors.grey77),
+                              fontWeight: FontWeight.w400),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                      ),
+                      SVGAssets.arrowDownIcon.toSvg(
+                          context: context,
+                          color: Theme.of(context).highlightColor),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            if (hasSelectedLocation)
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 10),
+                  child: CommonButtonWithIcon(
+                    onTap: () {
+                      setState(() {
+                        cubit.clearSingleAddressLocation();
+                      });
+                    },
+                    isGradientColor: false,
+                    icon: SVGAssets.deleteIcon.toSvg(context: context),
+                    borderColor: AppColors.red00,
+                    buttonBgColor: AppColors.white.adaptiveColor(context,
+                        lightModeColor: AppColors.white,
+                        darkModeColor: AppColors.black14),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        12.verticalSpace,
       ],
     );
   }
