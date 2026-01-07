@@ -182,6 +182,15 @@ class _SideDrawerWidgetState extends State<SideDrawerWidget> {
                                         routeName:
                                             Routes.kFinanceRequestScreen),
                                   ),
+                                  DrawerOption(
+                                    icon: Utils.isDark(context)
+                                        ? SVGAssets.docIcon
+                                        : SVGAssets.docIcon,
+                                    title: "Vendor Offer Analytics",
+                                    onTap: () => _navigateToRoute(
+                                        routeName:
+                                            Routes.kVendorOfferAnalytics),
+                                  ),
                                   if (shouldHideRequestedAndVisitedProperties)
                                     DrawerOption(
                                       icon: Utils.isDark(context)

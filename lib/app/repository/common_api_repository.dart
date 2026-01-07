@@ -19,6 +19,8 @@ import '../model/property/add_to_fav_request_model.dart';
 import '../model/property/property_category_response_model.dart';
 import '../model/user_details_request.model.dart';
 import '../model/user_details_response.model.dart';
+import '../model/vendor_offer_analytics/vendor_offer_analytics_request_model.dart';
+import '../model/vendor_offer_analytics/vendor_offer_analytics_response_model.dart';
 
 abstract class CommonApiRepository {
   Future<ResponseBaseModel> countryList({
@@ -50,6 +52,10 @@ abstract class CommonApiRepository {
   });
 
   Future<ResponseBaseModel> getCurrencyList();
+
+  Future<ResponseBaseModel> getVendorOfferAnalytics({
+    required VendorOfferAnalyticsRequestModel requestModel,
+  });
 }
 
 class CommonApiRepositoryImpl extends CommonApiRepository {
@@ -295,6 +301,33 @@ class CommonApiRepositoryImpl extends CommonApiRepository {
         if (response.statusCode == 200 || response.statusCode == 201) {
           CurrencyListResponseModel responseModel =
           CurrencyListResponseModel.fromJson(response.data);
+          return SuccessResponse(data: responseModel);
+        } else {
+          return FailedResponse(errorMessage: response.statusMessage ?? "");
+        }
+      } else {
+        return FailedResponse(errorMessage: response.statusMessage ?? "");
+      }
+    } else {
+      return FailedResponse(errorMessage: "No internet connected!");
+    }
+  }
+
+  /// Vendor Offer Analytics API
+  ///
+  @override
+  Future<ResponseBaseModel> getVendorOfferAnalytics({
+    required VendorOfferAnalyticsRequestModel requestModel,
+  }) async {
+    if (await Utils.isConnected()) {
+      final response = await GetIt.I<DioProvider>().postBaseAPIWithToken(
+        url: NetworkAPIs.kVendorOfferAnalytics,
+        data: requestModel.toJson(),
+      );
+      if (response.data != null) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          VendorOfferAnalyticsResponseModel responseModel =
+              VendorOfferAnalyticsResponseModel.fromJson(response.data);
           return SuccessResponse(data: responseModel);
         } else {
           return FailedResponse(errorMessage: response.statusMessage ?? "");

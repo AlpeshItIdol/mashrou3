@@ -76,6 +76,7 @@ import '../ui/screens/subscription_information/subscription_information.dart';
 import '../ui/screens/unknown/invalid.screen.dart';
 import '../ui/screens/vendors/model/vendors_sequence_response.dart';
 import '../ui/screens/vendors/vendors_list_screen.dart';
+import '../ui/screens/vendor_offer_analytics/vendor_offer_analytics_screen.dart';
 
 class AppRouter {
   static final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -410,6 +411,12 @@ class AppRouter {
             // extra may contain licenceUrl from drawer, not used here
             final vendorData = state.extra as VendorSequenceUser;
             return  VendorsDetailScreen(items: vendorData,);
+          }),
+      GoRoute(
+          name: Routes.kVendorOfferAnalytics,
+          path: RoutePaths.kVendorOfferAnalytics,
+          builder: (BuildContext context, GoRouterState state) {
+            return const VendorOfferAnalyticsScreen();
           }),
 
       GoRoute(
