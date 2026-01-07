@@ -10,6 +10,7 @@ import 'package:mashrou3/app/ui/screens/vendor_offer_analytics/cubit/vendor_offe
 import 'package:mashrou3/config/resources/app_colors.dart';
 import 'package:mashrou3/config/utils.dart';
 import 'package:mashrou3/utils/app_localization.dart';
+import 'package:mashrou3/utils/extensions.dart';
 
 class VendorOfferAnalyticsScreen extends StatefulWidget {
   const VendorOfferAnalyticsScreen({super.key});
@@ -60,10 +61,11 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
               ? const Center(child: CircularProgressIndicator())
               : Column(
                   children: [
+                    _buildPaginationControl(),
                     Expanded(
                       child: _buildTable(),
                     ),
-                    _buildPaginationControl(),
+
                   ],
                 ),
         );
@@ -220,34 +222,24 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
 
   Widget _buildPaginationControl() {
     final cubit = context.read<VendorOfferAnalyticsCubit>();
+    final itemsPerPageOptions = [10, 25, 50, 75, 100];
+    const selectedColor = Color.fromRGBO(62, 113, 119, 1.0);
+
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 1,
-          ),
-        ),
-      ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          Text(
-            'Rows per page:',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(width: 8),
-          DropdownButton<int>(
-            value: itemsPerPage,
-            items: [10, 25, 50, 100].map((value) {
-              return DropdownMenuItem<int>(
-                value: value,
-                child: Text('$value'),
-              );
-            }).toList(),
-            onChanged: (value) {
-              if (value != null && value != itemsPerPage) {
+          PopupMenuButton<int>(
+            offset: const Offset(0, 40),
+            color: AppColors.white.adaptiveColor(
+              context,
+              lightModeColor: AppColors.white,
+              darkModeColor: AppColors.black2E,
+            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            onSelected: (value) {
+              if (value != itemsPerPage) {
                 setState(() {
                   itemsPerPage = value;
                 });
@@ -255,6 +247,57 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
                 _pagingController.refresh();
               }
             },
+            itemBuilder: (context) {
+              return itemsPerPageOptions.map((value) {
+                final isSelected = value == itemsPerPage;
+
+                return PopupMenuItem<int>(
+                  value: value,
+                  padding: EdgeInsets.zero,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: isSelected ? selectedColor : Colors.transparent,
+                    ),
+                    child: Text(
+                      "$value",
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: isSelected ? Colors.white : AppColors.black14,
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                          ),
+                    ),
+                  ),
+                );
+              }).toList();
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.greyE8.adaptiveColor(
+                    context,
+                    lightModeColor: AppColors.greyE8,
+                    darkModeColor: AppColors.black2E,
+                  ),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "$itemsPerPage",
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: selectedColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(Icons.arrow_drop_down, color: selectedColor, size: 18),
+                ],
+              ),
+            ),
           ),
         ],
       ),
