@@ -11,6 +11,7 @@ import 'package:mashrou3/config/resources/app_colors.dart';
 import 'package:mashrou3/config/utils.dart';
 import 'package:mashrou3/utils/app_localization.dart';
 import 'package:mashrou3/utils/extensions.dart';
+import 'package:mashrou3/utils/ui_components.dart';
 
 class VendorOfferAnalyticsScreen extends StatefulWidget {
   const VendorOfferAnalyticsScreen({super.key});
@@ -22,7 +23,6 @@ class VendorOfferAnalyticsScreen extends StatefulWidget {
 class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen> with AppBarMixin {
   final PagingController<int, VendorOfferAnalyticsOffer> _pagingController = PagingController(firstPageKey: 1);
   String? vendorId;
-  int itemsPerPage = 10;
 
   @override
   void initState() {
@@ -74,148 +74,296 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
   }
 
   Widget _buildTable() {
-    if (_pagingController.itemList == null || _pagingController.itemList!.isEmpty) {
-      if (_pagingController.value.status == PagingStatus.firstPageError) {
-        return Center(
-          child: Text(
-            'Error loading data',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        );
-      }
-      return const Center(child: CircularProgressIndicator());
-    }
+    return RefreshIndicator(
+      onRefresh: () async {
+        if (vendorId != null && vendorId!.isNotEmpty) {
+          _pagingController.refresh();
+        }
+      },
+      child: PagedListView<int, VendorOfferAnalyticsOffer>.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        separatorBuilder: (BuildContext context, int index) {
+          return 12.verticalSpace;
+        },
+        pagingController: _pagingController,
+        shrinkWrap: true,
+        builderDelegate: PagedChildBuilderDelegate<VendorOfferAnalyticsOffer>(
+          firstPageProgressIndicatorBuilder: (context) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: const Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: AppColors.colorPrimary,
+                ),
+              ),
+            );
+          },
+          newPageProgressIndicatorBuilder: (context) {
+            return const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: AppColors.colorPrimary,
+                ),
+              ),
+            );
+          },
+          itemBuilder: (context, offer, index) {
+            return _buildAnalyticsCard(offer);
+          },
+          noItemsFoundIndicatorBuilder: (context) {
+            return SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Center(
+                child: UIComponent.noDataWidgetWithInfo(
+                  title: "No Analytics Data",
+                  info: "No vendor offer analytics data available",
+                  context: context,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
 
-    final offers = _pagingController.itemList!;
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        child: DataTable(
-          headingRowColor: MaterialStateProperty.all(
-            AppColors.colorPrimary.withOpacity(0.1),
+  Widget _buildAnalyticsCard(VendorOfferAnalyticsOffer offer) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white.adaptiveColor(
+          context,
+          lightModeColor: AppColors.white,
+          darkModeColor: AppColors.black2E,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          columnSpacing: 20,
-          dataRowMinHeight: 60,
-          dataRowMaxHeight: 100,
-          columns: const [
-            DataColumn(label: Text('COMPANY NAME')),
-            DataColumn(label: Text('OFFER TITLE')),
-            DataColumn(label: Text('OFFER CATEGORY\n(VENDOR CATEGORY)')),
-            DataColumn(label: Text('PRICE')),
-            DataColumn(label: Text('PROPERTY WITH\nOFFERS')),
-            DataColumn(label: Text('OFFER REQUEST\n(FINANCE)')),
-            DataColumn(label: Text('OFFER VIEW')),
-            DataColumn(label: Text('OFFER UNIQUE\nVIEW')),
-          ],
-          rows: offers.map((offer) {
-            return DataRow(
-              cells: [
-                DataCell(
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (offer.companyLogo != null && offer.companyLogo!.isNotEmpty)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: CachedNetworkImage(
-                            imageUrl: offer.companyLogo ?? "",
-                            width: 32,
-                            height: 32,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const SizedBox(
-                              width: 32,
-                              height: 32,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                color: AppColors.colorSecondary,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(Icons.business, size: 20),
-                            ),
-                          ),
-                        )
-                      else
-                        Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: AppColors.colorSecondary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.business, size: 20),
-                        ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          offer.companyName ?? "",
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Company Name with Logo
+            Row(
+              children: [
+                if (offer.companyLogo != null && offer.companyLogo!.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      imageUrl: offer.companyLogo ?? "",
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       ),
-                    ],
+                      errorWidget: (context, url, error) => Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.colorSecondary,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.business, size: 24),
+                      ),
+                    ),
+                  )
+                else
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.colorSecondary,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.business, size: 24),
                   ),
-                ),
-                DataCell(
-                  Text(
-                    offer.offerTitle ?? "",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    offer.vendorCategory ?? "",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    "${offer.price?.amount ?? ""} ${offer.price?.currencyCode ?? ""}",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    "${offer.analyticsData?.propertyOfferCount ?? 0}",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ),
-                DataCell(
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
+                12.horizontalSpace,
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Cash: ${offer.vendorCashCount ?? 0}",
-                        style: Theme.of(context).textTheme.bodySmall,
+                        offer.companyName ?? "",
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: Theme.of(context).highlightColor,
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        "Bank: ${offer.vendorFinanceCount ?? 0}",
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
+                      if (offer.vendorCategory != null && offer.vendorCategory!.isNotEmpty) ...[
+                        4.verticalSpace,
+                        Text(
+                          offer.vendorCategory ?? "",
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColors.black14.adaptiveColor(
+                                  context,
+                                  lightModeColor: AppColors.black14,
+                                  darkModeColor: AppColors.greyE9,
+                                ),
+                              ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                DataCell(
-                  Text(
-                    "${offer.offerAppliedCount ?? 0}",
-                    style: Theme.of(context).textTheme.bodyMedium,
+              ],
+            ),
+            16.verticalSpace,
+            Divider(
+              height: 1,
+              color: AppColors.greyE8.adaptiveColor(
+                context,
+                lightModeColor: AppColors.greyE8,
+                darkModeColor: AppColors.grey50,
+              ),
+            ),
+            16.verticalSpace,
+            // Offer Title
+            Text(
+              "Offer Title",
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AppColors.black3D.adaptiveColor(
+                      context,
+                      lightModeColor: AppColors.black3D,
+                      darkModeColor: AppColors.greyE9,
+                    ),
+                    fontWeight: FontWeight.w400,
+                  ),
+            ),
+            4.verticalSpace,
+            Text(
+              offer.offerTitle ?? "",
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).highlightColor,
+                  ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            16.verticalSpace,
+            // Metrics Row
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMetricItem(
+                    label: "Price",
+                    value: "${offer.price?.amount ?? ""} ${offer.price?.currencyCode ?? ""}",
+                    isPrimary: true,
                   ),
                 ),
-                DataCell(
-                  Text(
-                    "${offer.offerAppliedCount ?? 0}",
-                    style: Theme.of(context).textTheme.bodyMedium,
+                12.horizontalSpace,
+                Expanded(
+                  child: _buildMetricItem(
+                    label: "Property with Offers",
+                    value: "${offer.analyticsData?.propertyOfferCount ?? 0}",
+                    isPrimary: true,
                   ),
                 ),
               ],
-            );
-          }).toList(),
+            ),
+            16.verticalSpace,
+            // Finance Request Metrics
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMetricItem(
+                    label: "Cash",
+                    value: "${offer.vendorCashCount ?? 0}",
+                    isPrimary: true,
+                  ),
+                ),
+                12.horizontalSpace,
+                Expanded(
+                  child: _buildMetricItem(
+                    label: "Bank",
+                    value: "${offer.vendorFinanceCount ?? 0}",
+                    isPrimary: true,
+                  ),
+                ),
+              ],
+            ),
+            16.verticalSpace,
+            // View Metrics
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMetricItem(
+                    label: "Offer View",
+                    value: "${offer.offerAppliedCount ?? 0}",
+                    isPrimary: true,
+                  ),
+                ),
+                12.horizontalSpace,
+                Expanded(
+                  child: _buildMetricItem(
+                    label: "Unique View",
+                    value: "${offer.offerAppliedCount ?? 0}",
+                    isPrimary: true,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMetricItem({
+    required String label,
+    required String value,
+    bool isPrimary = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isPrimary
+            ? AppColors.colorPrimary.withOpacity(0.05)
+            : AppColors.greyF8.adaptiveColor(
+                context,
+                lightModeColor: AppColors.greyF8,
+                darkModeColor: AppColors.black3D.withOpacity(0.3),
+              ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.black3D.adaptiveColor(
+                    context,
+                    lightModeColor: AppColors.black3D,
+                    darkModeColor: AppColors.greyE9,
+                  ),
+                  fontWeight: FontWeight.w400,
+                ),
+          ),
+          4.verticalSpace,
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: isPrimary
+                      ? AppColors.colorPrimary
+                      : Theme.of(context).highlightColor,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
       ),
     );
   }
@@ -238,18 +386,19 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
               darkModeColor: AppColors.black2E,
             ),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            onSelected: (value) {
-              if (value != itemsPerPage) {
-                setState(() {
-                  itemsPerPage = value;
-                });
+            onSelected: (value) async {
+              if (value != cubit.itemsPerPage) {
                 cubit.updateItemsPerPage(value);
                 _pagingController.refresh();
+                // Manually trigger API call with new itemsPerPage
+                if (vendorId != null && vendorId!.isNotEmpty) {
+                  await cubit.getVendorOfferAnalytics(page: 1, vendorId: vendorId!);
+                }
               }
             },
             itemBuilder: (context) {
               return itemsPerPageOptions.map((value) {
-                final isSelected = value == itemsPerPage;
+                final isSelected = value == cubit.itemsPerPage;
 
                 return PopupMenuItem<int>(
                   value: value,
@@ -287,7 +436,7 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "$itemsPerPage",
+                    "${cubit.itemsPerPage}",
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: selectedColor,
                           fontWeight: FontWeight.w600,
