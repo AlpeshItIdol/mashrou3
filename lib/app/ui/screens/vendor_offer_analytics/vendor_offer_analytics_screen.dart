@@ -82,16 +82,21 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
     return RefreshIndicator(
       onRefresh: () async {
         if (vendorId != null && vendorId!.isNotEmpty) {
+          // Clear loaded pages to allow refresh
+          _loadedPages.clear();
+          // Trigger paging controller refresh - this will reset and request page 1
           _pagingController.refresh();
+          // Wait a moment for the refresh to be processed
+          await Future.delayed(const Duration(milliseconds: 100));
         }
       },
       child: PagedListView<int, VendorOfferAnalyticsOffer>.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        physics: const AlwaysScrollableScrollPhysics(),
         separatorBuilder: (BuildContext context, int index) {
           return 12.verticalSpace;
         },
         pagingController: _pagingController,
-        shrinkWrap: true,
         builderDelegate: PagedChildBuilderDelegate<VendorOfferAnalyticsOffer>(
           firstPageProgressIndicatorBuilder: (context) {
             return SizedBox(
