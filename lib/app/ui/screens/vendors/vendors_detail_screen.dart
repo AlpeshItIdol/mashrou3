@@ -371,6 +371,13 @@ class _VendorsDetailScreenState extends State<VendorsDetailScreen> {
   }
 
   Widget _buildContactUs(BuildContext context) {
+    final socialLinks = widget.items.socialMediaLinks;
+    final hasFacebook = socialLinks?.facebook != null && socialLinks!.facebook!.isNotEmpty;
+    final hasInstagram = socialLinks?.instagram != null && socialLinks!.instagram!.isNotEmpty;
+    final hasTwitter = socialLinks?.twitter != null && socialLinks!.twitter!.isNotEmpty;
+    final hasLinkedIn = socialLinks?.linkedIn != null && socialLinks!.linkedIn.toString().isNotEmpty;
+    final hasWebsite = socialLinks?.website != null && socialLinks!.website!.isNotEmpty;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -386,31 +393,39 @@ class _VendorsDetailScreenState extends State<VendorsDetailScreen> {
           children: [
             _buildSocialLink(
               onTap: () {
-                urlLaunch(widget.items.socialMediaLinks!.facebook!);
+                if (hasFacebook && socialLinks?.facebook != null) {
+                  urlLaunch(socialLinks!.facebook!);
+                }
                 },
                 customUI: SVGAssets.facebookVector.toSvg(context: context, height: 32, width: 32)
-            ),
-            12.horizontalSpace,
+            ).showIf(hasFacebook),
+            12.horizontalSpace.showIf(hasFacebook),
             _buildSocialLink(
                 onTap: () {
-                  urlLaunch(widget.items.socialMediaLinks!.instagram!);
+                  if (hasInstagram && socialLinks?.instagram != null) {
+                    urlLaunch(socialLinks!.instagram!);
+                  }
                 },
                 customUI: SVGAssets.instagramVector.toSvg(context: context, height: 32, width: 32),
-            ),
-            12.horizontalSpace,
+            ).showIf(hasInstagram),
+            12.horizontalSpace.showIf(hasInstagram),
             _buildSocialLink(
               onTap: () {
-                urlLaunch(widget.items.socialMediaLinks!.twitter!);
+                if (hasTwitter && socialLinks?.twitter != null) {
+                  urlLaunch(socialLinks!.twitter!);
+                }
               },
               customUI:SVGAssets.twitterVector.toSvg(context: context, height: 32, width: 32),
-            ),
-            12.horizontalSpace,
+            ).showIf(hasTwitter),
+            12.horizontalSpace.showIf(hasTwitter),
             _buildSocialLink(
               onTap: () {
-                urlLaunch(widget.items.socialMediaLinks!.linkedIn);
+                if (hasLinkedIn && socialLinks?.linkedIn != null) {
+                  urlLaunch(socialLinks!.linkedIn.toString());
+                }
               },
               customUI: SVGAssets.linkedinIcon.toSvg(context: context, height: 32, width: 32),
-            ),
+            ).showIf(hasLinkedIn),
             // 12.horizontalSpace,
             // _buildSocialLink(
             //   onTap: () {
@@ -419,13 +434,15 @@ class _VendorsDetailScreenState extends State<VendorsDetailScreen> {
             //   // customUI: Icon(Icons.document_scanner_rounded)
             //   customUI: SVGAssets.catlogIcon.toSvg(context: context, height: 32, width: 32),
             // ),
-            12.horizontalSpace,
+            12.horizontalSpace.showIf(hasLinkedIn),
             _buildSocialLink(
               onTap: () {
-                urlLaunch(widget.items.socialMediaLinks!.website!);
+                if (hasWebsite && socialLinks?.website != null) {
+                  urlLaunch(socialLinks!.website!);
+                }
               },
               customUI: SVGAssets.websiteVector.toSvg(context: context, height: 32, width: 32),
-            ),
+            ).showIf(hasWebsite),
 
           ],
         ),

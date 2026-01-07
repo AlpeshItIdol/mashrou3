@@ -1648,7 +1648,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
                                               .withOpacity(0.3)
                                               : Theme.of(context).primaryColor,
                                         ),
-                                      ).hideIf(cubit.myPropertyDetails.isSoldOut ?? false),
+                                      ).hideIf((cubit.myPropertyDetails.isSoldOut ?? false) || cubit.isVendor),
                                     ),
                                   ],
                                 )

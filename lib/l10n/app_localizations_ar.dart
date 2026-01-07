@@ -374,6 +374,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get financeRequest => 'طلب التمويل';
 
   @override
+  String get lblVendorOfferAnalytics => 'تحليلات عروض البائع';
+
+  @override
   String get textForRealEstate => 'لعقارات';
 
   @override

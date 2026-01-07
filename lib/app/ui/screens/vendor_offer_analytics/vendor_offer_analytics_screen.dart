@@ -23,6 +23,8 @@ class VendorOfferAnalyticsScreen extends StatefulWidget {
 class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen> with AppBarMixin {
   final PagingController<int, VendorOfferAnalyticsOffer> _pagingController = PagingController(firstPageKey: 1);
   String? vendorId;
+  bool _isListenerSetup = false;
+  final Set<int> _loadedPages = <int>{};
 
   @override
   void initState() {
@@ -32,17 +34,20 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
 
   Future<void> _initializeData() async {
     vendorId = await GetIt.I<AppPreferences>().getUserID();
-    if (mounted && vendorId != null && vendorId!.isNotEmpty) {
+    if (mounted && vendorId != null && vendorId!.isNotEmpty && !_isListenerSetup) {
+      _isListenerSetup = true;
+      // Set up listener only after vendorId is available
       final cubit = context.read<VendorOfferAnalyticsCubit>();
       _pagingController.addPageRequestListener((pageKey) {
-        cubit.getVendorOfferAnalytics(page: pageKey, vendorId: vendorId!);
+        // Prevent duplicate API calls for the same page
+        if (!_loadedPages.contains(pageKey) && vendorId != null && vendorId!.isNotEmpty) {
+          // Mark page as loading immediately to prevent duplicate calls
+          _loadedPages.add(pageKey);
+          cubit.getVendorOfferAnalytics(page: pageKey, vendorId: vendorId!);
+        }
       });
-      // Trigger the first page request immediately
-      if (mounted) {
-        setState(() {});
-        // Directly trigger the first page request
-        cubit.getVendorOfferAnalytics(page: 1, vendorId: vendorId!);
-      }
+      setState(() {});
+      // PagedListView will automatically request the first page when it renders
     }
   }
 
@@ -55,7 +60,7 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
           appBar: buildAppBar(
             context: context,
             requireLeading: true,
-            title: "Vendor Offer Analytics",
+            title: appStrings(context).lblVendorOfferAnalytics,
           ),
           body: vendorId == null || vendorId!.isEmpty
               ? const Center(child: CircularProgressIndicator())
@@ -455,6 +460,7 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
 
   Future<void> _buildBlocListener(BuildContext context, VendorOfferAnalyticsState state) async {
     if (state is VendorOfferAnalyticsSuccess) {
+      // Append the data - page is already marked as loaded in the listener
       if (state.isLastPage) {
         _pagingController.appendLastPage(state.offers);
       } else {
@@ -463,6 +469,10 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
     } else if (state is NoVendorOfferAnalyticsFound) {
       _pagingController.appendLastPage([]);
     } else if (state is VendorOfferAnalyticsError) {
+      // Remove the page from loaded pages on error so it can be retried
+      // Note: We don't know which page failed, so we clear all
+      // In a more sophisticated implementation, we could track which page is loading
+      _loadedPages.clear();
       _pagingController.error = state.errorMessage;
       if (mounted) {
         Utils.showErrorMessage(
@@ -473,6 +483,7 @@ class _VendorOfferAnalyticsScreenState extends State<VendorOfferAnalyticsScreen>
         );
       }
     } else if (state is VendorOfferAnalyticsRefresh) {
+      _loadedPages.clear();
       _pagingController.refresh();
     }
   }

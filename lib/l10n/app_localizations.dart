@@ -812,6 +812,12 @@ abstract class AppLocalizations {
   /// **'Finance Request'**
   String get financeRequest;
 
+  /// No description provided for @lblVendorOfferAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor Offer Analytics'**
+  String get lblVendorOfferAnalytics;
+
   /// No description provided for @textForRealEstate.
   ///
   /// In en, this message translates to:

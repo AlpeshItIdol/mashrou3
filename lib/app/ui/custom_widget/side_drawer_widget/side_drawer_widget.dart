@@ -186,21 +186,11 @@ class _SideDrawerWidgetState extends State<SideDrawerWidget> {
                                     icon: Utils.isDark(context)
                                         ? SVGAssets.docIcon
                                         : SVGAssets.docIcon,
-                                    title: "Vendor Offer Analytics",
+                                    title: appStrings(context).lblVendorOfferAnalytics,
                                     onTap: () => _navigateToRoute(
                                         routeName:
                                             Routes.kVendorOfferAnalytics),
                                   ),
-                                  if (shouldHideRequestedAndVisitedProperties)
-                                    DrawerOption(
-                                      icon: Utils.isDark(context)
-                                          ? SVGAssets.calenderWhite
-                                          : SVGAssets.calenderPrimaryIcon,
-                                      title:
-                                          appStrings(context).lblVisitRequests,
-                                      onTap: () => _navigateToRoute(
-                                          routeName: Routes.kVisitRequestsList),
-                                    ),
                                   DrawerOption(
                                     icon: Utils.isDark(context)
                                         ? SVGAssets.scrollWhiteIcon

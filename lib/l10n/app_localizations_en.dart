@@ -374,6 +374,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get financeRequest => 'Finance Request';
 
   @override
+  String get lblVendorOfferAnalytics => 'Vendor Offer Analytics';
+
+  @override
   String get textForRealEstate => 'For Real Estate';
 
   @override
