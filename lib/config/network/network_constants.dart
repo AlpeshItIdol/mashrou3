@@ -3,13 +3,13 @@ abstract class NetworkConstants {
   // static const kServerURL = "http://172.16.1.237:8000/api/";
 
   /// Staging
-  // static const kServerURL = "https://devapigateway.devhostserver.com/api/";
+  static const kServerURL = "https://devapigateway.devhostserver.com/api/";
 
   /// Staging 2
   // static const kServerURL = "https://apigateway.devhostserver.com/api/";
 
   ///Live
-  static const kServerURL = "https://api.mashrou3.com/api/";
+  // static const kServerURL = "https://api.mashrou3.com/api/";
 
   // static const kServerURL = "https://devapigateway.devhostserver.com/api/";
 
@@ -276,6 +276,9 @@ abstract class NetworkAPIs {
 // User Vendor List
   static const userVenderListCategories = "vendor/list";
   static const userVenderList = "users/vendor-list-sequence";
+
+  // Vendor Offer Analytics
+  static const kVendorOfferAnalytics = "google-analytics/super-admin";
 
 
 }

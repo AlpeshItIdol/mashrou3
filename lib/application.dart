@@ -28,6 +28,7 @@ import 'package:mashrou3/app/ui/screens/dashboard/sub_screens/my_offers_list/cub
 import 'package:mashrou3/app/ui/screens/filter/cubit/filter_cubit.dart';
 import 'package:mashrou3/app/ui/screens/finance_request/cubit/finance_request_cubit.dart';
 import 'package:mashrou3/app/ui/screens/property_details/cubit/property_details_cubit.dart';
+import 'package:mashrou3/app/ui/screens/vendor_offer_analytics/cubit/vendor_offer_analytics_cubit.dart';
 import 'package:mashrou3/app/ui/screens/property_details/sub_screens/add_my_offers/cubit/add_my_offers_cubit.dart';
 import 'package:mashrou3/app/ui/screens/property_details/sub_screens/bank_details/cubit/bank_details_cubit.dart';
 import 'package:mashrou3/app/ui/screens/property_details/sub_screens/vendor_finance/vendor_categories/cubit/vendor_categories_cubit.dart';
@@ -291,6 +292,9 @@ class _ApplicationState extends State<Application> {
                       BlocProvider(
                           create: (BuildContext context) => FinanceRequestCubit(
                               repository: GetIt.I<PropertyRepository>())),
+                      BlocProvider(
+                          create: (BuildContext context) => VendorOfferAnalyticsCubit(
+                              repository: GetIt.I<CommonApiRepository>())),
                       BlocProvider(
                           create: (BuildContext context) => InReviewCubit(
                               propertyRepository:
