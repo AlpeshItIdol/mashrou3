@@ -725,7 +725,7 @@ class _AddEditPropertyScreen2State extends State<AddEditPropertyScreen2> with Ap
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Select Address Location",
+                    "Select Area Name",
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.black3D.forLightMode(context)),

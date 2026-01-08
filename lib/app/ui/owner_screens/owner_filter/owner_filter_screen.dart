@@ -1597,7 +1597,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomTextLabel(text: "Address Location"),
+        CustomTextLabel(text: "Area Name"),
         5.verticalSpace,
         UIComponent.customInkWellWidget(
           onTap: () async {
@@ -1989,7 +1989,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Select Address Location",
+                  Text("Select Area Name",
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.black3D.forLightMode(context))),
