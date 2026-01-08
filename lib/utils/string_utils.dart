@@ -25,13 +25,11 @@ class StringUtils {
         lastDotIndex == -1 ||
         lastUnderscoreIndex < lastSlashIndex ||
         lastDotIndex < lastUnderscoreIndex) {
-      return "";
       throw ArgumentError("Invalid URL format");
     }
 
     // Extract the file name and extension
     final fileName = url.substring(lastSlashIndex + 1, lastUnderscoreIndex);
-    final extension = url.substring(lastDotIndex);
     String decodedString = Uri.decodeComponent(fileName);
     // Return the full name with extension
     return decodedString;

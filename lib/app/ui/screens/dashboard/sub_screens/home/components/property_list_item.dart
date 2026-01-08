@@ -35,7 +35,7 @@ class PropertyListItem extends StatefulWidget {
   final bool requiredDelete;
   final bool isLocked;
   final bool isLockedByMe;
-  final PropertyOfferData? offerData;
+  final dynamic offerData;
   final String? createdAt;
   final String? reqStatus;
   final String? reqStatusText;

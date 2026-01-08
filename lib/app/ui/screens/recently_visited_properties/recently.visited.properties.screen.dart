@@ -667,9 +667,6 @@ class _RecentlyVisitedPropertiesScreenState
             offerData: item.offerData,
             requiredCheckBox: widget.isPropertiesWithOffers ? cubit.isBtnSelectPropertiesTapped : false,
             isSelected: isSelected,
-            isLocked: item.isLocked,
-            isLockedByMe: item.isLockedByMe,
-            offerData: item.offerData,
             onCheckBoxToggle: (isSelectedForCheckbox) async {
               cubit.togglePropertySelection(item, isSelectedForCheckbox, allProperties);
             },

@@ -228,8 +228,8 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
               });
             },
             isFavorite: item.favorite ?? cubit.isFavorite,
-            isLocked: item.isLocked,
-            isLockedByMe: item.isLockedByMe,
+            isLocked: item.isLocked ?? false,
+            isLockedByMe: item.isLockedByMe ?? false,
             offerData: item.offerData,
             onFavouriteToggle: (isFavourite) async {
               favScreenPagingController.refresh();

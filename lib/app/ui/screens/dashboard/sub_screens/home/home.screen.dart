@@ -423,9 +423,6 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
             isFavorite: item.favorite ?? cubit.isFavorite,
             isSelected: isSelected,
             isBankProperty: item.createdByBank ?? false,
-            // isLocked: item.isLocked,
-            // isLockedByMe: item.isLockedByMe,
-            offerData: item.offerData,
             onFavouriteToggle: (isFavourite) async {
               if (isFetchingData) return;
               OverlayLoadingProgress.start(context);

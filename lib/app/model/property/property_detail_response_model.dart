@@ -91,11 +91,8 @@ class PropertyDetailData {
   int? iV;
   String? propertyIdForPropertiesWithOffers;
   CreatedByData? createdByData;
-  bool? isLocked;
   String? lockExpiresAt;
   String? lockOwnerId;
-  bool? isLockedByMe;
-  PropertyOfferData? offerData;
 
   PropertyDetailData(
       {this.sId,
@@ -156,11 +153,8 @@ class PropertyDetailData {
       this.offerData,
       this.propertyIdForPropertiesWithOffers,
       this.createdByData,
-      this.isLocked,
       this.lockExpiresAt,
-      this.lockOwnerId,
-      this.isLockedByMe,
-      this.offerData});
+      this.lockOwnerId});
 
   PropertyDetailData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];

@@ -8,7 +8,6 @@ import 'package:mashrou3/utils/extensions.dart';
 import 'package:mashrou3/utils/ui_components.dart';
 import 'package:mashrou3/utils/string_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:mashrou3/app/model/property/property_list_response_model.dart';
 
 class RecentlyVisitedPropertiesListItem extends StatefulWidget {
   final String propertyName;
@@ -25,7 +24,7 @@ class RecentlyVisitedPropertiesListItem extends StatefulWidget {
   final bool isBankProperty;
   final bool isLocked;
   final bool isLockedByMe;
-  final PropertyOfferData? offerData;
+  final dynamic offerData;
   final bool requiredFavorite;
   final bool requiredDelete;
   final bool requiredCheckBox;
