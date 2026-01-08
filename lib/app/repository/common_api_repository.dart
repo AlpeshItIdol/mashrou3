@@ -296,7 +296,7 @@ class CommonApiRepositoryImpl extends CommonApiRepository {
   Future<ResponseBaseModel> getCurrencyList() async {
     if (await Utils.isConnected()) {
       final response = await GetIt.I<DioProvider>()
-          .getBaseAPI(url: NetworkAPIs.kCurrencyList);
+          .getBaseAPIWithToken(url: NetworkAPIs.kCurrencyList);
       if (response.data != null) {
         if (response.statusCode == 200 || response.statusCode == 201) {
           CurrencyListResponseModel responseModel =
