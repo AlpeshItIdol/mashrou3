@@ -1118,6 +1118,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectRadius => 'Select Radius';
 
   @override
+  String get addressLocation => 'Address Location';
+
+  @override
+  String get selectAddressLocation => 'Select Address Location';
+
+  @override
   String get invalidValue => 'Invalid value';
 
   @override

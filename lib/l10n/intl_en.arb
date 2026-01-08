@@ -390,6 +390,8 @@
   "price": "Price",
   "area": "Area",
   "selectRadius": "Select Radius",
+  "addressLocation": "Address Location",
+  "selectAddressLocation": "Select Address Location",
   "invalidValue": "Invalid value",
   "fromLessThanOrEqualToTo": "From value must be less than or equal to To value.",
   "toGreaterThanOrEqualToFrom": "To value must be greater than or equal to From value.",

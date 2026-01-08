@@ -1953,7 +1953,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomTextLabel(text: "Address Location"),
+        CustomTextLabel(text: appStrings(context).addressLocation),
         5.verticalSpace,
         UIComponent.customInkWellWidget(
           onTap: () async {
@@ -2020,7 +2020,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Select Address Location",
+                  Text(appStrings(context).selectAddressLocation,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.black3D.forLightMode(context))),
@@ -2135,7 +2135,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomTextLabel(text: "Category"),
+            CustomTextLabel(text: appStrings(context).propertyCategory),
             5.verticalSpace,
             UIComponent.customInkWellWidget(
           onTap: () async {
@@ -2217,7 +2217,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomTextLabel(text: "Sub Category"),
+            CustomTextLabel(text: appStrings(context).propertySubCategory),
             6.verticalSpace,
             BlocListener<FilterCubit, FilterState>(
               listener: (context, state) {},
@@ -2350,7 +2350,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Select Property Category",
+                  Text(appStrings(context).selectPropertyCategory,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.black3D.forLightMode(context))),

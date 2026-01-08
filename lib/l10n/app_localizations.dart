@@ -2240,6 +2240,18 @@ abstract class AppLocalizations {
   /// **'Select Radius'**
   String get selectRadius;
 
+  /// No description provided for @addressLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Address Location'**
+  String get addressLocation;
+
+  /// No description provided for @selectAddressLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Address Location'**
+  String get selectAddressLocation;
+
   /// No description provided for @invalidValue.
   ///
   /// In en, this message translates to:

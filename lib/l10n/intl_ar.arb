@@ -377,6 +377,8 @@
     "price": "السعر",
     "area": "المساحة",
     "selectRadius": "اختر نصف القطر",
+    "addressLocation": "موقع العنوان",
+    "selectAddressLocation": "اختر موقع العنوان",
     "invalidValue": "قيمة غير صالحة",
     "fromLessThanOrEqualToTo": "يجب أن تكون القيمة \"من\" أقل من أو تساوي القيمة \"إلى\".",
     "toGreaterThanOrEqualToFrom": "يجب أن تكون القيمة \"إلى\" أكبر من أو تساوي القيمة \"من\".",
