@@ -1111,10 +1111,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get selectRadius => 'اختر نصف القطر';
 
   @override
-  String get addressLocation => 'موقع العنوان';
+  String get addressLocation => 'اسم المنطقة';
 
   @override
-  String get selectAddressLocation => 'اختر موقع العنوان';
+  String get selectAddressLocation => 'اختر اسم المنطقة';
 
   @override
   String get invalidValue => 'قيمة غير صالحة';

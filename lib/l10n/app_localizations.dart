@@ -2243,13 +2243,13 @@ abstract class AppLocalizations {
   /// No description provided for @addressLocation.
   ///
   /// In en, this message translates to:
-  /// **'Address Location'**
+  /// **'Area Name'**
   String get addressLocation;
 
   /// No description provided for @selectAddressLocation.
   ///
   /// In en, this message translates to:
-  /// **'Select Address Location'**
+  /// **'Select Area Name'**
   String get selectAddressLocation;
 
   /// No description provided for @invalidValue.

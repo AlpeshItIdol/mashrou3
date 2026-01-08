@@ -11,7 +11,6 @@ import 'package:mashrou3/utils/extensions.dart';
 import 'package:mashrou3/utils/ui_components.dart';
 import 'package:mashrou3/utils/string_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:mashrou3/app/model/property/property_list_response_model.dart';
 
 import '../cubit/home_cubit.dart';
 
@@ -146,7 +145,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
       elevation: 2,
       color: AppColors.white.adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
       child: UIComponent.customInkWellWidget(
-        onTap: (widget.isLocked == true && widget.isLockedByMe == true) ? null : widget.onPropertyTap,
+        onTap: widget.onPropertyTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
