@@ -41,14 +41,13 @@ class StringUtils {
   /// Returns "Lifetime" if permanent, or "X days left" / "X hours left" if timed
   static String? getLockLabelText(bool? isLocked, dynamic offerData) {
     if (isLocked != true) return null;
-    
+
     // If offerData is null, cannot determine lock type
     if (offerData == null) return null;
-    
+
     // Extract offerType and endDate from offerData
     String? offerType;
     String? endDate;
-    
     // Handle PropertyOfferData object or Map
     if (offerData is Map<String, dynamic>) {
       offerType = offerData['offerType'];
@@ -64,12 +63,12 @@ class StringUtils {
         return null;
       }
     }
-    
+
     // If offerType is "lifetime" or endDate is null/empty, it's a permanent lock
     if (offerType == "lifetime" || endDate == null || endDate.isEmpty) {
       return "Lifetime Booked";
     }
-    
+
     // For timed offers, calculate remaining time (endDate is guaranteed to be non-null here due to check above)
     if (offerType == "timed") {
       try {
@@ -77,12 +76,12 @@ class StringUtils {
         final expiresDate = DateTime.parse(endDate);
         final now = DateTime.now();
         final difference = expiresDate.difference(now);
-        
+
         if (difference.isNegative) {
           // Lock has expired
           return null;
         }
-        
+
         final daysLeft = difference.inDays;
         if (daysLeft == 0) {
           final hoursLeft = difference.inHours;
@@ -91,14 +90,14 @@ class StringUtils {
           }
           return "Booked — free in $hoursLeft ${hoursLeft == 1 ? 'hour' : 'hours'}";
         }
-        
+
         return "Booked — free in $daysLeft ${daysLeft == 1 ? 'day' : 'days'}";
       } catch (e) {
         // If parsing fails, treat as permanent
         return "Lifetime Booked";
       }
     }
-    
+
     return null;
   }
 

@@ -1,6 +1,7 @@
 // import '../offers/my_offers_list_response_model.dart';
 
 import '../../ui/screens/dashboard/sub_screens/add_offer/model/add_vendor_response_model.dart';
+import 'property_list_response_model.dart';
 
 class PropertyDetailsResponseModel {
   int? statusCode;
@@ -84,6 +85,9 @@ class PropertyDetailData {
   bool? favorite;
   bool? bankOffer;
   bool? vendorOffer;
+  bool? isLocked;
+  bool? isLockedByMe;
+  PropertyOfferData? offerData;
   int? iV;
   String? propertyIdForPropertiesWithOffers;
   CreatedByData? createdByData;
@@ -147,6 +151,9 @@ class PropertyDetailData {
       this.favorite,
       this.bankOffer,
       this.vendorOffer,
+      this.isLocked,
+      this.isLockedByMe,
+      this.offerData,
       this.propertyIdForPropertiesWithOffers,
       this.createdByData,
       this.isLocked,
@@ -248,6 +255,11 @@ class PropertyDetailData {
     favorite = json['favorite'];
     bankOffer = json['bankOffer'];
     vendorOffer = json['vendorOffer'];
+    isLocked = json['isLocked'];
+    isLockedByMe = json['isLockedByMe'];
+    offerData = json['offerData'] != null
+        ? PropertyOfferData.fromJson(json['offerData'])
+        : null;
     createdByData = json['createdByData'] != null
         ? CreatedByData.fromJson(json['createdByData'])
         : null;
@@ -353,6 +365,11 @@ class PropertyDetailData {
     data['favorite'] = favorite;
     data['bankOffer'] = bankOffer;
     data['vendorOffer'] = vendorOffer;
+    data['isLocked'] = isLocked;
+    data['isLockedByMe'] = isLockedByMe;
+    if (offerData != null) {
+      data['offerData'] = offerData!.toJson();
+    }
     if (createdByData != null) {
       data['createdByData'] = createdByData!.toJson();
     }

@@ -8,6 +8,7 @@ import 'package:mashrou3/utils/extensions.dart';
 import 'package:mashrou3/utils/ui_components.dart';
 import 'package:mashrou3/utils/string_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:mashrou3/app/model/property/property_list_response_model.dart';
 
 class RecentlyVisitedPropertiesListItem extends StatefulWidget {
   final String propertyName;
@@ -22,13 +23,13 @@ class RecentlyVisitedPropertiesListItem extends StatefulWidget {
   final bool isSoldOut;
   final bool isVisitor;
   final bool isBankProperty;
+  final bool isLocked;
+  final bool isLockedByMe;
+  final PropertyOfferData? offerData;
   final bool requiredFavorite;
   final bool requiredDelete;
   final bool requiredCheckBox;
   final bool isSelected;
-  final bool? isLocked;
-  final bool? isLockedByMe;
-  final dynamic offerData;
   final VoidCallback onPropertyTap;
   final VoidCallback? onDeleteTap;
   final Future<void> Function(bool isAdd)? onFavouriteToggle;
@@ -48,13 +49,13 @@ class RecentlyVisitedPropertiesListItem extends StatefulWidget {
     required this.isVisitor,
     this.isBankProperty = false,
     this.isFavorite = false,
+    this.isLocked = false,
+    this.isLockedByMe = false,
+    this.offerData,
     this.requiredDelete = false,
     this.requiredFavorite = true,
     this.requiredCheckBox = false,
     this.isSelected = false,
-    this.isLocked,
-    this.isLockedByMe,
-    this.offerData,
     required this.onPropertyTap,
     this.onDeleteTap,
     this.onFavouriteToggle,
@@ -211,7 +212,7 @@ class _RecentlyVisitedPropertiesListItemState
                     builder: (context) {
                       final lockLabelText = StringUtils.getLockLabelText(widget.isLocked, widget.offerData);
                       final lockTooltipText = StringUtils.getLockTooltipText(widget.isLockedByMe);
-                      
+
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -231,21 +232,17 @@ class _RecentlyVisitedPropertiesListItemState
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Padding(
-                                    padding: const EdgeInsetsDirectional.symmetric(
-                                        vertical: 12.0, horizontal: 12),
+                                    padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           lockLabelText,
                                           textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall
-                                              ?.copyWith(
-                                            fontWeight: FontWeight.w500,
-                                            color: AppColors.white,
-                                          ),
+                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                                fontWeight: FontWeight.w500,
+                                                color: AppColors.white,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -262,28 +259,23 @@ class _RecentlyVisitedPropertiesListItemState
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Padding(
-                                padding: const EdgeInsetsDirectional.symmetric(
-                                    vertical: 12.0, horizontal: 12),
+                                padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       appStrings(context).soldOut,
                                       textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall
-                                          ?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.white,
-                                      ),
+                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.white,
+                                          ),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
-                          ).showIf(
-                              widget.isSoldOut == true && widget.isVisitor == true),
+                          ).showIf(widget.isSoldOut == true && widget.isVisitor == true),
                           // Bank Property label
                           Container(
                             decoration: BoxDecoration(
@@ -291,21 +283,17 @@ class _RecentlyVisitedPropertiesListItemState
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Padding(
-                              padding: const EdgeInsetsDirectional.symmetric(
-                                  vertical: 12.0, horizontal: 12),
+                              padding: const EdgeInsetsDirectional.symmetric(vertical: 12.0, horizontal: 12),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     appStrings(context).btnBankProperty,
                                     textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall
-                                        ?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.white,
-                                    ),
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          color: AppColors.white,
+                                        ),
                                   ),
                                 ],
                               ),

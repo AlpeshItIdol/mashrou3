@@ -11,6 +11,7 @@ import 'package:mashrou3/utils/extensions.dart';
 import 'package:mashrou3/utils/ui_components.dart';
 import 'package:mashrou3/utils/string_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:mashrou3/app/model/property/property_list_response_model.dart';
 
 import '../cubit/home_cubit.dart';
 
@@ -32,14 +33,12 @@ class PropertyListItem extends StatefulWidget {
   final bool requiredFavorite;
   final bool requiredCheckBox;
   final bool requiredDelete;
-  // final bool isLocked;
-  // final bool isLockedByMe;
+  final bool isLocked;
+  final bool isLockedByMe;
+  final PropertyOfferData? offerData;
   final String? createdAt;
   final String? reqStatus;
   final String? reqStatusText;
-  final bool? isLocked;
-  final bool? isLockedByMe;
-  final dynamic offerData;
   final VoidCallback onPropertyTap;
   final VoidCallback? onDeleteTap;
   final Future<void> Function(bool isAdd)? onFavouriteToggle;
@@ -60,9 +59,6 @@ class PropertyListItem extends StatefulWidget {
     this.createdAt,
     this.reqStatus,
     this.reqStatusText,
-    // this.isLocked,
-    // this.isLockedByMe,
-    this.offerData,
     this.isFavorite = false,
     this.isSelected = false,
     this.isBankProperty = false,
@@ -72,6 +68,7 @@ class PropertyListItem extends StatefulWidget {
     this.requiredFavorite = true,
     this.isLocked = false,
     this.isLockedByMe = false,
+    this.offerData,
     required this.onPropertyTap,
     this.onDeleteTap,
     this.onFavouriteToggle,
@@ -149,12 +146,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
       elevation: 2,
       color: AppColors.white.adaptiveColor(context, lightModeColor: AppColors.white, darkModeColor: AppColors.black2E),
       child: UIComponent.customInkWellWidget(
-        onTap: (widget.isLocked == true && widget.isLockedByMe == true)
-            ? null
-            : widget.onPropertyTap,
-        // onTap: (widget.isLocked == true && widget.isLockedByMe == true)
-        //             ? null
-        //             : widget.onPropertyTap,
+        onTap: (widget.isLocked == true && widget.isLockedByMe == true) ? null : widget.onPropertyTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -215,8 +207,6 @@ class _PropertyListItemState extends State<PropertyListItem> {
                   builder: (context, state) {
                     final isFullyLocked = widget.isLocked == true && widget.isLockedByMe == true;
 
-                    //   final isFullyLocked = widget.isLocked == true && widget.isLockedByMe == true;
-                    //
                     return PositionedDirectional(
                       top: 12,
                       start: 12,
@@ -247,9 +237,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
                                   padding: const EdgeInsets.all(4),
                                   child: UIComponent.svgIconContainer(
                                       context: context,
-                                      clipPath: _isSelected
-                                          ? SVGAssets.checkboxWhiteWithRightIcon
-                                          : SVGAssets.checkboxWhiteWithoutRightIcon,
+                                      clipPath: _isSelected ? SVGAssets.checkboxWhiteWithRightIcon : SVGAssets.checkboxWhiteWithoutRightIcon,
                                       padding: 12,
                                       backgroundColor: AppColors.colorPrimary,
                                       radius: 80,
