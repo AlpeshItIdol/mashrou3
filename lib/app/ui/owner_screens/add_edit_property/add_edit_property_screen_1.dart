@@ -173,9 +173,14 @@ class _AddEditPropertyScreen1State extends State<AddEditPropertyScreen1> with Ap
               },
               onRightButtonTap: () async {
                 if (!context.mounted) return;
+                final cubit = context.read<AddEditPropertyCubit>();
+                
+                // Remove empty video links before validation and navigation
+                cubit.removeEmptyVideoLinks();
+                
                 if (formKeyStep1.currentState!.validate() &&
-                    context.read<AddEditPropertyCubit>().selectedPropertyCategory.sId != null &&
-                    context.read<AddEditPropertyCubit>().selectedPropertySubCategory.sId != null) {
+                    cubit.selectedPropertyCategory.sId != null &&
+                    cubit.selectedPropertySubCategory.sId != null) {
                   if (!isRedirecting) {
                     isRedirecting = true;
                     Future.delayed(const Duration(milliseconds: 200), () {
@@ -191,7 +196,7 @@ class _AddEditPropertyScreen1State extends State<AddEditPropertyScreen1> with Ap
                 } else {
                   if (!isRedirecting) {
                     isRedirecting = true;
-                    context.read<AddEditPropertyCubit>().validateStep1(context);
+                    cubit.validateStep1(context);
                     isRedirecting = false;
                   }
                 }

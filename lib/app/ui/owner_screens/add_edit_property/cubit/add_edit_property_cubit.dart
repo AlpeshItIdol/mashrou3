@@ -342,6 +342,36 @@ class AddEditPropertyCubit extends Cubit<AddEditPropertyState> {
     }
   }
 
+  /// Remove empty video links (except the first one if it's the only one)
+  void removeEmptyVideoLinks() {
+    if (videoLinksList.length <= 1) {
+      return; // Keep at least one field
+    }
+
+    // First, sync the list with controller values to ensure consistency
+    for (int i = 0; i < videoLinksControllers.length && i < videoLinksList.length; i++) {
+      videoLinksList[i] = videoLinksControllers[i].text;
+    }
+
+    // Iterate backwards to avoid index issues when removing items
+    for (int i = videoLinksList.length - 1; i > 0; i--) {
+      final linkText = videoLinksControllers[i].text.trim();
+      final linkValue = videoLinksList[i].trim();
+      
+      // Remove if both controller text and list value are empty
+      if (linkText.isEmpty && linkValue.isEmpty) {
+        videoLinksControllers[i].dispose();
+        videoLinksControllers.removeAt(i);
+        videoLinksList.removeAt(i);
+      }
+    }
+
+    emit(AddMoreVideoLinks(
+      videoLinks: List.from(videoLinksList),
+      videoLinksCtls: List.from(videoLinksControllers),
+    ));
+  }
+
   void addLocationKeys(String question) {
     locationKeys.add(question);
     locationKeysControllers.add(TextEditingController());
