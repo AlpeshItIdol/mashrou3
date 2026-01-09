@@ -59,6 +59,17 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
   }
 
   void _updateArrowVisibility(ScrollMetrics metrics, {bool forceUpdate = false, bool throttle = false}) {
+    // Check if list is empty first
+    final isEmpty = _pagingController.itemList != null && 
+                    _pagingController.itemList!.isEmpty;
+    if (isEmpty) {
+      if (_showLeftArrow.value || _showRightArrow.value) {
+        _showLeftArrow.value = false;
+        _showRightArrow.value = false;
+      }
+      return;
+    }
+    
     // Throttle updates during active scrolling to prevent excessive updates
     if (throttle && !forceUpdate) {
       final now = DateTime.now();
@@ -836,110 +847,123 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
             child: Stack(
               children: [
                 NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              _scrollMetrics = notification.metrics;
-              // Update on scroll end (always) and during scrolling (throttled)
-              if (notification is ScrollEndNotification) {
-                // Always update when scrolling ends
-                _updateArrowVisibility(notification.metrics, forceUpdate: true);
-              } else if (notification is ScrollUpdateNotification) {
-                // Throttle updates during active scrolling to prevent flickering
-                _updateArrowVisibility(notification.metrics, throttle: true);
-              }
-              return false;
-            },
-            child: PagedListView<int, PropertyData>.separated(
-              padding: EdgeInsets.zero,
-              scrollDirection: Axis.horizontal,
-              physics: const AlwaysScrollableScrollPhysics(),
-              separatorBuilder: (BuildContext context, int index) {
-                return 12.horizontalSpace;
-              },
-              pagingController: _pagingController,
-              builderDelegate: PagedChildBuilderDelegate<PropertyData>(
-              firstPageProgressIndicatorBuilder: (context) {
-                return SizedBox(
-                  width: 400,
-                  child: Padding(
+                  onNotification: (notification) {
+                    _scrollMetrics = notification.metrics;
+                    // Update on scroll end (always) and during scrolling (throttled)
+                    if (notification is ScrollEndNotification) {
+                      // Always update when scrolling ends
+                      _updateArrowVisibility(notification.metrics, forceUpdate: true);
+                    } else if (notification is ScrollUpdateNotification) {
+                      // Throttle updates during active scrolling to prevent flickering
+                      _updateArrowVisibility(notification.metrics, throttle: true);
+                    }
+                    return false;
+                  },
+                  child: PagedListView<int, PropertyData>.separated(
                     padding: EdgeInsets.zero,
-                    child: UIComponent.getSkeletonProperty(isHorizontal: true),
-                  ),
-                );
-              },
-              itemBuilder: (context, item, index) {
-                return SizedBox(
-                  width: 350,
-                  child: PropertyListItem(
-                    propertyName: item.title ?? '',
-                    propertyImg: Utils.getLatestPropertyImage(item.propertyFiles ?? [], item.thumbnail ?? "") ?? "",
-                    propertyImgCount:
-                    (Utils.getAllImageFiles(item.propertyFiles ?? []).length + ((item.thumbnail != null && item.thumbnail!.isNotEmpty) ? 1 : 0))
-                        .toString(),
-                    propertyPrice: item.price?.amount?.toString(),
-                    propertyLocation: '${item.city?.isNotEmpty == true ? item.city : ''}'
-                        '${(item.city?.isNotEmpty == true && item.country?.isNotEmpty == true) ? ', ' : ''}'
-                        '${item.country?.isNotEmpty == true ? item.country : ''}',
-                    propertyArea: Utils.formatArea('${item.area?.amount ?? ''}', item.area?.unit ?? ''),
-                    propertyRating: item.rating.toString(),
-                    isVendor: false,
-                    isVisitor: true,
-                    isSoldOut: item.isSoldOut ?? false,
-                    onPropertyTap: () {
-                      context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
-                        RouteArguments.propertyId: item.sId ?? "0",
-                        RouteArguments.propertyLat: (item.propertyLocation?.latitude ?? 0.00).toString(),
-                        RouteArguments.propertyLng: (item.propertyLocation?.longitude ?? 0.00).toString(),
-                      }).then((value) {
-                        if (value != null && value == true) {
-                          _pagingController.refresh();
-                        }
-                      });
+                    scrollDirection: Axis.horizontal,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    separatorBuilder: (BuildContext context, int index) {
+                      return 12.horizontalSpace;
                     },
-                    requiredFavorite: true,
-                    requiredCheckBox: false,
-                    isFavorite: item.favorite ?? false,
-                    isSelected: false,
-                    isBankProperty: item.createdByBank ?? false,
-                    isLocked: item.isLocked ?? false,
-                    isLockedByMe: item.isLockedByMe ?? false,
-                    offerData: item.offerData,
-                    onFavouriteToggle: (isFavourite) async {
-                      if (isFetchingData) return;
-                      isFetchingData = true;
-                      try {
-                        await cubit.addRemoveFavorite(
-                          propertyId: item.sId ?? "",
-                          isFav: isFavourite,
-                        ).then((value) {
-                          Future.delayed(Duration.zero, () async {
-                            _pagingController.refresh();
-                          });
+                    pagingController: _pagingController,
+                    builderDelegate: PagedChildBuilderDelegate<PropertyData>(
+                      firstPageProgressIndicatorBuilder: (context) {
+                        return SizedBox(
+                          width: 400,
+                          child: Padding(
+                            padding: EdgeInsets.zero,
+                            child: UIComponent.getSkeletonProperty(isHorizontal: true),
+                          ),
+                        );
+                      },
+                      itemBuilder: (context, item, index) {
+                        return SizedBox(
+                          width: 350,
+                          child: PropertyListItem(
+                            propertyName: item.title ?? '',
+                            propertyImg: Utils.getLatestPropertyImage(item.propertyFiles ?? [], item.thumbnail ?? "") ?? "",
+                            propertyImgCount:
+                            (Utils.getAllImageFiles(item.propertyFiles ?? []).length + ((item.thumbnail != null && item.thumbnail!.isNotEmpty) ? 1 : 0))
+                                .toString(),
+                            propertyPrice: item.price?.amount?.toString(),
+                            propertyLocation: '${item.city?.isNotEmpty == true ? item.city : ''}'
+                                '${(item.city?.isNotEmpty == true && item.country?.isNotEmpty == true) ? ', ' : ''}'
+                                '${item.country?.isNotEmpty == true ? item.country : ''}',
+                            propertyArea: Utils.formatArea('${item.area?.amount ?? ''}', item.area?.unit ?? ''),
+                            propertyRating: item.rating.toString(),
+                            isVendor: false,
+                            isVisitor: true,
+                            isSoldOut: item.isSoldOut ?? false,
+                            onPropertyTap: () {
+                              context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
+                                RouteArguments.propertyId: item.sId ?? "0",
+                                RouteArguments.propertyLat: (item.propertyLocation?.latitude ?? 0.00).toString(),
+                                RouteArguments.propertyLng: (item.propertyLocation?.longitude ?? 0.00).toString(),
+                              }).then((value) {
+                                if (value != null && value == true) {
+                                  _pagingController.refresh();
+                                }
+                              });
+                            },
+                            requiredFavorite: true,
+                            requiredCheckBox: false,
+                            isFavorite: item.favorite ?? false,
+                            isSelected: false,
+                            isBankProperty: item.createdByBank ?? false,
+                            isLocked: item.isLocked ?? false,
+                            isLockedByMe: item.isLockedByMe ?? false,
+                            offerData: item.offerData,
+                            onFavouriteToggle: (isFavourite) async {
+                              if (isFetchingData) return;
+                              isFetchingData = true;
+                              try {
+                                await cubit.addRemoveFavorite(
+                                  propertyId: item.sId ?? "",
+                                  isFav: isFavourite,
+                                ).then((value) {
+                                  Future.delayed(Duration.zero, () async {
+                                    _pagingController.refresh();
+                                  });
+                                });
+                              } catch (error) {
+                                printf("Error toggling favorite: $error");
+                              } finally {
+                                isFetchingData = false;
+                              }
+                            },
+                            propertyPriceCurrency: item.price?.currencySymbol ?? '',
+                          ),
+                        );
+                      },
+                      noItemsFoundIndicatorBuilder: (context) {
+                        // Hide arrows when showing empty state
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _showLeftArrow.value = false;
+                          _showRightArrow.value = false;
                         });
-                      } catch (error) {
-                        printf("Error toggling favorite: $error");
-                      } finally {
-                        isFetchingData = false;
-                      }
-                    },
-                    propertyPriceCurrency: item.price?.currencySymbol ?? '',
-                  ),
-                );
-              },
-              noItemsFoundIndicatorBuilder: (context) {
-                return SizedBox(
-                  height: 200,
-                  child: Center(
-                    child: UIComponent.noDataWidgetWithInfo(
-                      title: appStrings(context).emptyPropertyList,
-                      info: appStrings(context).emptyPropertyListInfo,
-                      context: context,
+                        return SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 16.0),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: MediaQuery.of(context).size.width - 32,
+                                ),
+                                child: UIComponent.noDataWidgetWithInfo(
+                                  title: appStrings(context).emptyPropertyList,
+                                  info: appStrings(context).emptyPropertyListInfo,
+                                  context: context,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                );
-              },
-            ),
-            ),
-          ),
+                ),
           // Left arrow indicator
           ValueListenableBuilder<bool>(
             valueListenable: _showLeftArrow,
@@ -1121,20 +1145,30 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
       } else {
         _pagingController.appendPage(state.propertyList, state.currentKey + 1);
       }
-      // Update arrow visibility after list is loaded, but only once after a delay
-      // to avoid interfering with the scroll animation
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if (mounted && _scrollMetrics != null) {
-          _updateArrowVisibility(_scrollMetrics!, forceUpdate: true);
-        }
-      });
+      // Hide arrows if list is empty
+      if (state.propertyList.isEmpty && state.isLastPage) {
+        _showLeftArrow.value = false;
+        _showRightArrow.value = false;
+      } else {
+        // Update arrow visibility after list is loaded, but only once after a delay
+        // to avoid interfering with the scroll animation
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted && _scrollMetrics != null) {
+            _updateArrowVisibility(_scrollMetrics!, forceUpdate: true);
+          }
+        });
+      }
     } else if (state is PropertyListError) {
       _pagingController.appendLastPage([]);
+      _showLeftArrow.value = false;
+      _showRightArrow.value = false;
       Utils.showErrorMessage(
           context: context,
           message: state.errorMessage.contains('No internet') ? appStrings(context).noInternetConnection : state.errorMessage);
     } else if (state is NoPropertyFoundState) {
       _pagingController.appendLastPage([]);
+      _showLeftArrow.value = false;
+      _showRightArrow.value = false;
     } else if (state is AddedToFavorite) {
       OverlayLoadingProgress.stop();
       Utils.snackBar(
