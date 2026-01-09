@@ -1016,9 +1016,11 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
                                                                                 switch (index) {
                                                                                   case 0:
                                                                                   // Make the phone call
+                                                                                    // Remove spaces from phone number for dialer
+                                                                                    final formattedPhoneNumber = contact.toString().replaceAll(' ', '');
                                                                                     Utils.makePhoneCall(
                                                                                       context: context,
-                                                                                      phoneNumber: contact.toString(),
+                                                                                      phoneNumber: formattedPhoneNumber,
                                                                                     );
 
                                                                                     // Log the event for direct call
@@ -1044,9 +1046,11 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
 
                                                                                   case 1:
                                                                                   // Make WhatsApp call
+                                                                                    // Remove spaces from phone number for dialer
+                                                                                    final formattedPhoneNumber = contact.toString().replaceAll(' ', '');
                                                                                     Utils.makeWhatsAppCall(
                                                                                       context: context,
-                                                                                      phoneNumber: contact.toString(),
+                                                                                      phoneNumber: formattedPhoneNumber,
                                                                                     );
 
                                                                                     // Log the event for WhatsApp call
@@ -1071,9 +1075,11 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
 
                                                                                   case 2:
                                                                                   // Send SMS
+                                                                                    // Remove spaces from phone number for dialer
+                                                                                    final formattedPhoneNumber = contact.toString().replaceAll(' ', '');
                                                                                     Utils.makeSms(
                                                                                       context: context,
-                                                                                      phoneNumber: contact.toString(),
+                                                                                      phoneNumber: formattedPhoneNumber,
                                                                                     );
 
                                                                                     // Log the event for text message
@@ -1283,9 +1289,11 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
                                                                               switch (index) {
                                                                                 case 0:
                                                                                 // Make the phone call
+                                                                                  // Remove spaces from phone number for dialer
+                                                                                  final formattedPhoneNumber = contact.toString().replaceAll(' ', '');
                                                                                   Utils.makePhoneCall(
                                                                                     context: context,
-                                                                                    phoneNumber: contact.toString(),
+                                                                                    phoneNumber: formattedPhoneNumber,
                                                                                   );
 
                                                                                   // Log the event for direct call
@@ -1312,9 +1320,11 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
 
                                                                                 case 1:
                                                                                 // Make WhatsApp call
+                                                                                  // Remove spaces from phone number for dialer
+                                                                                  final formattedPhoneNumber = contact.toString().replaceAll(' ', '');
                                                                                   Utils.makeWhatsAppCall(
                                                                                     context: context,
-                                                                                    phoneNumber: contact.toString(),
+                                                                                    phoneNumber: formattedPhoneNumber,
                                                                                   );
 
                                                                                   // Log the event for WhatsApp call
@@ -1341,9 +1351,11 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
 
                                                                                 case 2:
                                                                                 // Send SMS
+                                                                                  // Remove spaces from phone number for dialer
+                                                                                  final formattedPhoneNumber = contact.toString().replaceAll(' ', '');
                                                                                   Utils.makeSms(
                                                                                     context: context,
-                                                                                    phoneNumber: contact.toString(),
+                                                                                    phoneNumber: formattedPhoneNumber,
                                                                                   );
 
                                                                                   // Log the event for text message
