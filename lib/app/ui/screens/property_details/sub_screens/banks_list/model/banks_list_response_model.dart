@@ -98,6 +98,7 @@ class BankUser {
   String? bankName;
   String? companyName;
   String? companyLogo;
+  String? email;
   List<BanksAlternativeContact>? banksAlternativeContact;
   BankLocation? bankLocation;
 
@@ -108,6 +109,7 @@ class BankUser {
       this.bankName,
       this.companyName,
       this.companyLogo,
+      this.email,
       this.banksAlternativeContact,
       this.bankLocation});
 
@@ -125,6 +127,7 @@ class BankUser {
     bankName = json['bankName'] ?? json['companyName'];
     companyName = json['companyName'];
     companyLogo = json['companyLogo'];
+    email = json['email'];
     if (json['banksAlternativeContact'] != null) {
       banksAlternativeContact = <BanksAlternativeContact>[];
       json['banksAlternativeContact'].forEach((v) {
@@ -146,6 +149,7 @@ class BankUser {
     data['bankName'] = bankName;
     data['companyName'] = companyName;
     data['companyLogo'] = companyLogo;
+    data['email'] = email;
     if (banksAlternativeContact != null) {
       data['banksAlternativeContact'] =
           banksAlternativeContact!.map((v) => v.toJson()).toList();

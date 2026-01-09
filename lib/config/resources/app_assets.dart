@@ -75,6 +75,8 @@ abstract class SVGAssets {
   static const calender1Icon = 'assets/icons/ic_calendar_1.svg';
   static const calenderPrimaryIcon = 'assets/icons/ic_calendar_green.svg';
   static const callIcon = 'assets/icons/ic_calling.svg';
+  static const callContactIcon = 'assets/icons/ic_call_contact.svg';
+  static const emailContactIcon = 'assets/icons/ic_email_contact.svg';
   static const whatsAppIcon = 'assets/icons/ic_whatsapp.svg';
   static const messageIcon = 'assets/icons/ic_message.svg';
   static const calenderWhite = 'assets/icons/ic_calendar_white.svg';

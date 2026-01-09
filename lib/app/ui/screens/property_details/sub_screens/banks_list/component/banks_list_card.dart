@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mashrou3/app/ui/screens/property_details/sub_screens/banks_list/model/banks_list_response_model.dart';
 import 'package:mashrou3/utils/extensions.dart';
 
@@ -109,6 +110,86 @@ class BanksListCard extends StatelessWidget {
                                       fontWeight: FontWeight.w700,
                                       color: Theme.of(context).primaryColor),
                             ),
+                            8.verticalSpace,
+                            // Email display
+                            if (data?.email?.isNotEmpty == true) ...[
+                              Row(
+                                children: [
+                                  SvgPicture.asset(
+                                    SVGAssets.emailContactIcon,
+                                    height: 16,
+                                    width: 16,
+                                    colorFilter: ColorFilter.mode(
+                                      const Color.fromRGBO(62, 113, 119, 1.0),
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                  6.horizontalSpace,
+                                  Expanded(
+                                    child: Text(
+                                      data!.email!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w400,
+                                            color: AppColors.black3D.adaptiveColor(
+                                              context,
+                                              lightModeColor: AppColors.black3D,
+                                              darkModeColor: AppColors.greyB0,
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              6.verticalSpace,
+                            ],
+                            // Phone numbers display
+                            if (data?.banksAlternativeContact?.isNotEmpty == true) ...[
+                              ...data!.banksAlternativeContact!.map((contact) {
+                                final phoneNumber = contact.phoneCode != null && contact.contactNumber != null
+                                    ? '+${contact.phoneCode} ${contact.contactNumber}'
+                                    : contact.contactNumber ?? '';
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 6.0),
+                                  child: Row(
+                                    children: [
+                                      SvgPicture.asset(
+                                        SVGAssets.callContactIcon,
+                                        height: 16,
+                                        width: 16,
+                                        colorFilter: ColorFilter.mode(
+                                          const Color.fromRGBO(62, 113, 119, 1.0),
+                                          BlendMode.srcIn,
+                                        ),
+                                      ),
+                                      6.horizontalSpace,
+                                      Expanded(
+                                        child: Text(
+                                          phoneNumber,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w400,
+                                                color: AppColors.black3D.adaptiveColor(
+                                                  context,
+                                                  lightModeColor: AppColors.black3D,
+                                                  darkModeColor: AppColors.greyB0,
+                                                ),
+                                              ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ],
                             8.verticalSpace,
                             Padding(
                               padding: const EdgeInsets.only(bottom: 18.0),
