@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mashrou3/app/ui/screens/property_details/sub_screens/banks_list/model/banks_list_response_model.dart';
 import 'package:mashrou3/utils/extensions.dart';
 
 import '../../../../../../../../../../config/resources/app_assets.dart';
@@ -13,6 +14,7 @@ class BanksListCard extends StatelessWidget {
   final String? imageUrl;
   final VoidCallback? onTap;
   final String? phNo;
+  final BankUser? data;
   const BanksListCard({
     super.key,
     this.name,
@@ -21,7 +23,7 @@ class BanksListCard extends StatelessWidget {
     this.city,
     this.imageUrl,
     this.onTap,
-    this.phNo
+    this.phNo, this.data,
   });
 
   @override

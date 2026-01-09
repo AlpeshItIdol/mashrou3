@@ -1123,10 +1123,14 @@ class UIComponent {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           title ?? '',
+          textAlign: TextAlign.center,
+          maxLines: 3,
+          softWrap: true,
+          overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
@@ -1135,6 +1139,9 @@ class UIComponent {
         Text(
           info ?? '',
           textAlign: TextAlign.center,
+          maxLines: 5,
+          softWrap: true,
+          overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w500,
                 color: AppColors.grey8A,

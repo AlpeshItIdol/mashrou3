@@ -229,6 +229,7 @@ class _BanksListScreenState extends State<BanksListScreen> with AppBarMixin {
         itemBuilder: (context, item, index) {
           return BanksListCard(
             name: item.bankName ?? item.companyName,
+            data: item,
             description: item.offers?.isNotEmpty == true
                 ? item.offers != null
                     ? item.offers![0].title ?? ""

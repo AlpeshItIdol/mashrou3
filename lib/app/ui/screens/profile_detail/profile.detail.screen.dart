@@ -47,6 +47,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
   ScrollMetrics? _scrollMetrics;
   final ValueNotifier<bool> _showLeftArrow = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _showRightArrow = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> _isListEmpty = ValueNotifier<bool>(false);
   DateTime? _lastUpdateTime;
 
   @override
@@ -109,6 +110,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
     _pagingController.dispose();
     _showLeftArrow.dispose();
     _showRightArrow.dispose();
+    _isListEmpty.dispose();
     super.dispose();
   }
 
@@ -844,117 +846,204 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
         builder: (builderContext) {
           return SizedBox(
             height: 430,
-            child: Stack(
-              children: [
-                NotificationListener<ScrollNotification>(
-                  onNotification: (notification) {
-                    _scrollMetrics = notification.metrics;
-                    // Update on scroll end (always) and during scrolling (throttled)
-                    if (notification is ScrollEndNotification) {
-                      // Always update when scrolling ends
-                      _updateArrowVisibility(notification.metrics, forceUpdate: true);
-                    } else if (notification is ScrollUpdateNotification) {
-                      // Throttle updates during active scrolling to prevent flickering
-                      _updateArrowVisibility(notification.metrics, throttle: true);
-                    }
-                    return false;
-                  },
-                  child: PagedListView<int, PropertyData>.separated(
-                    padding: EdgeInsets.zero,
-                    scrollDirection: Axis.horizontal,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    separatorBuilder: (BuildContext context, int index) {
-                      return 12.horizontalSpace;
-                    },
-                    pagingController: _pagingController,
-                    builderDelegate: PagedChildBuilderDelegate<PropertyData>(
-                      firstPageProgressIndicatorBuilder: (context) {
-                        return SizedBox(
-                          width: 400,
-                          child: Padding(
-                            padding: EdgeInsets.zero,
-                            child: UIComponent.getSkeletonProperty(isHorizontal: true),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _isListEmpty,
+              builder: (context, isEmpty, child) {
+                // When list is empty, show empty message without any scrollable widget
+                if (isEmpty) {
+                  // Hide arrows when showing empty state
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _showLeftArrow.value = false;
+                    _showRightArrow.value = false;
+                  });
+                  
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 430,
+                    child: Center(
+                      child: SingleChildScrollView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(horizontal: 16.0, vertical: 24.0),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width - 32,
+                            ),
+                            child: UIComponent.noDataWidgetWithInfo(
+                              title: appStrings(context).emptyPropertyList,
+                              info: appStrings(context).emptyPropertyListInfo,
+                              context: context,
+                            ),
                           ),
-                        );
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                
+                // When list has items, show the scrollable list with arrows
+                return Stack(
+                  children: [
+                    NotificationListener<ScrollNotification>(
+                      onNotification: (notification) {
+                        _scrollMetrics = notification.metrics;
+                        // Update on scroll end (always) and during scrolling (throttled)
+                        if (notification is ScrollEndNotification) {
+                          // Always update when scrolling ends
+                          _updateArrowVisibility(notification.metrics, forceUpdate: true);
+                        } else if (notification is ScrollUpdateNotification) {
+                          // Throttle updates during active scrolling to prevent flickering
+                          _updateArrowVisibility(notification.metrics, throttle: true);
+                        }
+                        return false;
                       },
-                      itemBuilder: (context, item, index) {
-                        return SizedBox(
-                          width: 350,
-                          child: PropertyListItem(
-                            propertyName: item.title ?? '',
-                            propertyImg: Utils.getLatestPropertyImage(item.propertyFiles ?? [], item.thumbnail ?? "") ?? "",
-                            propertyImgCount:
-                            (Utils.getAllImageFiles(item.propertyFiles ?? []).length + ((item.thumbnail != null && item.thumbnail!.isNotEmpty) ? 1 : 0))
-                                .toString(),
-                            propertyPrice: item.price?.amount?.toString(),
-                            propertyLocation: '${item.city?.isNotEmpty == true ? item.city : ''}'
-                                '${(item.city?.isNotEmpty == true && item.country?.isNotEmpty == true) ? ', ' : ''}'
-                                '${item.country?.isNotEmpty == true ? item.country : ''}',
-                            propertyArea: Utils.formatArea('${item.area?.amount ?? ''}', item.area?.unit ?? ''),
-                            propertyRating: item.rating.toString(),
-                            isVendor: false,
-                            isVisitor: true,
-                            isSoldOut: item.isSoldOut ?? false,
-                            onPropertyTap: () {
-                              context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
-                                RouteArguments.propertyId: item.sId ?? "0",
-                                RouteArguments.propertyLat: (item.propertyLocation?.latitude ?? 0.00).toString(),
-                                RouteArguments.propertyLng: (item.propertyLocation?.longitude ?? 0.00).toString(),
-                              }).then((value) {
-                                if (value != null && value == true) {
-                                  _pagingController.refresh();
-                                }
-                              });
-                            },
-                            requiredFavorite: true,
-                            requiredCheckBox: false,
-                            isFavorite: item.favorite ?? false,
-                            isSelected: false,
-                            isBankProperty: item.createdByBank ?? false,
-                            isLocked: item.isLocked ?? false,
-                            isLockedByMe: item.isLockedByMe ?? false,
-                            offerData: item.offerData,
-                            onFavouriteToggle: (isFavourite) async {
-                              if (isFetchingData) return;
-                              isFetchingData = true;
-                              try {
-                                await cubit.addRemoveFavorite(
-                                  propertyId: item.sId ?? "",
-                                  isFav: isFavourite,
-                                ).then((value) {
-                                  Future.delayed(Duration.zero, () async {
-                                    _pagingController.refresh();
+                      child: PagedListView<int, PropertyData>.separated(
+                        padding: EdgeInsets.zero,
+                        scrollDirection: Axis.horizontal,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        separatorBuilder: (BuildContext context, int index) {
+                          return 12.horizontalSpace;
+                        },
+                        pagingController: _pagingController,
+                        builderDelegate: PagedChildBuilderDelegate<PropertyData>(
+                          firstPageProgressIndicatorBuilder: (context) {
+                            return SizedBox(
+                              width: 400,
+                              child: Padding(
+                                padding: EdgeInsets.zero,
+                                child: UIComponent.getSkeletonProperty(isHorizontal: true),
+                              ),
+                            );
+                          },
+                          itemBuilder: (context, item, index) {
+                            return SizedBox(
+                              width: 350,
+                              child: PropertyListItem(
+                                propertyName: item.title ?? '',
+                                propertyImg: Utils.getLatestPropertyImage(item.propertyFiles ?? [], item.thumbnail ?? "") ?? "",
+                                propertyImgCount:
+                                (Utils.getAllImageFiles(item.propertyFiles ?? []).length + ((item.thumbnail != null && item.thumbnail!.isNotEmpty) ? 1 : 0))
+                                    .toString(),
+                                propertyPrice: item.price?.amount?.toString(),
+                                propertyLocation: '${item.city?.isNotEmpty == true ? item.city : ''}'
+                                    '${(item.city?.isNotEmpty == true && item.country?.isNotEmpty == true) ? ', ' : ''}'
+                                    '${item.country?.isNotEmpty == true ? item.country : ''}',
+                                propertyArea: Utils.formatArea('${item.area?.amount ?? ''}', item.area?.unit ?? ''),
+                                propertyRating: item.rating.toString(),
+                                isVendor: false,
+                                isVisitor: true,
+                                isSoldOut: item.isSoldOut ?? false,
+                                onPropertyTap: () {
+                                  context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
+                                    RouteArguments.propertyId: item.sId ?? "0",
+                                    RouteArguments.propertyLat: (item.propertyLocation?.latitude ?? 0.00).toString(),
+                                    RouteArguments.propertyLng: (item.propertyLocation?.longitude ?? 0.00).toString(),
+                                  }).then((value) {
+                                    if (value != null && value == true) {
+                                      _pagingController.refresh();
+                                    }
                                   });
-                                });
-                              } catch (error) {
-                                printf("Error toggling favorite: $error");
-                              } finally {
-                                isFetchingData = false;
-                              }
-                            },
-                            propertyPriceCurrency: item.price?.currencySymbol ?? '',
-                          ),
-                        );
-                      },
-                      noItemsFoundIndicatorBuilder: (context) {
-                        // Hide arrows when showing empty state
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _showLeftArrow.value = false;
-                          _showRightArrow.value = false;
-                        });
-                        return SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 16.0),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxWidth: MediaQuery.of(context).size.width - 32,
+                                },
+                                requiredFavorite: true,
+                                requiredCheckBox: false,
+                                isFavorite: item.favorite ?? false,
+                                isSelected: false,
+                                isBankProperty: item.createdByBank ?? false,
+                                isLocked: item.isLocked ?? false,
+                                isLockedByMe: item.isLockedByMe ?? false,
+                                offerData: item.offerData,
+                                onFavouriteToggle: (isFavourite) async {
+                                  if (isFetchingData) return;
+                                  isFetchingData = true;
+                                  try {
+                                    await cubit.addRemoveFavorite(
+                                      propertyId: item.sId ?? "",
+                                      isFav: isFavourite,
+                                    ).then((value) {
+                                      Future.delayed(Duration.zero, () async {
+                                        _pagingController.refresh();
+                                      });
+                                    });
+                                  } catch (error) {
+                                    printf("Error toggling favorite: $error");
+                                  } finally {
+                                    isFetchingData = false;
+                                  }
+                                },
+                                propertyPriceCurrency: item.price?.currencySymbol ?? '',
+                              ),
+                            );
+                          },
+                          noItemsFoundIndicatorBuilder: (context) {
+                            // This should not be shown as we handle empty state above
+                            // But kept for safety
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      ),
+                    ),
+                    // Left arrow indicator - only shown when list has items
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _showLeftArrow,
+                      builder: (context, showLeft, child) {
+                        return Positioned(
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: IgnorePointer(
+                            ignoring: !showLeft,
+                            child: AnimatedOpacity(
+                              opacity: showLeft ? 1.0 : 0.0,
+                              duration: const Duration(milliseconds: 200),
+                              child: Container(
+                                width: 40,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                      Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
+                                    ],
+                                  ),
                                 ),
-                                child: UIComponent.noDataWidgetWithInfo(
-                                  title: appStrings(context).emptyPropertyList,
-                                  info: appStrings(context).emptyPropertyListInfo,
-                                  context: context,
+                                child: UIComponent.customInkWellWidget(
+                                  onTap: () {
+                                    final scrollable = Scrollable.maybeOf(builderContext);
+                                    if (scrollable != null && _scrollMetrics != null) {
+                                      final position = scrollable.position;
+                                      final newOffset = (position.pixels - 350).clamp(
+                                        position.minScrollExtent,
+                                        position.maxScrollExtent,
+                                      );
+                                      position.animateTo(
+                                        newOffset,
+                                        duration: const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.black14.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: SVGAssets.arrowLeftIcon.toSvg(
+                                      context: context,
+                                      height: 20,
+                                      width: 20,
+                                      color: AppColors.colorPrimary,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -962,149 +1051,80 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
                         );
                       },
                     ),
-                  ),
-                ),
-          // Left arrow indicator
-          ValueListenableBuilder<bool>(
-            valueListenable: _showLeftArrow,
-            builder: (context, showLeft, child) {
-              return Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                child: IgnorePointer(
-                  ignoring: !showLeft,
-                  child: AnimatedOpacity(
-                    opacity: showLeft ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Container(
-                      width: 40,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            Theme.of(context).scaffoldBackgroundColor,
-                            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
-                          ],
-                        ),
-                      ),
-                      child: UIComponent.customInkWellWidget(
-                        onTap: () {
-                          final scrollable = Scrollable.maybeOf(builderContext);
-                          if (scrollable != null && _scrollMetrics != null) {
-                            final position = scrollable.position;
-                            final newOffset = (position.pixels - 350).clamp(
-                              position.minScrollExtent,
-                              position.maxScrollExtent,
-                            );
-                            position.animateTo(
-                              newOffset,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.black14.withOpacity(0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
+                    // Right arrow indicator - only shown when list has items
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _showRightArrow,
+                      builder: (context, showRight, child) {
+                        return Positioned(
+                          right: 0,
+                          top: 0,
+                          bottom: 0,
+                          child: IgnorePointer(
+                            ignoring: !showRight,
+                            child: AnimatedOpacity(
+                              opacity: showRight ? 1.0 : 0.0,
+                              duration: const Duration(milliseconds: 200),
+                              child: Container(
+                                width: 40,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.centerRight,
+                                    end: Alignment.centerLeft,
+                                    colors: [
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                      Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
+                                    ],
+                                  ),
+                                ),
+                                child: UIComponent.customInkWellWidget(
+                                  onTap: () {
+                                    final scrollable = Scrollable.maybeOf(builderContext);
+                                    if (scrollable != null && _scrollMetrics != null) {
+                                      final position = scrollable.position;
+                                      final newOffset = (position.pixels + 350).clamp(
+                                        position.minScrollExtent,
+                                        position.maxScrollExtent,
+                                      );
+                                      position.animateTo(
+                                        newOffset,
+                                        duration: const Duration(milliseconds: 300),
+                                        curve: Curves.easeInOut,
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppColors.black14.withOpacity(0.1),
+                                          blurRadius: 4,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: SVGAssets.arrowRightIcon.toSvg(
+                                      context: context,
+                                      height: 20,
+                                      width: 20,
+                                      color: AppColors.colorPrimary,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ],
+                            ),
                           ),
-                          child: SVGAssets.arrowLeftIcon.toSvg(
-                            context: context,
-                            height: 20,
-                            width: 20,
-                            color: AppColors.colorPrimary,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
-                  ),
-                ),
-              );
-            },
-          ),
-          // Right arrow indicator
-          ValueListenableBuilder<bool>(
-            valueListenable: _showRightArrow,
-            builder: (context, showRight, child) {
-              return Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                child: IgnorePointer(
-                  ignoring: !showRight,
-                  child: AnimatedOpacity(
-                    opacity: showRight ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Container(
-                      width: 40,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerRight,
-                          end: Alignment.centerLeft,
-                          colors: [
-                            Theme.of(context).scaffoldBackgroundColor,
-                            Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
-                          ],
-                        ),
-                      ),
-                      child: UIComponent.customInkWellWidget(
-                        onTap: () {
-                          final scrollable = Scrollable.maybeOf(builderContext);
-                          if (scrollable != null && _scrollMetrics != null) {
-                            final position = scrollable.position;
-                            final newOffset = (position.pixels + 350).clamp(
-                              position.minScrollExtent,
-                              position.maxScrollExtent,
-                            );
-                            position.animateTo(
-                              newOffset,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.8),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.black14.withOpacity(0.1),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: SVGAssets.arrowRightIcon.toSvg(
-                            context: context,
-                            height: 20,
-                            width: 20,
-                            color: AppColors.colorPrimary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
+                  ],
+                );
+              },
+            ),
+          );
         },
       ),
     );
@@ -1145,6 +1165,10 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
       } else {
         _pagingController.appendPage(state.propertyList, state.currentKey + 1);
       }
+      // Update empty state
+      final isEmpty = _pagingController.itemList != null && _pagingController.itemList!.isEmpty;
+      _isListEmpty.value = isEmpty;
+      
       // Hide arrows if list is empty
       if (state.propertyList.isEmpty && state.isLastPage) {
         _showLeftArrow.value = false;
@@ -1160,6 +1184,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
       }
     } else if (state is PropertyListError) {
       _pagingController.appendLastPage([]);
+      _isListEmpty.value = true;
       _showLeftArrow.value = false;
       _showRightArrow.value = false;
       Utils.showErrorMessage(
@@ -1167,6 +1192,7 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
           message: state.errorMessage.contains('No internet') ? appStrings(context).noInternetConnection : state.errorMessage);
     } else if (state is NoPropertyFoundState) {
       _pagingController.appendLastPage([]);
+      _isListEmpty.value = true;
       _showLeftArrow.value = false;
       _showRightArrow.value = false;
     } else if (state is AddedToFavorite) {
