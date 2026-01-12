@@ -183,12 +183,12 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
                 /// Property Category
                 buildFilterComponent("propertyCategory"),
 
-                /// Property Sub Category (only show if category is selected)
+                /// Property Sub Category (only show if a specific category is selected, not "All")
                 if (cubit.selectedPropertyCategory.sId != null && 
                     cubit.selectedPropertyCategory.sId!.isNotEmpty)
                   buildFilterComponent("propertySubCategory"),
 
-                /// Living Space Details (only show if category is selected and data is loaded)
+                /// Living Space Details (only show if a specific category is selected and data is loaded, not "All")
                 if (cubit.selectedPropertyCategory.sId != null && 
                     cubit.selectedPropertyCategory.sId!.isNotEmpty &&
                     cubit.categoryOptions.isNotEmpty)
@@ -2143,15 +2143,21 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
                 context, cubit.propertyCategoryList ?? []);
 
             if (category != null) {
-              // Load sub categories and living space fields from pre-loaded data when category is selected
-              if (category.sId != null && category.sId!.isNotEmpty) {
-                // Set the selected category first
-                setState(() {
-                  cubit.selectedPropertyCategory = category;
-                  cubit.selectedPropertySubCategories = [];
-                  cubit.propertySubCategoryList = [];
-                });
-                
+              // Check if "All" is selected (empty sId)
+              final isAllSelected = category.sId == null || category.sId!.isEmpty;
+              
+              // Set the selected category
+              setState(() {
+                cubit.selectedPropertyCategory = category;
+                cubit.selectedPropertySubCategories = [];
+                cubit.propertySubCategoryList = [];
+                cubit.categoryOptions.clear();
+                cubit.selectedLivingSpaceItems.clear();
+                cubit.selectedLivingSpaceMultiItems.clear();
+              });
+              
+              // Only load sub categories and living space fields if a specific category is selected (not "All")
+              if (!isAllSelected && category.sId != null && category.sId!.isNotEmpty) {
                 // Data is already pre-loaded, retrieve it using cubit methods (should be instant)
                 // These methods will use pre-loaded data and emit states to trigger UI rebuild
                 // Since data is pre-loaded, these complete immediately (no API calls)
@@ -2159,11 +2165,11 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
                   cubit.getPropertySubCategoryList(categoryId: category.sId!),
                   cubit.getPropertyCategoryData(categoryId: category.sId!),
                 ]);
-                
-                // Force UI update to ensure immediate display
-                if (mounted) {
-                  setState(() {});
-                }
+              }
+              
+              // Force UI update to ensure immediate display
+              if (mounted) {
+                setState(() {});
               }
             }
           },
@@ -2335,7 +2341,13 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
 
   Future<PropertyCategoryData?> showPropertyCategorySheet(
       BuildContext context, List<PropertyCategoryData> dataList) {
-    final itemCount = dataList.length;
+    // Add "All" option at the top of the list
+    final allOption = PropertyCategoryData(
+      sId: "", // Empty sId indicates "All"
+      name: appStrings(context).textAll,
+    );
+    final listWithAll = [allOption, ...dataList];
+    final itemCount = listWithAll.length;
     final isSmall = itemCount <= 5;
 
     return showModalBottomSheet<PropertyCategoryData>(
@@ -2365,13 +2377,13 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
             ),
             isSmall
                 ? ListView.separated(
-                    itemCount: dataList.length,
+                    itemCount: listWithAll.length,
                     physics: const ClampingScrollPhysics(),
                     shrinkWrap: true,
                     itemBuilder: (BuildContext context, int index) {
                       return UIComponent.customInkWellWidget(
                         onTap: () {
-                          Navigator.pop(context, dataList[index]);
+                          Navigator.pop(context, listWithAll[index]);
                         },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -2380,7 +2392,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Text(
-                                dataList[index].name ?? "",
+                                listWithAll[index].name ?? "",
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleSmall
@@ -2409,13 +2421,13 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
                   )
                 : Expanded(
                     child: ListView.separated(
-                      itemCount: dataList.length,
+                      itemCount: listWithAll.length,
                       physics: const ClampingScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
                         return UIComponent.customInkWellWidget(
                           onTap: () {
-                            Navigator.pop(context, dataList[index]);
+                            Navigator.pop(context, listWithAll[index]);
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -2424,7 +2436,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
-                                  dataList[index].name ?? "",
+                                  listWithAll[index].name ?? "",
                                   style: Theme.of(context)
                                       .textTheme
                                       .titleSmall

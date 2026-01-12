@@ -101,11 +101,9 @@ class FilterCubit extends Cubit<FilterState> {
       getPropertyCategoryList(),
     ]);
     
-    // Load all sub categories and living space data for all categories upfront
-    await loadAllCategoryRelatedData();
-    
-    // Pre-select the first category and load its sub-categories and living space details
-    await preSelectFirstCategory();
+    // Note: We don't pre-select any category - user must select one manually
+    // Dependent APIs (sub-categories and living space data) will be called
+    // only when a specific category is selected (not "All")
     
     OverlayLoadingProgress.stop();
     if (filterRequestModel.neighborhood?.isNotEmpty ?? false) {
@@ -115,150 +113,6 @@ class FilterCubit extends Cubit<FilterState> {
       selectedNeighborhoodTypes = [];
     }
     emit(FilterNeighbourhoodDataSet());
-  }
-
-  /// Pre-select the first category and load its sub-categories and living space details
-  Future<void> preSelectFirstCategory() async {
-    if (propertyCategoryList == null || propertyCategoryList!.isEmpty) {
-      printf("No categories available to pre-select");
-      return;
-    }
-    
-    // Select the first category
-    final firstCategory = propertyCategoryList!.first;
-    if (firstCategory.sId != null && firstCategory.sId!.isNotEmpty) {
-      selectedPropertyCategory = firstCategory;
-      selectedPropertySubCategories = [];
-      propertySubCategoryList = [];
-      
-      printf("Pre-selecting first category: ${firstCategory.name} (${firstCategory.sId})");
-      
-      // Load sub-categories and living space details for the pre-selected category
-      // Data is already pre-loaded, so this will be instant
-      await getPropertySubCategoryList(categoryId: firstCategory.sId!);
-      await getPropertyCategoryData(categoryId: firstCategory.sId!);
-      
-      printf("Pre-loaded sub-categories: ${propertySubCategoryList?.length ?? 0}, Living space options: ${categoryOptions.length}");
-    }
-  }
-
-  /// Load all sub categories and living space data for all categories
-  /// This loads all data upfront so that when a user selects a category,
-  /// the sub categories and living space details appear immediately
-  Future<void> loadAllCategoryRelatedData() async {
-    allSubCategoriesByCategory.clear();
-    allCategoryOptionsByCategory.clear();
-    
-    if (propertyCategoryList == null || propertyCategoryList!.isEmpty) {
-      printf("No categories available to load sub categories and living space data");
-      return;
-    }
-    
-    printf("Loading sub categories and living space data for ${propertyCategoryList!.length} categories...");
-    
-    // Load sub categories and living space data for each category in parallel
-    final futures = <Future>[];
-    for (final category in propertyCategoryList!) {
-      if (category.sId != null && category.sId!.isNotEmpty) {
-        futures.add(_loadCategoryData(category.sId!));
-      }
-    }
-    
-    // Wait for all data to load (errors in individual categories won't stop others)
-    await Future.wait(futures, eagerError: false);
-    
-    printf("Finished loading data: ${allSubCategoriesByCategory.length} categories with sub categories, ${allCategoryOptionsByCategory.length} categories with living space data");
-    
-    // Verify data was loaded
-    for (final category in propertyCategoryList!) {
-      if (category.sId != null && category.sId!.isNotEmpty) {
-        final hasSubCategories = allSubCategoriesByCategory.containsKey(category.sId);
-        final hasLivingSpace = allCategoryOptionsByCategory.containsKey(category.sId);
-        printf("Category ${category.name} (${category.sId}): SubCategories=${hasSubCategories}, LivingSpace=${hasLivingSpace}");
-      }
-    }
-    
-    // Emit state to notify that all data has been loaded
-    emit(FilterStatusSuccess(dataList: filterStatusList ?? []));
-  }
-
-  /// Load sub categories and living space data for a specific category
-  Future<void> _loadCategoryData(String categoryId) async {
-    // Load sub categories
-    try {
-      final subCategoryResponse = await propertyRepository.getPropertySubCategories(
-        categoryId: categoryId,
-      );
-      if (subCategoryResponse is SuccessResponse &&
-          subCategoryResponse.data is SubCategoryResponseModel) {
-        SubCategoryResponseModel responseModel =
-            subCategoryResponse.data as SubCategoryResponseModel;
-        allSubCategoriesByCategory[categoryId] = responseModel.data ?? [];
-        printf("Loaded ${responseModel.data?.length ?? 0} sub categories for category $categoryId");
-      } else if (subCategoryResponse is FailedResponse) {
-        printf("Failed to load sub categories for category $categoryId: ${subCategoryResponse.errorMessage}");
-        // Store empty list to indicate we attempted to load
-        allSubCategoriesByCategory[categoryId] = [];
-      }
-    } catch (e) {
-      printf("Error loading sub categories for category $categoryId: $e");
-      // Store empty list to indicate we attempted to load
-      allSubCategoriesByCategory[categoryId] = [];
-    }
-    
-    // Load living space data
-    try {
-      final categoryDataResponse = await propertyRepository.getPropertyCategoryData(
-        categoryId: categoryId,
-      );
-      if (categoryDataResponse is SuccessResponse &&
-          categoryDataResponse.data is CategoryItemDataResponseModel) {
-        CategoryItemDataResponseModel responseModel =
-            categoryDataResponse.data as CategoryItemDataResponseModel;
-        final categoryItem = responseModel.data;
-        
-        if (categoryItem != null) {
-          Map<String, CategoryItemOptions> options = {};
-          if (categoryItem.floors != null) {
-            options['floors'] = categoryItem.floors!;
-          }
-          if (categoryItem.bedrooms != null) {
-            options['bedrooms'] = categoryItem.bedrooms!;
-          }
-          if (categoryItem.bathrooms != null) {
-            options['bathrooms'] = categoryItem.bathrooms!;
-          }
-          if (categoryItem.amenities != null) {
-            options['amenities'] = categoryItem.amenities!;
-          }
-          if (categoryItem.facades != null) {
-            options['facade'] = categoryItem.facades!;
-          }
-          if (categoryItem.furnishedTypes != null) {
-            options['furnishedType'] = categoryItem.furnishedTypes!;
-          }
-          if (categoryItem.buildingAge != null) {
-            options['buildingAge'] = categoryItem.buildingAge!;
-          }
-          if (categoryItem.mortgaged != null) {
-            options['mortgaged'] = categoryItem.mortgaged!;
-          }
-          allCategoryOptionsByCategory[categoryId] = options;
-          printf("Loaded ${options.length} living space options for category $categoryId");
-        } else {
-          // Store empty map to indicate we attempted to load
-          allCategoryOptionsByCategory[categoryId] = {};
-        }
-      } else if (categoryDataResponse is FailedResponse) {
-        printf("Failed to load living space data for category $categoryId: ${categoryDataResponse.errorMessage}");
-        // Store empty map to indicate we attempted to load
-        allCategoryOptionsByCategory[categoryId] = {};
-      }
-    } catch (e) {
-      printf("Error loading category data for category $categoryId: $e");
-      // Store empty map to indicate we attempted to load
-      allCategoryOptionsByCategory[categoryId] = {};
-    }
   }
 
   /// Filter - Status List API
@@ -364,46 +218,44 @@ class FilterCubit extends Cubit<FilterState> {
   }
 
   /// Property Sub Category List API
-  /// Now uses pre-loaded data instead of making API call
-  /// Data should already be loaded when filter screen opens
+  /// Fetches sub categories when a specific category is selected
   Future<void> getPropertySubCategoryList({required String categoryId}) async {
-    // Use pre-loaded data if available (should always be available after initial load)
+    // Check if we have cached data
     if (allSubCategoriesByCategory.containsKey(categoryId)) {
       final subCategories = allSubCategoriesByCategory[categoryId] ?? [];
       propertySubCategoryList = subCategories;
       selectedPropertySubCategories = []; // Reset selection
-      printf("Using pre-loaded sub categories for category $categoryId: ${subCategories.length} items");
-      // Emit state to trigger UI update immediately (data is already loaded, so this is instant)
-      // Use FilterNeighbourhoodDataSet to ensure UI rebuilds (it's a distinct state)
+      printf("Using cached sub categories for category $categoryId: ${subCategories.length} items");
       emit(FilterNeighbourhoodDataSet());
-    } else {
-      printf("WARNING: Pre-loaded sub categories not found for category $categoryId, falling back to API call");
-      printf("Available categories in pre-loaded data: ${allSubCategoriesByCategory.keys.toList()}");
-      // Fallback to API call if pre-loaded data not available
-      emit(FilterStatusLoading());
+      return;
+    }
+    
+    // Fetch from API
+    emit(FilterStatusLoading());
+    printf("Fetching sub categories for category $categoryId from API");
 
-      final response = await propertyRepository.getPropertySubCategories(
-        categoryId: categoryId,
-      );
+    final response = await propertyRepository.getPropertySubCategories(
+      categoryId: categoryId,
+    );
 
-      if (response is SuccessResponse &&
-          response.data is SubCategoryResponseModel) {
-        SubCategoryResponseModel responseModel =
-            response.data as SubCategoryResponseModel;
-        propertySubCategoryList = responseModel.data ?? [];
-        selectedPropertySubCategories = []; // Reset selection
-        emit(FilterStatusSuccess(dataList: filterStatusList ?? []));
-      } else if (response is FailedResponse) {
-        emit(FilterStatusFailure(response.errorMessage));
-      }
+    if (response is SuccessResponse &&
+        response.data is SubCategoryResponseModel) {
+      SubCategoryResponseModel responseModel =
+          response.data as SubCategoryResponseModel;
+      propertySubCategoryList = responseModel.data ?? [];
+      selectedPropertySubCategories = []; // Reset selection
+      // Cache the data for future use
+      allSubCategoriesByCategory[categoryId] = responseModel.data ?? [];
+      emit(FilterStatusSuccess(dataList: filterStatusList ?? []));
+    } else if (response is FailedResponse) {
+      emit(FilterStatusFailure(response.errorMessage));
     }
   }
 
   /// Property Category Data API (Living Space Fields)
-  /// Now uses pre-loaded data instead of making API call
-  /// Data should already be loaded when filter screen opens
+  /// Fetches living space data when a specific category is selected
   Future<void> getPropertyCategoryData({required String categoryId}) async {
-    // Use pre-loaded data if available (should always be available after initial load)
+    // Check if we have cached data
     if (allCategoryOptionsByCategory.containsKey(categoryId)) {
       final options = Map<String, CategoryItemOptions>.from(
         allCategoryOptionsByCategory[categoryId] ?? {},
@@ -411,62 +263,65 @@ class FilterCubit extends Cubit<FilterState> {
       categoryOptions = options;
       selectedLivingSpaceItems.clear();
       selectedLivingSpaceMultiItems.clear();
-      printf("Using pre-loaded living space data for category $categoryId: ${options.length} options");
-      // Emit state to trigger UI update immediately (data is already loaded, so this is instant)
-      // Use FilterNeighbourhoodDataSet to ensure UI rebuilds (it's a distinct state)
+      printf("Using cached living space data for category $categoryId: ${options.length} options");
       emit(FilterNeighbourhoodDataSet());
-    } else {
-      printf("WARNING: Pre-loaded living space data not found for category $categoryId, falling back to API call");
-      printf("Available categories in pre-loaded data: ${allCategoryOptionsByCategory.keys.toList()}");
-      // Fallback to API call if pre-loaded data not available
-      emit(FilterStatusLoading());
+      return;
+    }
+    
+    // Fetch from API
+    emit(FilterStatusLoading());
+    printf("Fetching living space data for category $categoryId from API");
 
-      final response = await propertyRepository.getPropertyCategoryData(
-        categoryId: categoryId,
-      );
+    final response = await propertyRepository.getPropertyCategoryData(
+      categoryId: categoryId,
+    );
 
-      if (response is SuccessResponse &&
-          response.data is CategoryItemDataResponseModel) {
-        CategoryItemDataResponseModel responseModel =
-            response.data as CategoryItemDataResponseModel;
-        categoryItemData = responseModel.data;
-        
-        // Initialize category options map
-        categoryOptions.clear();
-        selectedLivingSpaceItems.clear();
-        selectedLivingSpaceMultiItems.clear();
-        
-        if (categoryItemData != null) {
-          if (categoryItemData!.floors != null) {
-            categoryOptions['floors'] = categoryItemData!.floors!;
-          }
-          if (categoryItemData!.bedrooms != null) {
-            categoryOptions['bedrooms'] = categoryItemData!.bedrooms!;
-          }
-          if (categoryItemData!.bathrooms != null) {
-            categoryOptions['bathrooms'] = categoryItemData!.bathrooms!;
-          }
-          if (categoryItemData!.amenities != null) {
-            categoryOptions['amenities'] = categoryItemData!.amenities!;
-          }
-          if (categoryItemData!.facades != null) {
-            categoryOptions['facade'] = categoryItemData!.facades!;
-          }
-          if (categoryItemData!.furnishedTypes != null) {
-            categoryOptions['furnishedType'] = categoryItemData!.furnishedTypes!;
-          }
-          if (categoryItemData!.buildingAge != null) {
-            categoryOptions['buildingAge'] = categoryItemData!.buildingAge!;
-          }
-          if (categoryItemData!.mortgaged != null) {
-            categoryOptions['mortgaged'] = categoryItemData!.mortgaged!;
-          }
+    if (response is SuccessResponse &&
+        response.data is CategoryItemDataResponseModel) {
+      CategoryItemDataResponseModel responseModel =
+          response.data as CategoryItemDataResponseModel;
+      categoryItemData = responseModel.data;
+      
+      // Initialize category options map
+      categoryOptions.clear();
+      selectedLivingSpaceItems.clear();
+      selectedLivingSpaceMultiItems.clear();
+      
+      Map<String, CategoryItemOptions> options = {};
+      if (categoryItemData != null) {
+        if (categoryItemData!.floors != null) {
+          options['floors'] = categoryItemData!.floors!;
         }
-        
-        emit(FilterStatusSuccess(dataList: filterStatusList ?? []));
-      } else if (response is FailedResponse) {
-        emit(FilterStatusFailure(response.errorMessage));
+        if (categoryItemData!.bedrooms != null) {
+          options['bedrooms'] = categoryItemData!.bedrooms!;
+        }
+        if (categoryItemData!.bathrooms != null) {
+          options['bathrooms'] = categoryItemData!.bathrooms!;
+        }
+        if (categoryItemData!.amenities != null) {
+          options['amenities'] = categoryItemData!.amenities!;
+        }
+        if (categoryItemData!.facades != null) {
+          options['facade'] = categoryItemData!.facades!;
+        }
+        if (categoryItemData!.furnishedTypes != null) {
+          options['furnishedType'] = categoryItemData!.furnishedTypes!;
+        }
+        if (categoryItemData!.buildingAge != null) {
+          options['buildingAge'] = categoryItemData!.buildingAge!;
+        }
+        if (categoryItemData!.mortgaged != null) {
+          options['mortgaged'] = categoryItemData!.mortgaged!;
+        }
       }
+      
+      categoryOptions = options;
+      // Cache the data for future use
+      allCategoryOptionsByCategory[categoryId] = options;
+      
+      emit(FilterStatusSuccess(dataList: filterStatusList ?? []));
+    } else if (response is FailedResponse) {
+      emit(FilterStatusFailure(response.errorMessage));
     }
   }
 
@@ -641,35 +496,27 @@ class FilterCubit extends Cubit<FilterState> {
       filterRequestModel.neighborhood = neighborhoodIds;
     }
 
-    // Set category if selected
-    if (selectedPropertyCategory.sId != null && selectedPropertyCategory.sId!.isNotEmpty) {
+    // Set category if selected (only if not "All")
+    // "All" option has empty sId, so we skip category-related fields when sId is empty or null
+    final isAllSelected = selectedPropertyCategory.sId == null || 
+                         selectedPropertyCategory.sId!.isEmpty;
+    
+    if (!isAllSelected && selectedPropertyCategory.sId != null && selectedPropertyCategory.sId!.isNotEmpty) {
       filterRequestModel.category = selectedPropertyCategory.sId;
       printf("Setting category: ${selectedPropertyCategory.sId}");
-    } else {
-      printf("Category not set - sId is null or empty. selectedPropertyCategory: ${selectedPropertyCategory.name}, sId: ${selectedPropertyCategory.sId}");
-    }
-
-    // Set sub categories if selected
-    if (selectedPropertySubCategories.isNotEmpty) {
-      List<String> subCategoryIds = selectedPropertySubCategories
-          .where((subCategory) => subCategory.sId != null && subCategory.sId!.isNotEmpty)
-          .map((subCategory) => subCategory.sId!)
-          .toList();
-      filterRequestModel.subCategoryId = subCategoryIds;
-      printf("Setting subCategoryId: ${filterRequestModel.subCategoryId}");
       
-      // If sub categories are selected but category is not set, try to get it from the first sub category
-      if (filterRequestModel.category == null || filterRequestModel.category!.isEmpty) {
-        final firstSubCategory = selectedPropertySubCategories.first;
-        if (firstSubCategory.categoryId != null && firstSubCategory.categoryId!.isNotEmpty) {
-          filterRequestModel.category = firstSubCategory.categoryId;
-          printf("Setting category from subCategory.categoryId: ${firstSubCategory.categoryId}");
-        }
+      // Set sub categories if selected (only when a specific category is selected)
+      if (selectedPropertySubCategories.isNotEmpty) {
+        List<String> subCategoryIds = selectedPropertySubCategories
+            .where((subCategory) => subCategory.sId != null && subCategory.sId!.isNotEmpty)
+            .map((subCategory) => subCategory.sId!)
+            .toList();
+        filterRequestModel.subCategoryId = subCategoryIds;
+        printf("Setting subCategoryId: ${filterRequestModel.subCategoryId}");
       }
-    }
 
-    // Add living space filters
-    if (selectedLivingSpaceItems.isNotEmpty || selectedLivingSpaceMultiItems.isNotEmpty) {
+      // Add living space filters (only when a specific category is selected)
+      if (selectedLivingSpaceItems.isNotEmpty || selectedLivingSpaceMultiItems.isNotEmpty) {
       // Floors
       if (selectedLivingSpaceItems.containsKey('floors') && selectedLivingSpaceItems['floors']?.sId != null) {
         filterRequestModel.floors = [selectedLivingSpaceItems['floors']!.sId!];
@@ -705,6 +552,9 @@ class FilterCubit extends Cubit<FilterState> {
             .map((item) => item.sId!)
             .toList();
       }
+      }
+    } else {
+      printf("'All' category selected - skipping category, sub-category, and living space fields");
     }
 
     if (selectedAddressLocation.sId != null && selectedAddressLocation.sId!.isNotEmpty) {
