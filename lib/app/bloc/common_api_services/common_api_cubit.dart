@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mashrou3/app/db/app_preferences.dart';
 import 'package:mashrou3/app/model/language_list_response_model.dart';
+import 'package:mashrou3/app/model/property/address_location_response_model.dart';
 import 'package:mashrou3/app/model/property/currency_list_response_model.dart';
 import 'package:mashrou3/app/model/user_details_response.model.dart';
 import 'package:mashrou3/app/model/vendor_list_response.model.dart';
@@ -222,6 +224,28 @@ class CommonApiCubit extends Cubit<CommonApiState> {
     final response = await commonApiService.updateLanguage();
     if (response is CommonOnlyMessageResponseModel) {
       return response;
+    } else if (response is String) {
+      emit(CommonApiError(errorMessage: response));
+      return response;
+    }
+    return "Unknown error";
+  }
+
+  /// Fetch and store address location list
+  Future<dynamic> fetchAddressLocationList() async {
+    emit(CommonApiLoading());
+
+    final response = await commonApiService.getAddressLocationList();
+    if (response is AddressLocationResponseModel) {
+      if (response.data != null) {
+        // Store in async storage
+        AppPreferences appPreferences = AppPreferences();
+        await appPreferences.saveAddressLocationData(response.data!);
+        printf("AddressLocationData saved to storage--------${response.data!.locationData?.length ?? 0}");
+        emit(AddressLocationListLoaded(addressLocationData: response.data!));
+        return response.data;
+      }
+      return null;
     } else if (response is String) {
       emit(CommonApiError(errorMessage: response));
       return response;

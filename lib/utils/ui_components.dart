@@ -620,7 +620,7 @@ class UIComponent {
   }
 
   static iconRowAndText({
-    required String svgPath,
+    String? svgPath,
     Color? iconColor,
     required String text,
     required Color backgroundColor,
@@ -629,6 +629,7 @@ class UIComponent {
   }) {
     return Container(
       padding: const EdgeInsets.all(10),
+      height: 40,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(8),
@@ -636,8 +637,9 @@ class UIComponent {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          if(svgPath != "" || svgPath != null)
           SvgPicture.asset(
-            svgPath,
+            svgPath!,
             colorFilter: ColorFilter.mode(
                 iconColor ??
                     AppColors.colorPrimary.adaptiveColor(context, lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mashrou3/app/db/app_preferences.dart';
 import 'package:mashrou3/app/model/city_list_response_model.dart';
+import 'package:mashrou3/app/model/property/address_location_response_model.dart';
 import 'package:mashrou3/app/model/property/currency_list_response_model.dart';
 import 'package:mashrou3/app/model/vendor_list_response.model.dart';
 import 'package:mashrou3/app/ui/screens/property_details/sub_screens/vendor_finance/model/vendor_detail_response_model.dart';
@@ -56,6 +57,8 @@ abstract class CommonApiRepository {
   Future<ResponseBaseModel> getVendorOfferAnalytics({
     required VendorOfferAnalyticsRequestModel requestModel,
   });
+
+  Future<ResponseBaseModel> getAddressLocationList();
 }
 
 class CommonApiRepositoryImpl extends CommonApiRepository {
@@ -331,6 +334,36 @@ class CommonApiRepositoryImpl extends CommonApiRepository {
           return SuccessResponse(data: responseModel);
         } else {
           return FailedResponse(errorMessage: response.statusMessage ?? "");
+        }
+      } else {
+        return FailedResponse(errorMessage: response.statusMessage ?? "");
+      }
+    } else {
+      return FailedResponse(errorMessage: "No internet connected!");
+    }
+  }
+
+  /// Address Location List API
+  ///
+  @override
+  Future<ResponseBaseModel> getAddressLocationList() async {
+    if (await Utils.isConnected()) {
+      final response = await GetIt.I<DioProvider>().postBaseAPIWithToken(
+        url: NetworkAPIs.kAddressLocation,
+        data: {
+          "pagination": false,
+          "isSuperAdmin": true,
+          "limit": 10000,
+        },
+      );
+      if (response.data != null) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          AddressLocationResponseModel responseModel =
+              AddressLocationResponseModel.fromJson(response.data);
+          debugPrint("AddressLocationResponse-----------${response.data.toString()}");
+          return SuccessResponse(data: responseModel);
+        } else {
+          return FailedResponse(errorMessage: response.data.toString());
         }
       } else {
         return FailedResponse(errorMessage: response.statusMessage ?? "");

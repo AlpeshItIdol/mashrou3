@@ -38,6 +38,7 @@ import '../../../../config/resources/app_colors.dart';
 import '../../../../config/resources/app_strings.dart';
 import '../../../../config/services/analytics_service.dart';
 import '../../../../utils/ui_components.dart';
+import '../../../bloc/common_api_services/common_api_cubit.dart';
 import '../../../db/app_preferences.dart';
 import '../../../model/base/base_model.dart';
 import '../../../model/verify_response.model.dart';
@@ -101,6 +102,8 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
     context.read<BanksOfferListCubit>().refresh();
     final cubit = context.read<BanksOfferListCubit>();
     cubit.getBankOffersList(hasMoreData: true);
+    // Fetch address location list if not already stored
+    _fetchAddressLocations();
     // Log the property click event
     AnalyticsService.logEvent(
       eventName: "property_click",
@@ -110,6 +113,25 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
         AppConstants.analyticsPropertyIdKey: widget.sId
       },
     );
+  }
+
+  Future<void> _fetchAddressLocations() async {
+    if (!mounted) return;
+    final appPreferences = AppPreferences();
+    final storedData = await appPreferences.getAddressLocationData();
+    if (storedData == null || storedData.locationData == null || storedData.locationData!.isEmpty) {
+      // Fetch from API if not stored
+      context.read<CommonApiCubit>().fetchAddressLocationList();
+    }
+  }
+
+  Future<String?> _getLocationTextFromKeys(List<String>? locationKeys) async {
+    if (locationKeys == null || locationKeys.isEmpty) {
+      return null;
+    }
+    final appPreferences = AppPreferences();
+    // Use locationKeys[0] to get the first location ID
+    return await appPreferences.getLocationTextById(locationKeys.first);
   }
 
   @override
@@ -538,19 +560,62 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
                                 spacing: 4,
                                 runSpacing: 10,
                                 children: [
-                                  Visibility(
-                                      visible: cubit.myPropertyDetails.country != null && cubit.myPropertyDetails.country!.isNotEmpty,
-                                      child: UIComponent.iconRowAndText(
-                                        context: context,
-                                        svgPath: SVGAssets.locationIcon,
-                                        text: '${cubit.myPropertyDetails.city?.isNotEmpty == true ? cubit.myPropertyDetails.city : ''}'
+                                  FutureBuilder<String?>(
+                                    future: _getLocationTextFromKeys(cubit.myPropertyDetails.locationKeys),
+                                    builder: (context, locationSnapshot) {
+                                      // Build the original location (propertyLocation.address or city/country)
+                                      String originalLocation = '';
+                                      if (cubit.myPropertyDetails.propertyLocation?.address != null && cubit.myPropertyDetails.propertyLocation!.address!.isNotEmpty) {
+                                        originalLocation = cubit.myPropertyDetails.propertyLocation!.address!;
+                                      } else if (cubit.myPropertyDetails.country != null && cubit.myPropertyDetails.country!.isNotEmpty) {
+                                        originalLocation = '${cubit.myPropertyDetails.city?.isNotEmpty == true ? cubit.myPropertyDetails.city : ''}'
                                             '${(cubit.myPropertyDetails.city?.isNotEmpty == true && cubit.myPropertyDetails.country?.isNotEmpty == true) ? ', ' : ''}'
-                                            '${cubit.myPropertyDetails.country?.isNotEmpty == true ? cubit.myPropertyDetails.country : ''}',
-                                        backgroundColor: AppColors.colorBgPrimary.adaptiveColor(context,
-                                            lightModeColor: AppColors.colorBgPrimary, darkModeColor: AppColors.black2E),
-                                        textColor: AppColors.colorPrimary.adaptiveColor(context,
-                                            lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
-                                      )),
+                                            '${cubit.myPropertyDetails.country?.isNotEmpty == true ? cubit.myPropertyDetails.country : ''}';
+                                      }
+                                      
+                                      // Get address location text from API
+                                      String addressLocationText = '';
+                                      if (locationSnapshot.hasData && locationSnapshot.data != null && locationSnapshot.data!.isNotEmpty) {
+                                        addressLocationText = locationSnapshot.data!;
+                                      }
+                                      
+                                      // Display both locations in separate cards
+                                      return Wrap(
+                                        spacing: 4,
+                                        runSpacing: 4,
+                                        children: [
+                                          // Address location text from API (separate card)
+                                          Visibility(
+                                            visible: addressLocationText.isNotEmpty,
+                                            child: UIComponent.iconRowAndText(
+                                              context: context,
+                                              svgPath: '',
+                                              text: addressLocationText,
+                                              backgroundColor: AppColors.colorBgPrimary.adaptiveColor(context,
+                                                  lightModeColor: AppColors.colorBgPrimary, darkModeColor: AppColors.black2E),
+                                              textColor: AppColors.colorPrimary.adaptiveColor(context,
+                                                  lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
+                                            ),
+                                          ),
+                                          // Original property location (separate card)
+                                          Visibility(
+                                            visible: originalLocation.isNotEmpty,
+                                            child: UIComponent.iconRowAndText(
+                                              context: context,
+                                              svgPath: SVGAssets.locationIcon,
+                                              text: '${cubit.myPropertyDetails.city?.isNotEmpty == true ? cubit.myPropertyDetails.city : ''}'
+                                      '${(cubit.myPropertyDetails.city?.isNotEmpty == true && cubit.myPropertyDetails.country?.isNotEmpty == true) ? ', ' : ''}'
+                                      '${cubit.myPropertyDetails.country?.isNotEmpty == true ? cubit.myPropertyDetails.country : ''}',
+                                              backgroundColor: AppColors.colorBgPrimary.adaptiveColor(context,
+                                                  lightModeColor: AppColors.colorBgPrimary, darkModeColor: AppColors.black2E),
+                                              textColor: AppColors.colorPrimary.adaptiveColor(context,
+                                                  lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ),
                                   Visibility(
                                       visible: cubit.myPropertyDetails.area != null && cubit.myPropertyDetails.area!.amount.isNotEmpty,
                                       child: UIComponent.iconRowAndText(

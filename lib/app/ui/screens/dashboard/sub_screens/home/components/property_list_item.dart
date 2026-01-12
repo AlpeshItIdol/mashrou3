@@ -21,6 +21,7 @@ class PropertyListItem extends StatefulWidget {
   final String? propertyPrice;
   final String propertyPriceCurrency;
   final String propertyLocation;
+  final String? addressLocationText;
   final String propertyArea;
   final dynamic propertyRating;
   final bool isFavorite;
@@ -51,6 +52,7 @@ class PropertyListItem extends StatefulWidget {
     required this.propertyPrice,
     required this.propertyPriceCurrency,
     required this.propertyLocation,
+    this.addressLocationText,
     required this.propertyArea,
     required this.propertyRating,
     required this.isVisitor,
@@ -410,12 +412,23 @@ class _PropertyListItemState extends State<PropertyListItem> {
                           ),
                         ),
                   ).showIf(widget.propertyPrice != null && widget.propertyPrice != "null" && widget.propertyPrice!.isNotEmpty),
-                  Visibility(visible: widget.propertyLocation.isNotEmpty == true || widget.propertyArea.isNotEmpty == true || widget.propertyRating != '0', child: 12.verticalSpace),
+                  Visibility(visible: widget.propertyLocation.isNotEmpty == true || (widget.addressLocationText != null && widget.addressLocationText!.isNotEmpty) || widget.propertyArea.isNotEmpty == true || widget.propertyRating != '0', child: 12.verticalSpace),
                   Skeleton.unite(
                       child: Wrap(
                     spacing: 4,
                     runSpacing: 4,
                     children: [
+                      // Address location text from API (separate card)
+                      Visibility(
+                          visible: widget.addressLocationText != null && widget.addressLocationText!.isNotEmpty,
+                          child: UIComponent.iconRowAndText(
+                            context: context,
+                            svgPath: "",
+                            text: widget.addressLocationText ?? '',
+                            backgroundColor: AppColors.colorBgPrimary.adaptiveColor(context, lightModeColor: AppColors.colorBgPrimary, darkModeColor: AppColors.black14),
+                            textColor: AppColors.colorPrimary.adaptiveColor(context, lightModeColor: AppColors.colorPrimary, darkModeColor: AppColors.white),
+                          )),
+                      // Original property location (separate card)
                       Visibility(
                           visible: widget.propertyLocation.isNotEmpty == true,
                           child: UIComponent.iconRowAndText(

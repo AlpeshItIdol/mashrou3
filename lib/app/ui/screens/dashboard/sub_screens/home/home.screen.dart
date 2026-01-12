@@ -22,6 +22,7 @@ import '../../../../../../config/resources/app_assets.dart';
 import '../../../../../../config/utils.dart';
 import '../../../../../../utils/app_localization.dart';
 import '../../../../../bloc/common_api_services/common_api_cubit.dart';
+import '../../../../../db/app_preferences.dart';
 import '../../../../custom_widget/toggle_widget/toggle_cubit.dart';
 import '../../../../custom_widget/toggle_widget/toggle_row_item.dart';
 import 'cubit/home_cubit.dart';
@@ -46,7 +47,28 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
     homeScreenPagingController.addPageRequestListener((pageKey) {
       context.read<HomeCubit>().getPropertyList(pageKey: pageKey);
     });
+    // Fetch address location list if not already stored
+    _fetchAddressLocations();
     super.initState();
+  }
+
+  Future<void> _fetchAddressLocations() async {
+    if (!mounted) return;
+    final appPreferences = AppPreferences();
+    final storedData = await appPreferences.getAddressLocationData();
+    if (storedData == null || storedData.locationData == null || storedData.locationData!.isEmpty) {
+      // Fetch from API if not stored
+      context.read<CommonApiCubit>().fetchAddressLocationList();
+    }
+  }
+
+  Future<String?> _getLocationText(String? locationKeys) async {
+    if (locationKeys == null || locationKeys.isEmpty) {
+      return null;
+    }
+    final appPreferences = AppPreferences();
+    // Use locationKeys directly as it's already the first ID from the list
+    return await appPreferences.getLocationTextById(locationKeys);
   }
 
   @override
@@ -391,66 +413,79 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
         itemBuilder: (context, item, index) {
           final isFullyLocked = (item.isLocked == true && item.isLockedByMe == true);
           final isSelected = !isFullyLocked && (cubit.isBtnSelectAllPropertiesTapped || cubit.selectedPropertyList.contains(item));
-          return PropertyListItem(
-            propertyName: item.title ?? '',
-            propertyImg: Utils.getLatestPropertyImage(item.propertyFiles ?? [], item.thumbnail ?? "") ?? "",
-            propertyImgCount: (Utils.getAllImageFiles(item.propertyFiles ?? []).length + ((item.thumbnail != null && item.thumbnail!.isNotEmpty) ? 1 : 0)).toString(),
-            propertyPrice: item.price?.amount?.toString(),
-            propertyLocation: '${item.city?.isNotEmpty == true ? item.city : ''}'
-                '${(item.city?.isNotEmpty == true && item.country?.isNotEmpty == true) ? ', ' : ''}'
-                '${item.country?.isNotEmpty == true ? item.country : ''}',
-            propertyArea: Utils.formatArea('${item.area?.amount ?? ''}', item.area?.unit ?? ''),
-            propertyRating: item.rating.toString(),
-            isVendor: cubit.isVendor,
-            isVisitor: cubit.isVendor == true ? false : true,
-            isSoldOut: item.isSoldOut ?? false,
-            isLocked: item.isLocked ?? false,
-            isLockedByMe: item.isLockedByMe ?? false,
-            offerData: item.offerData,
-            onPropertyTap: () {
-              context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
-                RouteArguments.propertyId: item.sId ?? "0",
-                RouteArguments.propertyLat: (item.propertyLocation?.latitude ?? 0.00).toString(),
-                RouteArguments.propertyLng: (item.propertyLocation?.longitude ?? 0.00).toString(),
-              }).then((value) {
-                if (value != null && value == true) {
-                  // _pagingController.refresh();
-                }
-              });
-            },
-            requiredFavorite: cubit.isGuest ? false : true,
-            requiredCheckBox: cubit.isBtnSelectPropertiesTapped,
-            isFavorite: item.favorite ?? cubit.isFavorite,
-            isSelected: isSelected,
-            isBankProperty: item.createdByBank ?? false,
-            onFavouriteToggle: (isFavourite) async {
-              if (isFetchingData) return;
-              OverlayLoadingProgress.start(context);
-              isFetchingData = true;
-              try {
-                await cubit
-                    .addRemoveFavorite(
-                  propertyId: item.sId ?? "",
-                  isFav: isFavourite,
-                )
-                    .then((value) {
-                  Future.delayed(Duration.zero, () async {
-                    cubit.resetPropertyList();
-                    homeScreenPagingController.refresh();
+          // Get location text from locationKeys if available
+          return FutureBuilder<String?>(
+            future: _getLocationText(item.locationKeys),
+            builder: (context, locationSnapshot) {
+              // Get address location text from API
+              String addressLocationText = '';
+              if (locationSnapshot.hasData && locationSnapshot.data != null && locationSnapshot.data!.isNotEmpty) {
+                addressLocationText = locationSnapshot.data!;
+              }
+              
+              return PropertyListItem(
+                propertyName: item.title ?? '',
+                propertyImg: Utils.getLatestPropertyImage(item.propertyFiles ?? [], item.thumbnail ?? "") ?? "",
+                propertyImgCount: (Utils.getAllImageFiles(item.propertyFiles ?? []).length + ((item.thumbnail != null && item.thumbnail!.isNotEmpty) ? 1 : 0)).toString(),
+                propertyPrice: item.price?.amount?.toString(),
+                propertyLocation: '${item.city?.isNotEmpty == true ? item.city : ''}'
+                    '${(item.city?.isNotEmpty == true && item.country?.isNotEmpty == true) ? ', ' : ''}'
+                    '${item.country?.isNotEmpty == true ? item.country : ''}',
+                addressLocationText: addressLocationText,
+                propertyArea: Utils.formatArea('${item.area?.amount ?? ''}', item.area?.unit ?? ''),
+                propertyRating: item.rating.toString(),
+                isVendor: cubit.isVendor,
+                isVisitor: cubit.isVendor == true ? false : true,
+                isSoldOut: item.isSoldOut ?? false,
+                isLocked: item.isLocked ?? false,
+                isLockedByMe: item.isLockedByMe ?? false,
+                offerData: item.offerData,
+                onPropertyTap: () {
+                  context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
+                    RouteArguments.propertyId: item.sId ?? "0",
+                    RouteArguments.propertyLat: (item.propertyLocation?.latitude ?? 0.00).toString(),
+                    RouteArguments.propertyLng: (item.propertyLocation?.longitude ?? 0.00).toString(),
+                  }).then((value) {
+                    if (value != null && value == true) {
+                      // _pagingController.refresh();
+                    }
                   });
-                });
-              } catch (error) {
-                printf("Error fetching properties: $error");
-              } finally {
-                isFetchingData = false;
-              }
+                },
+                requiredFavorite: cubit.isGuest ? false : true,
+                requiredCheckBox: cubit.isBtnSelectPropertiesTapped,
+                isFavorite: item.favorite ?? cubit.isFavorite,
+                isSelected: isSelected,
+                isBankProperty: item.createdByBank ?? false,
+                onFavouriteToggle: (isFavourite) async {
+                  if (isFetchingData) return;
+                  OverlayLoadingProgress.start(context);
+                  isFetchingData = true;
+                  try {
+                    await cubit
+                        .addRemoveFavorite(
+                      propertyId: item.sId ?? "",
+                      isFav: isFavourite,
+                    )
+                        .then((value) {
+                      Future.delayed(Duration.zero, () async {
+                        cubit.resetPropertyList();
+                        homeScreenPagingController.refresh();
+                      });
+                    });
+                  } catch (error) {
+                    printf("Error fetching properties: $error");
+                  } finally {
+                    isFetchingData = false;
+                  }
+                },
+                onCheckBoxToggle: (isSelectedForCheckbox) async {
+                  if (!isFullyLocked) {
+                    cubit.togglePropertySelection(item, isSelectedForCheckbox, homeScreenPagingController);
+                  }
+                },
+                propertyPriceCurrency: item.price?.currencySymbol ?? '',
+              );
             },
-            onCheckBoxToggle: (isSelectedForCheckbox) async {
-              if (!isFullyLocked) {
-                cubit.togglePropertySelection(item, isSelectedForCheckbox, homeScreenPagingController);
-              }
-            },
-            propertyPriceCurrency: item.price?.currencySymbol ?? '',
           );
         },
         noItemsFoundIndicatorBuilder: (context) {

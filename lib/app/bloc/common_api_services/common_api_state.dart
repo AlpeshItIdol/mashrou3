@@ -79,6 +79,15 @@ class PropertyCategoryListLoaded extends CommonApiState {
   List<Object> get props => [propertyCategoryListData];
 }
 
+class AddressLocationListLoaded extends CommonApiState {
+  final AddressLocationData addressLocationData;
+
+  const AddressLocationListLoaded({required this.addressLocationData});
+
+  @override
+  List<Object> get props => [addressLocationData];
+}
+
 class CommonApiError extends CommonApiState {
   final String errorMessage;
 

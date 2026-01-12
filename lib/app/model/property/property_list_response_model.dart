@@ -213,7 +213,19 @@ class PropertyData {
         videoLink = (json['videoLink'] as List).cast<String>();
       }
     }
-    locationKeys = json['locationKeys'] is String ? json['locationKeys'] : null;
+    // Handle locationKeys as List or String
+    if (json['locationKeys'] != null) {
+      if (json['locationKeys'] is List) {
+        List<String> keysList = (json['locationKeys'] as List).cast<String>();
+        locationKeys = keysList.isNotEmpty ? keysList.first : null;
+      } else if (json['locationKeys'] is String) {
+        locationKeys = json['locationKeys'];
+      } else {
+        locationKeys = null;
+      }
+    } else {
+      locationKeys = null;
+    }
     propertyFiles = (json['propertyFiles'] as List?)?.cast<String>() ?? [];
     neighborhoodType =
         (json['neighborhoodType'] as List?)?.cast<String>() ?? [];

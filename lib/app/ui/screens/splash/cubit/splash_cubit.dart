@@ -36,7 +36,19 @@ class SplashCubit extends Cubit<SplashState> {
   Future<void> getData(BuildContext context) async {
     isDarkModeEnabled = await GetIt.I<AppPreferences>().getIsDarkMode();
     printf(isDarkModeEnabled);
+    // Fetch address location list on app launch
+    _fetchAddressLocations(context);
     navigateToScreen();
+  }
+
+  Future<void> _fetchAddressLocations(BuildContext context) async {
+    if (!context.mounted) return;
+    final appPreferences = AppPreferences();
+    final storedData = await appPreferences.getAddressLocationData();
+    if (storedData == null || storedData.locationData == null || storedData.locationData!.isEmpty) {
+      // Fetch from API if not stored
+      context.read<CommonApiCubit>().fetchAddressLocationList();
+    }
   }
 
   /// navigate to welcome screen

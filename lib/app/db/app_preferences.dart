@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mashrou3/app/model/property/address_location_response_model.dart';
 import 'package:mashrou3/app/model/property/property_list_response_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,6 +45,9 @@ class AppPreferences {
 
   // If logged in user has active subscription or not.
   static const String keyIsSubscribed = 'keyIsSubscribed';
+
+  // Address location data
+  static const String keyAddressLocationData = 'keyAddressLocationData';
 
   // Method to set User Role details
   Future<bool> setIsUserClient(bool value) async {
@@ -320,5 +324,54 @@ class AppPreferences {
   Future<void> clearLangData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove(keyLanguagePref);
+  }
+
+  // Method to save address location data
+  Future<bool> saveAddressLocationData(AddressLocationData locationData) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String locationDataJson = json.encode(locationData.toJson());
+    return prefs.setString(keyAddressLocationData, locationDataJson);
+  }
+
+  // Method to get address location data
+  Future<AddressLocationData?> getAddressLocationData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? locationDataJson = prefs.getString(keyAddressLocationData);
+    if (locationDataJson != null && locationDataJson.isNotEmpty) {
+      try {
+        Map<String, dynamic> decoded = json.decode(locationDataJson);
+        return AddressLocationData.fromJson(decoded);
+      } catch (e) {
+        debugPrint("Error decoding address location data: $e");
+        return null;
+      }
+    }
+    return null;
+  }
+
+  // Method to get location text by ID
+  Future<String?> getLocationTextById(String? locationId) async {
+    if (locationId == null || locationId.isEmpty) {
+      return null;
+    }
+    final locationData = await getAddressLocationData();
+    if (locationData?.locationData != null) {
+      final locationItem = locationData!.locationData!.firstWhere(
+        (item) => item.sId == locationId,
+        orElse: () => AddressLocationItem(),
+      );
+      return locationItem.text;
+    }
+    return null;
+  }
+
+  // Method to get location text by IDs (for list of IDs)
+  Future<String?> getLocationTextByIds(List<String>? locationIds) async {
+    if (locationIds == null || locationIds.isEmpty) {
+      return null;
+    }
+    // Get the first location ID from the list
+    final firstLocationId = locationIds.first;
+    return getLocationTextById(firstLocationId);
   }
 }
