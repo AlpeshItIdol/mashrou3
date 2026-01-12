@@ -496,12 +496,15 @@ class FilterCubit extends Cubit<FilterState> {
       filterRequestModel.neighborhood = neighborhoodIds;
     }
 
-    // Set category if selected (only if not "All")
+    // Handle category selection
     // "All" option has empty sId, so we skip category-related fields when sId is empty or null
+    // When "All" is selected, the API will still be called (if other filters are applied)
+    // but without category, subCategoryId, or any living space fields in the payload
     final isAllSelected = selectedPropertyCategory.sId == null || 
                          selectedPropertyCategory.sId!.isEmpty;
     
     if (!isAllSelected && selectedPropertyCategory.sId != null && selectedPropertyCategory.sId!.isNotEmpty) {
+      // Specific category selected - include category and related fields
       filterRequestModel.category = selectedPropertyCategory.sId;
       printf("Setting category: ${selectedPropertyCategory.sId}");
       
@@ -554,7 +557,9 @@ class FilterCubit extends Cubit<FilterState> {
       }
       }
     } else {
-      printf("'All' category selected - skipping category, sub-category, and living space fields");
+      // "All" selected - category-related fields remain null and will be excluded from API payload
+      // The API will still be called if other filters (price, area, location, etc.) are applied
+      printf("'All' category selected - category, sub-category, and living space fields will not be included in API payload");
     }
 
     if (selectedAddressLocation.sId != null && selectedAddressLocation.sId!.isNotEmpty) {
@@ -574,10 +579,21 @@ class FilterCubit extends Cubit<FilterState> {
     printf("Filter Request Model JSON: ${filterRequestModel.toJson()}");
     printf("Category in filterRequestModel: ${filterRequestModel.category}");
     printf("SubCategoryId in filterRequestModel: ${filterRequestModel.subCategoryId}");
+    printf("Is 'All' selected: $isAllSelected");
     
-    if (filterRequestModel.isEmpty()) {
+    // When "All" is selected, always call the API (even if no other filters are applied)
+    // This ensures that selecting "All" triggers a filter API call to get all properties
+    // without any category restrictions
+    if (isAllSelected) {
+      // "All" is selected - always call API, even if filterRequestModel appears empty
+      // The API will be called without category-related fields in the payload
+      printf("'All' category selected - calling API without category restrictions");
+      emit(ApplyPropertyFilter(filterRequestModel));
+    } else if (filterRequestModel.isEmpty()) {
+      // No filters applied and no category selected - don't call API
       emit(FilterInitial());
     } else {
+      // Specific category or other filters applied - call API
       emit(ApplyPropertyFilter(filterRequestModel));
     }
   }
