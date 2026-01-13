@@ -995,19 +995,8 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
                             child: AnimatedOpacity(
                               opacity: showLeft ? 1.0 : 0.0,
                               duration: const Duration(milliseconds: 200),
-                              child: Container(
-                                width: 40,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                      Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
-                                    ],
-                                  ),
-                                ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
                                 child: UIComponent.customInkWellWidget(
                                   onTap: () {
                                     final scrollable = Scrollable.maybeOf(builderContext);
@@ -1064,19 +1053,8 @@ class _ProfileDetailScreenState extends State<ProfileDetailScreen> with AppBarMi
                             child: AnimatedOpacity(
                               opacity: showRight ? 1.0 : 0.0,
                               duration: const Duration(milliseconds: 200),
-                              child: Container(
-                                width: 40,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.centerRight,
-                                    end: Alignment.centerLeft,
-                                    colors: [
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                      Theme.of(context).scaffoldBackgroundColor.withOpacity(0.0),
-                                    ],
-                                  ),
-                                ),
+                              child: Align(
+                                alignment: Alignment.centerRight,
                                 child: UIComponent.customInkWellWidget(
                                   onTap: () {
                                     final scrollable = Scrollable.maybeOf(builderContext);
