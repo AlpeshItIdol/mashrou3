@@ -1686,7 +1686,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
                 ),
                 title: Text(
                   isSelected
-                      ? "${cubit.selectedLivingSpaceMultiItems[key]?.length ?? 0} Selected"
+                      ? "${cubit.selectedLivingSpaceMultiItems[key]?.length ?? 0} ${appStrings(context).textSelected}"
                       : appStrings(context).select,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: AppColors.grey77, fontWeight: FontWeight.w400),
@@ -2249,7 +2249,7 @@ class _FilterScreenState extends State<FilterScreen> with AppBarMixin {
                   title: Text(
                     cubit.selectedPropertySubCategories.isEmpty
                         ? appStrings(context).select
-                        : "${cubit.selectedPropertySubCategories.length} Selected",
+                        : "${cubit.selectedPropertySubCategories.length} ${appStrings(context).textSelected}",
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         color: AppColors.grey77, fontWeight: FontWeight.w400),
                   ),

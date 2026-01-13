@@ -534,5 +534,6 @@
   "lblNeighbourLocations": "Area Names",
   "lblNeighbourLocationPlaceholder": "Enter area name",
   "errorDuplicateLocation": "Duplicate locations are not allowed",
-  "lblViewProperty": "View Property"
+  "lblViewProperty": "View Property",
+  "textSelected": "Selected"
 }

@@ -1466,4 +1466,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get lblViewProperty => 'عرض العقار';
+
+  @override
+  String get textSelected => 'محدد';
 }

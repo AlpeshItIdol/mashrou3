@@ -1402,7 +1402,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomTextLabel(text: "Category"),
+            CustomTextLabel(text: appStrings(context).propertyCategory),
             5.verticalSpace,
             UIComponent.customInkWellWidget(
               onTap: () async {
@@ -1475,7 +1475,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomTextLabel(text: "Sub Category"),
+            CustomTextLabel(text: appStrings(context).propertySubCategory),
             6.verticalSpace,
             BlocListener<OwnerFilterCubit, OwnerFilterState>(
               listener: (context, state) {},
@@ -1501,7 +1501,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
                     title: Text(
                       cubit.selectedPropertySubCategories.isEmpty
                           ? appStrings(context).select
-                          : "${cubit.selectedPropertySubCategories.length} Selected",
+                          : "${cubit.selectedPropertySubCategories.length} ${appStrings(context).textSelected}",
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: AppColors.grey77, fontWeight: FontWeight.w400),
                     ),
@@ -1597,7 +1597,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomTextLabel(text: "Area Name"),
+        CustomTextLabel(text: appStrings(context).lblNeighbourLocation),
         5.verticalSpace,
         UIComponent.customInkWellWidget(
           onTap: () async {
@@ -1712,7 +1712,7 @@ class _OwnerFilterScreenState extends State<OwnerFilterScreen>
                 ),
                 title: Text(
                   isSelected
-                      ? "${cubit.selectedLivingSpaceMultiItems[key]?.length ?? 0} Selected"
+                      ? "${cubit.selectedLivingSpaceMultiItems[key]?.length ?? 0} ${appStrings(context).textSelected}"
                       : appStrings(context).select,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       color: AppColors.grey77, fontWeight: FontWeight.w400),

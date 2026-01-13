@@ -2917,6 +2917,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View Property'**
   String get lblViewProperty;
+
+  /// No description provided for @textSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get textSelected;
 }
 
 class _AppLocalizationsDelegate

@@ -1473,4 +1473,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lblViewProperty => 'View Property';
+
+  @override
+  String get textSelected => 'Selected';
 }

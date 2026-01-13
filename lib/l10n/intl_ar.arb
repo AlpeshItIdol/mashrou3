@@ -526,6 +526,7 @@
   "lblNeighbourLocations": "أسماء المناطق",
   "lblNeighbourLocationPlaceholder": "أدخل اسم المنطقة",
   "errorDuplicateLocation": "لا يُسمح بالمواقع المكررة",
-  "lblViewProperty": "عرض العقار"
+  "lblViewProperty": "عرض العقار",
+  "textSelected": "محدد"
 
 }
