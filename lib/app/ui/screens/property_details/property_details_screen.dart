@@ -305,6 +305,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
                               _buildButton(
                                 context: context,
                                 label: appStrings(context).lblBank,
+                                isEnabled: cubit.myPropertyDetails.bankOffer ?? false,
                                 onTap: () async {
                                   AnalyticsService.logEvent(
                                     eventName: "property_property_finance_click",
@@ -326,6 +327,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
                               _buildButton(
                                 context: context,
                                 label: "Vendors",
+                                isEnabled: cubit.myPropertyDetails.vendorOffer ?? false,
                                 onTap: () async {
                                   AnalyticsService.logEvent(
                                     eventName: "property_vendor_finance_click",
@@ -360,6 +362,7 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
     required BuildContext context,
     required String label,
     required VoidCallback onTap,
+    bool isEnabled = true,
   }) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.25,
@@ -367,15 +370,15 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Material(
-          color: AppColors.white,
+          color: isEnabled ? AppColors.white : AppColors.greyE8,
           child: InkWell(
-            onTap: onTap,
+            onTap: isEnabled ? onTap : null,
             child: Center(
               child: Text(
                 label,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w400,
-                  color: AppColors.colorPrimary,
+                  color: isEnabled ? AppColors.colorPrimary : AppColors.grey77,
                 ),
               ),
             ),
