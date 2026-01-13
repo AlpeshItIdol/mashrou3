@@ -118,6 +118,10 @@ class _PropertyDetailsScreenState extends State<PropertyDetailsScreen> with AppB
   Future<void> _fetchAddressLocations() async {
     if (!mounted) return;
     final appPreferences = AppPreferences();
+    final isGuest = await appPreferences.getIsGuestUser();
+    // Skip API call for guest users as it requires authentication
+    if (isGuest) return;
+    
     final storedData = await appPreferences.getAddressLocationData();
     if (storedData == null || storedData.locationData == null || storedData.locationData!.isEmpty) {
       // Fetch from API if not stored
