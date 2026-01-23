@@ -206,7 +206,7 @@ class _PropertyListItemState extends State<PropertyListItem> {
                 ),
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
-                    final isFullyLocked = widget.isLocked == true && widget.isLockedByMe == true;
+                    final isFullyLocked = (widget.isLocked == true && widget.isLockedByMe == true) || widget.isLocked == true;
 
                     return PositionedDirectional(
                       top: 12,
