@@ -368,8 +368,14 @@ class Location {
   });
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
-    latitude: json["latitude"].toDouble(),
-    longitude: json["longitude"].toDouble(),
+    // Backend sometimes sends null for latitude/longitude, or as int/double.
+    // Make this parsing null-safe to avoid calling toDouble() on null.
+    latitude: json["latitude"] == null
+        ? null
+        : (json["latitude"] as num).toDouble(),
+    longitude: json["longitude"] == null
+        ? null
+        : (json["longitude"] as num).toDouble(),
     address: json["address"],
     id: json["_id"],
   );
