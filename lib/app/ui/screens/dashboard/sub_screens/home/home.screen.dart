@@ -25,6 +25,7 @@ import '../../../../../bloc/common_api_services/common_api_cubit.dart';
 import '../../../../../db/app_preferences.dart';
 import '../../../../custom_widget/toggle_widget/toggle_cubit.dart';
 import '../../../../custom_widget/toggle_widget/toggle_row_item.dart';
+import '../favourite/cubit/favourite_cubit.dart' hide AddedToFavorite, PropertyListError;
 import 'cubit/home_cubit.dart';
 
 class HomeScreen extends StatefulWidget with AppBarMixin {
@@ -160,12 +161,14 @@ class _HomeScreenState extends State<HomeScreen> with AppBarMixin {
                         if (state is ApplyPropertyFilter) {
                           filterRequestModel = state.filterRequestModel;
                           cubit.updateFilterRequestModel(filterRequestModel);
+                          context.read<FavouriteCubit>().updateFilterRequestModel(filterRequestModel.copy());
                           Future.delayed(Duration.zero, () async {
                             cubit.resetPropertyList();
                             homeScreenPagingController.refresh();
                           });
                         } else if (state is FilterReset) {
                           cubit.updateFilterRequestModel(FilterRequestModel());
+                          context.read<FavouriteCubit>().updateFilterRequestModel(FilterRequestModel());
                           Future.delayed(Duration.zero, () async {
                             cubit.resetPropertyList();
                             homeScreenPagingController.refresh();

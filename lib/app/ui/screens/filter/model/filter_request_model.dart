@@ -207,6 +207,40 @@ class FilterRequestModel {
         (price == null || price!.isEmpty()) &&
         (area == null || area!.isEmpty());
   }
+
+  /// Creates a deep copy so each cubit can mutate independently (e.g. category override).
+  FilterRequestModel copy() {
+    return FilterRequestModel(
+      category: category,
+      isSoldOut: isSoldOut,
+      isSold: isSold,
+      nearest: nearest,
+      farthest: farthest,
+      longitude: longitude,
+      latitude: latitude,
+      selectRadius: selectRadius,
+      underConstruction: underConstruction,
+      leasingCompany: leasingCompany,
+      furnished: furnished,
+      virtualTour: virtualTour,
+      country: country,
+      city: city,
+      currencyCode: currencyCode,
+      neighborhood: neighborhood != null ? List<String>.from(neighborhood!) : null,
+      locationKeys: locationKeys != null ? List<String>.from(locationKeys!) : null,
+      subCategoryId: subCategoryId != null ? List<String>.from(subCategoryId!) : null,
+      floors: floors != null ? List<String>.from(floors!) : null,
+      bedrooms: bedrooms != null ? List<String>.from(bedrooms!) : null,
+      bathrooms: bathrooms != null ? List<String>.from(bathrooms!) : null,
+      amenities: amenities != null ? List<String>.from(amenities!) : null,
+      facade: facade != null ? List<String>.from(facade!) : null,
+      furnishedType: furnishedType != null ? List<String>.from(furnishedType!) : null,
+      buildingAge: buildingAge != null ? List<String>.from(buildingAge!) : null,
+      mortgaged: mortgaged != null ? List<String>.from(mortgaged!) : null,
+      price: price != null ? MinMaxModel(min: price!.min, max: price!.max) : null,
+      area: area != null ? MinMaxModel(min: area!.min, max: area!.max) : null,
+    );
+  }
 }
 
 class MinMaxModel {

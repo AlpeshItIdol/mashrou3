@@ -13,7 +13,6 @@ import 'package:mashrou3/app/ui/screens/dashboard/sub_screens/favourite/favourit
 import 'package:mashrou3/app/ui/screens/dashboard/sub_screens/home/home.screen.dart';
 import 'package:mashrou3/app/ui/screens/dashboard/sub_screens/my_offers_list/my_offers_list_screen.dart';
 import 'package:mashrou3/app/ui/screens/dashboard/sub_screens/notification/notification.screen.dart';
-import 'package:mashrou3/app/ui/screens/filter/cubit/fav_filter_cubit.dart';
 import 'package:mashrou3/app/ui/screens/filter/cubit/filter_cubit.dart';
 import 'package:mashrou3/app/ui/screens/filter/model/filter_request_model.dart';
 import 'package:mashrou3/config/resources/app_colors.dart';
@@ -130,12 +129,10 @@ class _DashboardScreenState extends State<DashboardScreen> with AppBarMixin {
                   systemNavigationBarColor: Colors.white,
                   systemNavigationBarIconBrightness: Brightness.dark,
                 ),
-                child: BlocListener<FavFilterCubit, FavFilterState>(
+                child: BlocListener<FilterCubit, FilterState>(
                   listener: (context, state) {},
-                  child: BlocListener<FilterCubit, FilterState>(
-                    listener: (context, state) {},
-                    child:
-                        BlocListener<AppPreferencesCubit, AppPreferencesState>(
+                  child:
+                      BlocListener<AppPreferencesCubit, AppPreferencesState>(
                       listener: (context, state) {},
                       child: PopScope(
                         canPop: false,
@@ -731,20 +728,12 @@ class _DashboardScreenState extends State<DashboardScreen> with AppBarMixin {
                                                   ));
                                             },
                                             requireFilterSortIcon: true,
-                                            isFilterApplied:
-                                                cubit.selectedPageIndex == 0
-                                                    ? context
-                                                        .watch<FilterCubit>()
-                                                        .isFilterApplied
-                                                    : context
-                                                        .watch<FavFilterCubit>()
-                                                        .isFilterApplied,
+                                            isFilterApplied: context
+                                                .watch<FilterCubit>()
+                                                .isFilterApplied,
                                             onFilterTap: () {
-                                              cubit.selectedPageIndex == 0
-                                                  ? context.pushNamed(
-                                                      Routes.kFilterScreen)
-                                                  : context.pushNamed(
-                                                      Routes.kFavFilterScreen);
+                                              context.pushNamed(
+                                                  Routes.kFilterScreen);
                                             }),
                             body: BlocBuilder<BottomNavCubit, int>(
                               builder: (context, selectedIndex) {
@@ -785,8 +774,7 @@ class _DashboardScreenState extends State<DashboardScreen> with AppBarMixin {
                     ),
                   ),
                 ),
-              ),
-            );
+              );
           },
         );
       },
@@ -797,7 +785,6 @@ class _DashboardScreenState extends State<DashboardScreen> with AppBarMixin {
     context.read<HomeCubit>().filterRequestModel = FilterRequestModel();
     context.read<FilterCubit>().resetAndClearFilters(context);
     context.read<FavouriteCubit>().filterRequestModel = FilterRequestModel();
-    context.read<FavFilterCubit>().resetAndClearFilters(context);
     await SessionTracker().onLogout();
     await GetIt.I<AppPreferences>().clearData();
     await NotificationService().cancelAllNotifications();

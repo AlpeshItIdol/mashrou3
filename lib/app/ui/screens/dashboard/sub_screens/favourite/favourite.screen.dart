@@ -5,7 +5,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:mashrou3/app/navigation/route_arguments.dart';
 import 'package:mashrou3/app/navigation/routes.dart';
 import 'package:mashrou3/app/ui/custom_widget/app_bar_mixin.dart';
-import 'package:mashrou3/app/ui/screens/filter/cubit/fav_filter_cubit.dart';
+import 'package:mashrou3/app/ui/screens/filter/cubit/filter_cubit.dart';
 import 'package:mashrou3/app/ui/screens/filter/model/filter_request_model.dart';
 import 'package:mashrou3/app/ui/screens/property_details/cubit/property_details_cubit.dart';
 import 'package:mashrou3/app/ui/screens/ratings/cubit/add_rating_cubit.dart';
@@ -21,6 +21,7 @@ import '../../../../custom_widget/loader/overlay_loading_progress.dart';
 import '../../../../custom_widget/toggle_widget/toggle_cubit.dart';
 import '../../../../custom_widget/toggle_widget/toggle_row_item.dart';
 import '../home/components/property_list_item.dart';
+import '../home/cubit/home_cubit.dart' hide AddedToFavorite, PropertyListError;
 import 'cubit/favourite_cubit.dart';
 
 class FavouriteScreen extends StatefulWidget with AppBarMixin {
@@ -114,18 +115,19 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                           });
                         }
                       },
-                      child: BlocConsumer<FavFilterCubit, FavFilterState>(
+                      child: BlocConsumer<FilterCubit, FilterState>(
                         listener: (context, state) {
                           FilterRequestModel? filterRequestModel;
-                          if (state is FavApplyPropertyFilter) {
+                          if (state is ApplyPropertyFilter) {
                             filterRequestModel = state.filterRequestModel;
                             cubit.updateFilterRequestModel(filterRequestModel);
+                            context.read<HomeCubit>().updateFilterRequestModel(filterRequestModel.copy());
                             Future.delayed(Duration.zero, () async {
                               favScreenPagingController.refresh();
                             });
-                          } else if (state is FavFilterReset) {
-                            cubit
-                                .updateFilterRequestModel(FilterRequestModel());
+                          } else if (state is FilterReset) {
+                            cubit.updateFilterRequestModel(FilterRequestModel());
+                            context.read<HomeCubit>().updateFilterRequestModel(FilterRequestModel());
                             Future.delayed(Duration.zero, () async {
                               favScreenPagingController.refresh();
                             });
@@ -213,7 +215,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                 '${item.country?.isNotEmpty == true ? item.country : ''}',
             propertyArea: Utils.formatArea(
                 '${item.area?.amount ?? ''}', item.area?.unit ?? ''),
-            propertyRating: item.rating.toString() ?? '0',
+            propertyRating: item.rating?.toString() ?? '0',
             onPropertyTap: () {
               context.pushNamed(Routes.kPropertyDetailScreen, pathParameters: {
                 RouteArguments.propertyId: item.sId ?? "0",

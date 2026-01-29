@@ -10,7 +10,6 @@ import 'package:mashrou3/app/ui/custom_widget/side_drawer_widget/side_drawer_cub
 import 'package:mashrou3/app/ui/screens/app_prefereces/cubit/app_preferences_cubit.dart';
 import 'package:mashrou3/app/ui/screens/dashboard/sub_screens/favourite/cubit/favourite_cubit.dart';
 import 'package:mashrou3/app/ui/screens/dashboard/sub_screens/home/cubit/home_cubit.dart';
-import 'package:mashrou3/app/ui/screens/filter/cubit/fav_filter_cubit.dart';
 import 'package:mashrou3/app/ui/screens/filter/cubit/filter_cubit.dart';
 import 'package:mashrou3/app/ui/screens/filter/model/filter_request_model.dart';
 import 'package:mashrou3/app/ui/screens/personal_information/cubit/personal_information_cubit.dart';
@@ -56,7 +55,6 @@ class _SideDrawerWidgetState extends State<SideDrawerWidget> {
     context.read<HomeCubit>().filterRequestModel = FilterRequestModel();
     context.read<FilterCubit>().resetAndClearFilters(context);
     context.read<FavouriteCubit>().filterRequestModel = FilterRequestModel();
-    context.read<FavFilterCubit>().resetAndClearFilters(context);
     await SessionTracker().onLogout();
     await GetIt.I<AppPreferences>().clearData();
     _navigateToRoute(routeName: Routes.kLoginScreen, isForLogout: true);
