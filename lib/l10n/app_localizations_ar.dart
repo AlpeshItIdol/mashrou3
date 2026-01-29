@@ -377,6 +377,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get lblVendorOfferAnalytics => 'تحليلات عروض البائع';
 
   @override
+  String get lblOwnerOfferAnalytics => 'Owner Offer Analytics';
+
+  @override
   String get textForRealEstate => 'لعقارات';
 
   @override

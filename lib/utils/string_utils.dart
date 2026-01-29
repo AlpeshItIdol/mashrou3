@@ -1,3 +1,5 @@
+import 'package:mashrou3/app/db/app_preferences.dart';
+
 class StringUtils {
   static String enumName(String enumToString) {
     List<String> paths = enumToString.split(".");
@@ -33,6 +35,50 @@ class StringUtils {
     String decodedString = Uri.decodeComponent(fileName);
     // Return the full name with extension
     return decodedString;
+  }
+
+  /// Safely extract a localized string from a dynamic JSON value.
+  /// Handles both simple strings and objects like `{ "en": "...", "ar": "..." }`.
+  /// Falls back gracefully if the expected language key is missing.
+  static String? getLocalizedValue(dynamic value) {
+    if (value == null) return null;
+
+    // Simple string value
+    if (value is String) return value;
+
+    // Localized map
+    if (value is Map) {
+      try {
+        final langCode = AppPreferences.getCurrentLanguageCode();
+        final normalized = value.map(
+          (key, val) => MapEntry(key.toString(), val),
+        );
+
+        final preferred = normalized[langCode];
+        if (preferred is String && preferred.isNotEmpty) {
+          return preferred;
+        }
+
+        // Fallbacks
+        final en = normalized['en'];
+        if (en is String && en.isNotEmpty) return en;
+
+        final ar = normalized['ar'];
+        if (ar is String && ar.isNotEmpty) return ar;
+
+        // Any non-empty string value
+        for (final entry in normalized.values) {
+          if (entry is String && entry.isNotEmpty) {
+            return entry;
+          }
+        }
+      } catch (_) {
+        // Ignore and fall through to final fallback
+      }
+    }
+
+    // Final fallback: toString
+    return value.toString();
   }
 
   /// Calculate lock label text based on lock status and offerData

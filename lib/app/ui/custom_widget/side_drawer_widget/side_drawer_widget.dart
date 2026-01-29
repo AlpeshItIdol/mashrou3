@@ -188,8 +188,7 @@ class _SideDrawerWidgetState extends State<SideDrawerWidget> {
                                         : SVGAssets.docIcon,
                                     title: appStrings(context).lblVendorOfferAnalytics,
                                     onTap: () => _navigateToRoute(
-                                        routeName:
-                                            Routes.kVendorOfferAnalytics),
+                                        routeName: Routes.kVendorOfferAnalytics),
                                   ),
                                   DrawerOption(
                                     icon: Utils.isDark(context)
@@ -274,6 +273,15 @@ class _SideDrawerWidgetState extends State<SideDrawerWidget> {
                                       onTap: () => _navigateToRoute(
                                           routeName: Routes.kVisitRequestsList),
                                     ),
+                                  DrawerOption(
+                                    icon: Utils.isDark(context)
+                                        ? SVGAssets.docIcon
+                                        : SVGAssets.docIcon,
+                                    title: appStrings(context)
+                                        .lblOwnerOfferAnalytics,
+                                    onTap: () => _navigateToRoute(
+                                        routeName: Routes.kOwnerOfferAnalytics),
+                                  ),
                                   DrawerOption(
                                     icon: Utils.isDark(context)
                                         ? SVGAssets.scrollWhiteIcon

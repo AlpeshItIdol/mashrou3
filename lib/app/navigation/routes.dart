@@ -64,6 +64,7 @@ abstract class Routes {
   static const kDrawerVendorList = "drawervendor-list";
   static const kDrawerVendorDetail = "drawervendor-detail";
   static const kVendorOfferAnalytics = "vendor-offer-analytics";
+  static const kOwnerOfferAnalytics = "owner-offer-analytics";
 
 }
 
@@ -144,4 +145,5 @@ abstract class RoutePaths {
   static const kDrawerVendorList = "/drawervendor-list";
   static const kDrawerVendorDetail = "/drawervendor-detail";
   static const kVendorOfferAnalytics = "/vendor-offer-analytics";
+  static const kOwnerOfferAnalytics = "/owner-offer-analytics";
 }

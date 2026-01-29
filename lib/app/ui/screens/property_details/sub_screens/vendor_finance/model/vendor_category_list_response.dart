@@ -1,3 +1,5 @@
+import 'package:mashrou3/utils/string_utils.dart';
+
 class VendorCategoryListResponse {
   int? statusCode;
   bool? success;
@@ -111,7 +113,11 @@ class VendorCategoryData {
     return data;
   }
 
-  // Helper method to get localized title
+  /// Display title resolved for the current app language (with fallback to en, then ar).
+  /// Updates in real time when the user changes language in app settings.
+  String get displayTitle => StringUtils.getLocalizedValue(title) ?? '';
+
+  /// @deprecated Use [displayTitle] for UI so it reacts to app language changes.
   String getTitleString({String locale = 'en'}) {
     if (title is String) {
       return title as String;

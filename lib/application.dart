@@ -29,6 +29,7 @@ import 'package:mashrou3/app/ui/screens/filter/cubit/filter_cubit.dart';
 import 'package:mashrou3/app/ui/screens/finance_request/cubit/finance_request_cubit.dart';
 import 'package:mashrou3/app/ui/screens/property_details/cubit/property_details_cubit.dart';
 import 'package:mashrou3/app/ui/screens/vendor_offer_analytics/cubit/vendor_offer_analytics_cubit.dart';
+import 'package:mashrou3/app/ui/screens/owner_offer_analytics/cubit/owner_offer_analytics_cubit.dart';
 import 'package:mashrou3/app/ui/screens/property_details/sub_screens/add_my_offers/cubit/add_my_offers_cubit.dart';
 import 'package:mashrou3/app/ui/screens/property_details/sub_screens/bank_details/cubit/bank_details_cubit.dart';
 import 'package:mashrou3/app/ui/screens/property_details/sub_screens/vendor_finance/vendor_categories/cubit/vendor_categories_cubit.dart';
@@ -296,6 +297,9 @@ class _ApplicationState extends State<Application> {
                           create: (BuildContext context) => VendorOfferAnalyticsCubit(
                               repository: GetIt.I<CommonApiRepository>())),
                       BlocProvider(
+                          create: (BuildContext context) => OwnerOfferAnalyticsCubit(
+                              repository: GetIt.I<CommonApiRepository>())),
+                      BlocProvider(
                           create: (BuildContext context) => InReviewCubit(
                               propertyRepository:
                                   GetIt.I<PropertyRepository>())),
@@ -307,7 +311,7 @@ class _ApplicationState extends State<Application> {
                               repository: GetIt.I<BankManagementRepository>())),
                       BlocProvider(
                           create: (BuildContext context) => BanksOfferListCubit(
-                              repository: GetIt.I<BankManagementRepository>())),
+                              repository: GetIt.I<BankOfferListRepository>())),
                       BlocProvider(
                           create: (BuildContext context) => DrawerVendorsListCubit(
                               repository: GetIt.I<DrawerVendorListRepository>())),
@@ -398,22 +402,27 @@ class _ApplicationState extends State<Application> {
                           AppPreferencesCubit()..initializePreferences(),
                       child: BlocBuilder<SideDrawerCubit, SideDrawerState>(
                         builder: (context, _) {
-                          final appPreferencesCubit =
-                              context.watch<AppPreferencesCubit>();
-                          final isDarkMode =
-                              appPreferencesCubit.isDarkModeEnabled;
-                          final isArabic = appPreferencesCubit.isArabicSelected;
+                          return BlocBuilder<AppPreferencesCubit,
+                              AppPreferencesState>(
+                            builder: (context, _) {
+                              final appPreferencesCubit =
+                                  context.read<AppPreferencesCubit>();
+                              final isDarkMode =
+                                  appPreferencesCubit.isDarkModeEnabled;
+                              final isArabic =
+                                  appPreferencesCubit.isArabicSelected;
 
-                          final themeMode =
-                              isDarkMode ? ThemeMode.dark : ThemeMode.light;
-                          final appLocale = isArabic
-                              ? const Locale('ar')
-                              : const Locale('en');
-                          final mediaQueryData = MediaQuery.of(context);
-                          final scale = mediaQueryData.textScaler
-                              .clamp(minScaleFactor: 1.0, maxScaleFactor: 1.3);
-                          AppConstants.appContext = context;
-                          return MaterialApp.router(
+                              final themeMode = isDarkMode
+                                  ? ThemeMode.dark
+                                  : ThemeMode.light;
+                              final appLocale = isArabic
+                                  ? const Locale('ar')
+                                  : const Locale('en');
+                              final mediaQueryData = MediaQuery.of(context);
+                              final scale = mediaQueryData.textScaler.clamp(
+                                  minScaleFactor: 1.0, maxScaleFactor: 1.3);
+                              AppConstants.appContext = context;
+                              return MaterialApp.router(
                             builder: (context, child) {
                               return MediaQuery(
                                 data:
@@ -435,6 +444,8 @@ class _ApplicationState extends State<Application> {
                                 AppRouter.router.routeInformationProvider,
                             debugShowCheckedModeBanner: false,
                             title: FlavorConfig.instance.name,
+                          );
+                            },
                           );
                         },
                       ),

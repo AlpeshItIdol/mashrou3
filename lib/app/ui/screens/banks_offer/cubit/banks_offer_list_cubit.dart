@@ -80,7 +80,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:mashrou3/app/repository/bank_management_repository.dart';
 import 'package:mashrou3/app/repository/bank_offer_repository.dart';
 
 import '../../../../model/base/base_model.dart';
@@ -91,7 +90,8 @@ part 'banks_offer_list_state.dart';
 class BanksOfferListCubit extends Cubit<BanksOfferListState> {
   BanksOfferListCubit({required this.repository}) : super(BankOffersListInitial());
 
-  final BankManagementRepository repository;
+  /// Repository responsible for fetching bank offers list
+  final BankOfferListRepository repository;
 
   static const int PER_PAGE_SIZE = 10;
   int currentPage = 1;
@@ -105,7 +105,7 @@ class BanksOfferListCubit extends Cubit<BanksOfferListState> {
     currentPage = 1;
     banksOffers.clear();
     _searchQuery = searchQuery ?? "";
-    // await getBankOffersList();
+    await getBankOffersList();
   }
 
   Future<void> getBankOffersList({bool hasMoreData = false}) async {
@@ -121,7 +121,7 @@ class BanksOfferListCubit extends Cubit<BanksOfferListState> {
       'sortOrder': 'desc',
     };
 
-    final response = await repository.getBanksList(
+    final response = await repository.getBanksOfferList(
       queryParameters: queryParams,
       searchText: _searchQuery,
     );

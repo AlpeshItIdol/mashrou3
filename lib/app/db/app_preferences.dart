@@ -17,6 +17,12 @@ class AppPreferences {
 
   AppPreferences._internal();
 
+  /// Cached language code for quick synchronous access around the app.
+  /// Defaults to 'en' and is updated whenever [setLanguageCode] is called.
+  static String currentLanguageCode = 'en';
+
+  static String getCurrentLanguageCode() => currentLanguageCode;
+
   //------------------------- Preference Constants -----------------------------
   static const String keyLanguageCode = "keyLanguageCode";
   static const String keyLoginDetails = "keyLoginDetails";
@@ -197,12 +203,18 @@ class AppPreferences {
   // Method to get language code
   Future<String?> getLanguageCode() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(keyLanguageCode);
+    final code = prefs.getString(keyLanguageCode);
+    // Keep in-memory language code in sync with stored value
+    if (code != null && code.isNotEmpty) {
+      currentLanguageCode = code;
+    }
+    return code;
   }
 
   // Method to set language code
   Future<bool> setLanguageCode(String value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    currentLanguageCode = value;
     return prefs.setString(keyLanguageCode, value);
   }
 

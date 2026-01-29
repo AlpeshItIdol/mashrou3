@@ -195,7 +195,7 @@ class _ToggleRowItemState extends State<ToggleRowItem> {
                       // Adjust index for vendor items (add 1 because of "All")
                       final displayIndex = isVendor ? index + 1 : index;
                       final name = isVendor
-                          ? (items[index] as VendorCategoryData).getTitleString()
+                          ? (items[index] as VendorCategoryData).displayTitle
                           : (items[index] as PropertyCategoryData).name ?? "";
 
                       return GestureDetector(

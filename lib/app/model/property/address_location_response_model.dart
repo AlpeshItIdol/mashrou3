@@ -1,3 +1,5 @@
+import 'package:mashrou3/utils/string_utils.dart';
+
 class AddressLocationResponseModel {
   int? statusCode;
   bool? success;
@@ -69,7 +71,9 @@ class AddressLocationData {
 
 class AddressLocationItem {
   String? sId;
-  String? text;
+  /// Raw API value: can be a plain String or a multilingual map {"en": "...", "ar": "..."}.
+  /// Use [text] getter for display (resolved to current app language with fallbacks).
+  dynamic textRaw;
   String? status;
   String? userId;
   String? deletedAt;
@@ -77,21 +81,24 @@ class AddressLocationItem {
   String? updatedAt;
   int? v;
 
+  /// Display text resolved for the current app language (with fallback to en, then ar).
+  String? get text => StringUtils.getLocalizedValue(textRaw);
+
   AddressLocationItem({
     this.sId,
-    this.text,
+    dynamic text,
     this.status,
     this.userId,
     this.deletedAt,
     this.createdAt,
     this.updatedAt,
     this.v,
-  });
+  }) : textRaw = text;
 
   factory AddressLocationItem.fromJson(Map<String, dynamic> json) {
     return AddressLocationItem(
       sId: json['_id'] as String?,
-      text: json['text'] as String?,
+      text: json['text'],
       status: json['status'] as String?,
       userId: json['userId'] as String?,
       deletedAt: json['deletedAt'] as String?,
@@ -104,7 +111,7 @@ class AddressLocationItem {
   Map<String, dynamic> toJson() {
     return {
       '_id': sId,
-      'text': text,
+      'text': textRaw,
       'status': status,
       'userId': userId,
       'deletedAt': deletedAt,

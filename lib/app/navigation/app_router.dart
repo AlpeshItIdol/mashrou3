@@ -77,6 +77,7 @@ import '../ui/screens/unknown/invalid.screen.dart';
 import '../ui/screens/vendors/model/vendors_sequence_response.dart';
 import '../ui/screens/vendors/vendors_list_screen.dart';
 import '../ui/screens/vendor_offer_analytics/vendor_offer_analytics_screen.dart';
+import '../ui/screens/owner_offer_analytics/owner_offer_analytics_screen.dart';
 
 class AppRouter {
   static final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -417,6 +418,13 @@ class AppRouter {
           path: RoutePaths.kVendorOfferAnalytics,
           builder: (BuildContext context, GoRouterState state) {
             return const VendorOfferAnalyticsScreen();
+          }),
+
+      GoRoute(
+          name: Routes.kOwnerOfferAnalytics,
+          path: RoutePaths.kOwnerOfferAnalytics,
+          builder: (BuildContext context, GoRouterState state) {
+            return const OwnerOfferAnalyticsScreen();
           }),
 
       GoRoute(

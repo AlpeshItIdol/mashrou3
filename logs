@@ -1,0 +1,431 @@
+[GoRouter] getting location for name: "filter"
+[GoRouter] pushing /filter
+flutter:
+flutter: ╔╣ Request ║ GET
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/property-management/filter/list
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Headers
+flutter: ╟ Content-Type: application/json
+flutter: ╟ accept: application/json
+flutter: ╟ lang: en
+flutter: ╟ contentType: application/json
+flutter: ╟ responseType: ResponseType.json
+flutter: ╟ followRedirects: true
+flutter: ╟ connectTimeout: 0:00:59.000000
+flutter: ╟ receiveTimeout: 0:01:00.000000
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter:
+flutter: ╔╣ Request ║ POST
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/address-location/list
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Headers
+flutter: ╟ Content-Type: application/json
+flutter: ╟ accept: application/json
+flutter: ╟ Authorization:
+flutter: ║ Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Y2JkMThhNzMwMWYwYzIzMTFkZmNmMiIsIm
+flutter: ║ lhdCI6MTc2OTU4MzA5MiwiZXhwIjoxNzc3MzU5MDkyfQ.50xIVI9ZNyY4zwjSUkgafCNsBP3O5xb7NIjkjroUsQU
+flutter: ╟ lang: en
+flutter: ╟ device: mobile
+flutter: ╟ contentType: application/json
+flutter: ╟ responseType: ResponseType.json
+flutter: ╟ followRedirects: true
+flutter: ╟ connectTimeout: 0:00:59.000000
+flutter: ╟ receiveTimeout: 0:01:00.000000
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Body
+flutter: ╟ page: 1
+flutter: ╟ limit: 100
+flutter: ╟ search:
+flutter: ╟ isAll: true
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ║ {page: 1, limit: 100, search: , isAll: true}
+flutter:
+flutter: ╔╣ Request ║ POST
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/property-category/list
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Headers
+flutter: ╟ Content-Type: application/json
+flutter: ╟ accept: application/json
+flutter: ╟ Authorization:
+flutter: ║ Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Y2JkMThhNzMwMWYwYzIzMTFkZmNmMiIsIm
+flutter: ║ lhdCI6MTc2OTU4MzA5MiwiZXhwIjoxNzc3MzU5MDkyfQ.50xIVI9ZNyY4zwjSUkgafCNsBP3O5xb7NIjkjroUsQU
+[log] Auth token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Y2JkMThhNzMwMWYwYzIzMTFkZmNmMiIsImlhdCI6MTc2OTU4MzA5MiwiZXhwIjoxNzc3MzU5MDkyfQ.50xIVI9ZNyY4zwjSUkgafCNsBP3O5xb7NIjkjroUsQU
+flutter: ╟ lang: en
+flutter: ╟ device: mobile
+flutter: ╟ contentType: application/json
+flutter: ╟ responseType: ResponseType.json
+flutter: ╟ followRedirects: true
+flutter: ╟ connectTimeout: 0:00:59.000000
+flutter: ╟ receiveTimeout: 0:01:00.000000
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Body
+flutter: ╟ pagination: false
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ║ {pagination: false}
+flutter:
+flutter: ╔╣ Request ║ GET
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/property/list-currency
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Headers
+flutter: ╟ Content-Type: application/json
+flutter: ╟ accept: application/json
+flutter: ╟ Authorization:
+flutter: ║ Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Y2JkMThhNzMwMWYwYzIzMTFkZmNmMiIsIm
+flutter: ║ lhdCI6MTc2OTU4MzA5MiwiZXhwIjoxNzc3MzU5MDkyfQ.50xIVI9ZNyY4zwjSUkgafCNsBP3O5xb7NIjkjroUsQU
+flutter: ╟ lang: en
+flutter: ╟ contentType: application/json
+flutter: ╟ responseType: ResponseType.json
+flutter: ╟ followRedirects: true
+flutter: ╟ connectTimeout: 0:00:59.000000
+flutter: ╟ receiveTimeout: 0:01:00.000000
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter:
+flutter: ╔╣ Request ║ POST
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/property/list-neighbourhood-categories
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Headers
+flutter: ╟ Content-Type: application/json
+flutter: ╟ accept: application/json
+flutter: ╟ lang: en
+flutter: ╟ contentType: application/json
+flutter: ╟ responseType: ResponseType.json
+flutter: ╟ followRedirects: true
+flutter: ╟ connectTimeout: 0:00:59.000000
+flutter: ╟ receiveTimeout: 0:01:00.000000
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+[log] Auth token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Y2JkMThhNzMwMWYwYzIzMTFkZmNmMiIsImlhdCI6MTc2OTU4MzA5MiwiZXhwIjoxNzc3MzU5MDkyfQ.50xIVI9ZNyY4zwjSUkgafCNsBP3O5xb7NIjkjroUsQU
+[log] Auth token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4Y2JkMThhNzMwMWYwYzIzMTFkZmNmMiIsImlhdCI6MTc2OTU4MzA5MiwiZXhwIjoxNzc3MzU5MDkyfQ.50xIVI9ZNyY4zwjSUkgafCNsBP3O5xb7NIjkjroUsQU
+flutter:
+flutter: ╔╣ Response ║ GET ║ Status: 200 OK  ║ Time: 642 ms
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/property-management/filter/list
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Body
+flutter: ║
+flutter: ║    {
+flutter: ║         "statusCode": 200,
+flutter: ║         "success": true,
+flutter: ║         "message": "Filters fetched successfully.",
+flutter: ║         "data": [
+flutter: ║          {title: Select Radius, filterType: range, key: radius, isActive: true},
+flutter: ║          {title: Under Construction, filterType: select, key: underConstruction, isActive: true},
+flutter: ║          {title: Furnished, filterType: select, key: furnished, isActive: true},
+flutter: ║          {title: 3D Virtual Tour, filterType: select, key: virtualTour, isActive: true},
+flutter: ║          {title: Country Selection, filterType: select, key: country, isActive: true},
+flutter: ║          {title: City Selection, filterType: select, key: city, isActive: true},
+flutter: ║          {title: Neighborhood, filterType: select, key: neighborhood, isActive: true},
+flutter: ║          {title: Bank/Leasing Company, filterType: select, key: leasingCompany, isActive: true},
+flutter: ║          {title: Price, filterType: range, key: price, isActive: true},
+flutter: ║          {title: Area (Sq.Meter), filterType: range, key: area, isActive: true},
+flutter: ║          {title: Currency Type, filterType: select, key: currencyCode, isActive: true},
+flutter: ║          {title: Sold Out, filterType: select, key: isSold, isActive: true}
+flutter: ║         ]
+flutter: ║    }
+flutter: ║
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+[log] PropertyNeighbourhoodList--------34
+flutter:
+flutter: ╔╣ Response ║ POST ║ Status: 200 OK  ║ Time: 890 ms
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/property-category/list
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Body
+flutter: ║
+flutter: ║    {
+flutter: ║         "statusCode": 200,
+flutter: ║         "success": true,
+flutter: ║         "message": "Property category fetched successfully.",
+flutter: ║         "data": [
+flutter: ║          {name: Residential, _id: 672b708ac1576516c9a879a0},
+flutter: ║          {name: Commercial, _id: 672b7094c1576516c9a879a3},
+flutter: ║          {name: Lands, _id: 67756cd65c8d0b068232cc03}
+flutter: ║         ]
+flutter: ║    }
+flutter: ║
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter:
+flutter: ╔╣ Response ║ POST ║ Status: 200 OK  ║ Time: 864 ms
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/property/list-neighbourhood-categories
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Body
+flutter: ║
+flutter: ║    {
+flutter: ║         "statusCode": 200,
+flutter: ║         "success": true,
+flutter: ║         "message": "Neighbourhood categories list fetched successfully.",
+flutter: ║         "data": [
+flutter: ║          {name: ATM, _id: 6808f37d1bac66c59444b46a},
+flutter: ║          {name: Airport, _id: 6808f4921bac66c59444b61c},
+flutter: ║          {name: Amusement Park, _id: 6808f40c1bac66c59444b55b},
+flutter: ║          {name: Bakery, _id: 6808f3f31bac66c59444b52f},
+flutter: ║          {name: Bank, _id: 6808f31f1bac66c59444b3c4},
+flutter: ║          {name: Book Store, _id: 6808f50e1bac66c59444b6e2},
+flutter: ║          {name: Bus Station, _id: 6808f3bf1bac66c59444b4cc},
+flutter: ║          {name: Cafe, _id: 6808f4ce1bac66c59444b681},
+flutter: ║          {name: Cemetery, _id: 6808f4bf1bac66c59444b67c},
+flutter: ║          {name: Church, _id: 6808f38c1bac66c59444b482},
+flutter: ║          {name: Courthouse, _id: 6808f3e51bac66c59444b500},
+flutter: ║          {name: Embassy, _id: 6808f34d1bac66c59444b3fd},
+flutter: ║          {name: GYM, _id: 6808f5411bac66c59444b796},
+flutter: ║          {name: Gas Station, _id: 6808f3d11bac66c59444b4fb},
+flutter: ║          {name: Government Office, _id: 6808f4fd1bac66c59444b6dd},
+flutter: ║          {name: Hospital, _id: 6808f46a1bac66c59444b5e4},
+flutter: ║          {name: ID, _id: 685bd1cb1ba8502750f822db},
+flutter: ║          {name: Mall, _id: 6808f4541bac66c59444b5b6},
+flutter: ║          {name: Mosque, _id: 6808f4861bac66c59444b617},
+flutter: ║          {name: Museum, _id: 6808f3ab1bac66c59444b4c7},
+flutter: ║          {name: NeighborHood, _id: 6818b6899a560b845352fe2e},
+flutter: ║          {name: Park, _id: 6808f3371bac66c59444b3f8},
+flutter: ║          {name: Parking, _id: 6808f5311bac66c59444b76e},
+flutter: ║          {name: Pharmacy, _id: 67f3cb7c2d5f25aee241d2ff},
+flutter: ║          {name: Police, _id: 6808f4201bac66c59444b560},
+flutter: ║          {name: Post Office, _id: 6808f4e31bac66c59444b6ae},
+flutter: ║          {name: Restaurant, _id: 6808f4a31bac66c59444b64b},
+flutter: ║          {name: School, _id: 67f3c5ec2d5f25aee241d2dd},
+flutter: ║          {name: Showroom, _id: 67f3cbad2d5f25aee241d304},
+flutter: ║          {name: Stadium, _id: 6808f51d1bac66c59444b71b},
+flutter: ║          {name: Store, _id: 6808f3991bac66c59444b498},
+flutter: ║          {name: Street, _id: 6818b6c19a560b845352fe84},
+flutter: ║          {name: Supermarket, _id: 6808f35d1bac66c59444b429},
+flutter: ║          {name: University, _id: 6808f32a1bac66c59444b3c9}
+flutter: ║         ]
+flutter: ║    }
+flutter: ║
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter:
+flutter: ╔╣ Response ║ POST ║ Status: 200 OK  ║ Time: 1275 ms
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/address-location/list
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Body
+flutter: ║
+flutter: ║    {
+flutter: ║         "statusCode": 200,
+flutter: ║         "success": true,
+flutter: ║         "message": "Address location list fetched successfully.",
+flutter: ║         "data": {
+flutter: ║             "locationData": [
+flutter: ║                {
+flutter: ║                     "_id": "697a02bfcccd277b254a6023",
+flutter: ║                     "text": {en: adress in en, ar: adress in arabic},
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2026-01-28T12:36:15.166Z",
+flutter: ║                     "updatedAt": "2026-01-28T12:36:15.166Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393e7042c35398a39f3b33",
+flutter: ║                     "text": "حي الصحابة",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:33:36.555Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:33:36.555Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393e6542c35398a39f3b2c",
+flutter: ║                     "text": "دابوق",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:33:25.198Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:33:25.198Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393e5042c35398a39f3b25",
+flutter: ║                     "text": "ضاحية الأمير راشد",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:33:04.392Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:33:04.392Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393e4542c35398a39f3b20",
+flutter: ║                     "text": "الجبيهة",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:32:53.682Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:32:53.682Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393e3442c35398a39f3b19",
+flutter: ║                     "text": "دير غبار",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:32:36.827Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:32:36.827Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393e2342c35398a39f3b14",
+flutter: ║                     "text": "خلدا",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:32:19.878Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:32:19.878Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393e0b42c35398a39f3b0d",
+flutter: ║                     "text": "طريق المطار",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:31:55.324Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:31:55.324Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393dfb42c35398a39f3b08",
+flutter: ║                     "text": "عبدون",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:31:39.157Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:31:39.157Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393dee42c35398a39f3b01",
+flutter: ║                     "text": "مرج الحمام",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:31:26.265Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:31:26.265Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393de242c35398a39f3afc",
+flutter: ║                     "text": "ضاحية الأمير علي",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:31:14.833Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:31:14.833Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393dbf42c35398a39f3af5",
+flutter: ║                     "text": "الرابية",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:30:39.773Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:30:39.773Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "69393d7a42c35398a39f3aea",
+flutter: ║                     "text": "البنيات",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:29:30.752Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:29:30.752Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "6939395e42c35398a39f344b",
+flutter: ║                     "text": "ضاحية النخيل",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:11:58.689Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:11:58.689Z",
+flutter: ║                     "__v": 0
+flutter: ║                },
+flutter: ║                {
+flutter: ║                     "_id": "6939395842c35398a39f342e",
+flutter: ║                     "text": "شفا بدران",
+flutter: ║                     "status": "active",
+flutter: ║                     "isSuperAdmin": true,
+flutter: ║                     "userId": "67e27ad8ac249059ec64536b",
+flutter: ║                     "deletedAt": null,
+flutter: ║                     "createdAt": "2025-12-10T09:11:52.880Z",
+flutter: ║                     "updatedAt": "2025-12-10T09:11:52.880Z",
+flutter: ║                     "__v": 0
+flutter: ║                }
+flutter: ║             ],
+flutter: ║             "pageCount": 1,
+flutter: ║             "documentCount": 15,
+flutter: ║             "page": 1
+flutter: ║        }
+flutter: ║    }
+flutter: ║
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter:
+flutter: ╔╣ Response ║ GET ║ Status: 200 OK  ║ Time: 1278 ms
+flutter: ║  https://devapigateway.devhostserver.com/api/v1/property/list-currency
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+flutter: ╔ Body
+flutter: ║
+flutter: ║    {
+flutter: ║         "statusCode": 200,
+flutter: ║         "success": true,
+flutter: ║         "message": "Currency list fetched successfully.",
+flutter: ║         "data": [
+flutter: ║            {
+flutter: ║                 "_id": "5d441ff23b574544e86e97c1",
+flutter: ║                 "currencySymbol": "$",
+flutter: ║                 "currencyName": "United States Dollar",
+flutter: ║                 "currencyCode": "USD",
+flutter: ║                 "__v": 0
+flutter: ║            },
+flutter: ║            {
+flutter: ║                 "_id": "5d441ff23b574544e86e97be",
+flutter: ║                 "currencySymbol": "﷼",
+flutter: ║                 "currencyName": "Saudi Riyal",
+flutter: ║                 "currencyCode": "SAR",
+flutter: ║                 "__v": 0
+flutter: ║            },
+flutter: ║            {
+flutter: ║                 "_id": "5d441ff23b574544e86e97bd",
+flutter: ║                 "currencySymbol": "€",
+flutter: ║                 "currencyName": "Euro",
+flutter: ║                 "currencyCode": "EUR",
+flutter: ║                 "__v": 0
+flutter: ║            },
+flutter: ║            {
+flutter: ║                 "_id": "64a1b23c56a9e001a12345b8",
+flutter: ║                 "currencySymbol": "د.أ",
+flutter: ║                 "currencyName": "Jordanian Dinar",
+flutter: ║                 "currencyCode": "JOD",
+flutter: ║                 "__v": 0
+flutter: ║            }
+flutter: ║         ]
+flutter: ║    }
+flutter: ║
+flutter: ╚══════════════════════════════════════════════════════════════════════════════════════════╝
+[ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: type '_Map<String, dynamic>' is not a subtype of type 'String?' in type cast
+#0      new AddressLocationItem.fromJson (package:mashrou3/app/model/property/address_location_response_model.dart:94:26)
+#1      new AddressLocationData.fromJson.<anonymous closure> (package:mashrou3/app/model/property/address_location_response_model.dart:52:35)
+#2      MappedListIterable.elementAt (dart:_internal/iterable.dart:442:31)
+#3      ListIterator.moveNext (dart:_internal/iterable.dart:371:26)
+#4      new _GrowableList._ofEfficientLengthIterable (dart:core-patch/growable_array.dart:194:27)
+#5      new _GrowableList.of (dart:core-patch/growable_array.dart:154:28)
+#6      new List.of (dart:core-patch/array_patch.dart:39:18)
+#7      ListIterable.toList (dart:_internal/iterable.dart:224:7)
+#8      new AddressLocationData.fromJson (package:mashrou3/app/model/property/address_location_response_model.dart:53:12)
+#9      new AddressLocationResponseMode<…>

@@ -1,4 +1,4 @@
-import 'property_detail_response_model.dart';
+import 'package:mashrou3/utils/string_utils.dart';
 
 class PropertyListResponseModel {
   int? statusCode;
@@ -67,15 +67,15 @@ class PropertyListData {
 class PropertyData {
   String? sId;
   String? createdBy;
-  String? title;
+  dynamic _title;
   Price? price;
-  String? description;
+  dynamic _description;
   String? categoryId;
   String? subCategoryId;
   bool? isApproved;
   bool? isActive;
-  String? country;
-  String? city;
+  dynamic _country;
+  dynamic _city;
   bool? isDeleted;
   bool? isSoldOut;
   Area? area;
@@ -123,18 +123,23 @@ class PropertyData {
   PropertyOfferData? offerData;
   CreatedByData? createdByData;
 
+  String? get title => StringUtils.getLocalizedValue(_title);
+  String? get description => StringUtils.getLocalizedValue(_description);
+  String? get country => StringUtils.getLocalizedValue(_country);
+  String? get city => StringUtils.getLocalizedValue(_city);
+
   PropertyData(
       {this.sId,
       this.createdBy,
-      this.title,
+      dynamic title,
       this.price,
-      this.description,
+      dynamic description,
       this.categoryId,
       this.subCategoryId,
       this.isApproved,
       this.isActive,
-      this.country,
-      this.city,
+      dynamic country,
+      dynamic city,
       this.isDeleted,
       this.isSoldOut,
       this.area,
@@ -180,20 +185,25 @@ class PropertyData {
       this.AreaAsNumber,
       this.lowerCaseTitle,
       this.offerData,
-      this.createdByData});
+      this.createdByData}) {
+    _title = title;
+    _description = description;
+    _country = country;
+    _city = city;
+  }
 
   PropertyData.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     createdBy = json['createdBy'];
-    title = json['title'];
+    _title = json['title'];
     price = json['price'] != null ? Price.fromJson(json['price']) : null;
-    description = json['description'];
+    _description = json['description'];
     categoryId = json['categoryId'];
     subCategoryId = json['subCategoryId'];
     isApproved = json['isApproved'];
     isActive = json['isActive'];
-    country = json['country'];
-    city = json['city'];
+    _country = json['country'];
+    _city = json['city'];
     isDeleted = json['isDeleted'];
     isSoldOut = json['isSoldOut'];
     area = json['area'] != null ? Area.fromJson(json['area']) : null;
@@ -323,17 +333,17 @@ class PropertyData {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['_id'] = sId;
     data['createdBy'] = createdBy;
-    data['title'] = title;
+    data['title'] = _title;
     if (price != null) {
       data['price'] = price!.toJson();
     }
-    data['description'] = description;
+    data['description'] = _description;
     data['categoryId'] = categoryId;
     data['subCategoryId'] = subCategoryId;
     data['isApproved'] = isApproved;
     data['isActive'] = isActive;
-    data['country'] = country;
-    data['city'] = city;
+    data['country'] = _country;
+    data['city'] = _city;
     data['isDeleted'] = isDeleted;
     data['isSoldOut'] = isSoldOut;
     if (area != null) {

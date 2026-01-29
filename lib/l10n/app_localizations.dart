@@ -818,6 +818,12 @@ abstract class AppLocalizations {
   /// **'Vendor Offer Analytics'**
   String get lblVendorOfferAnalytics;
 
+  /// No description provided for @lblOwnerOfferAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner Offer Analytics'**
+  String get lblOwnerOfferAnalytics;
+
   /// No description provided for @textForRealEstate.
   ///
   /// In en, this message translates to:
